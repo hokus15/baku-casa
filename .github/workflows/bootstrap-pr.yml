@@ -1,0 +1,127 @@
+name: Bootstrap PR Checks
+
+on:
+  pull_request:
+
+jobs:
+  required_checks_definition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure required backend checks are declared
+        run: |
+          grep -q "Lint backend" .github/workflows/bootstrap-pr.yml
+          grep -q "Type-check backend" .github/workflows/bootstrap-pr.yml
+          grep -q "Smoke backend" .github/workflows/bootstrap-pr.yml
+
+      - name: Ensure required bot checks are declared
+        run: |
+          grep -q "Lint bot" .github/workflows/bootstrap-pr.yml
+          grep -q "Type-check bot" .github/workflows/bootstrap-pr.yml
+          grep -q "Smoke bot" .github/workflows/bootstrap-pr.yml
+
+      - name: Ensure CI is external-service free
+        run: |
+          if grep -q "services:" .github/workflows/bootstrap-pr.yml; then
+            echo "External services are not allowed in EN-0100 bootstrap CI."
+            exit 1
+          fi
+
+  backend_ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend tooling
+        run: python -m pip install --upgrade pip pytest ruff mypy
+
+      - name: Validate backend structure
+        run: |
+          test -f backend/pyproject.toml
+          test -d backend/src
+          test -d backend/tests
+
+      - name: Lint backend
+        run: ruff check backend/src backend/tests
+
+      - name: Type-check backend
+        run: mypy backend/src
+
+      - name: Smoke backend
+        run: pytest -q backend/tests/test_backend_smoke.py
+
+  bot_ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install bot tooling
+        run: python -m pip install --upgrade pip pytest ruff mypy
+
+      - name: Validate bot structure
+        run: |
+          test -f bot/pyproject.toml
+          test -d bot/src
+          test -d bot/tests
+
+      - name: Lint bot
+        run: ruff check bot/src bot/tests
+
+      - name: Type-check bot
+        run: mypy bot/src
+
+      - name: Smoke bot
+        run: pytest -q bot/tests/test_bot_smoke.py
+
+  scope_guardrails:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Block runtime cross-root imports
+        run: |
+          if grep -RInE "from[[:space:]]+baku\.bot|import[[:space:]]+baku\.bot" backend/src; then
+            echo "Cross-root runtime import from backend to bot is prohibited."
+            exit 1
+          fi
+          if grep -RInE "from[[:space:]]+baku\.backend|import[[:space:]]+baku\.backend" bot/src; then
+            echo "Cross-root runtime import from bot to backend is prohibited."
+            exit 1
+          fi
+
+      - name: Block real endpoints in bootstrap
+        run: |
+          if grep -RInE "FastAPI\(|APIRouter\(|@app\.(get|post|put|delete|patch)" backend/src bot/src; then
+            echo "Real endpoints are out of scope for EN-0100."
+            exit 1
+          fi
+
+      - name: Block migrations and event publication markers
+        run: |
+          if [ -d backend/migrations ] || [ -d bot/migrations ]; then
+            echo "Migrations are out of scope for EN-0100."
+            exit 1
+          fi
+          if grep -RInE "CloudEvent|cloudevents|outbox|publish_event|mqtt" backend/src bot/src; then
+            echo "Events are out of scope for EN-0100."
+            exit 1
+          fi
