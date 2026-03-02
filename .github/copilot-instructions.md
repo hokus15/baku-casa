@@ -5,7 +5,7 @@ This project follows strict Spec Driven Development (SDD).
 All generated code MUST comply with:
 
 - Constitution
-- ADR-0001 to ADR-0010
+- ADR-0001 to ADR-0012
 - Feature specification
 - Implementation plan
 
