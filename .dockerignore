@@ -1,0 +1,31 @@
+# VCS
+.git/
+.gitignore
+
+# Python/build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual envs
+.venv/
+venv/
+
+# Node (future-proof)
+node_modules/
+
+# Logs and env
+*.log*
+.env*
+
+# Coverage/cache
+coverage/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Docker metadata
+Dockerfile*
+.dockerignore

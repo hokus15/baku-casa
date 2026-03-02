@@ -1,0 +1,39 @@
+{
+    "folders": [
+        {
+            // "name": "Root",
+            "path": "./"
+        },
+        {
+            // "name": "Baku Backend",
+            "path": "./backend"
+        },
+        {
+            // "name": "Baku bot",
+            "path": "./bot"
+        },
+        // {
+        // 	// "name": "Baku Docker",
+        // 	"path": "./docker"
+        // },
+        // {
+        // 	// "name": "Baku Scripts",
+        // 	"path": "./scripts"
+        // }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.venv": true,
+            "**/__pycache__": true,
+            "**/.pytest_cache": true
+        },
+        "workbench.editor.labelFormat": "short",
+        "editor.formatOnSave": true,
+        "terminal.integrated.cwd": "",
+        "python.terminal.activateEnvironment": false,
+        "python.analysis.extraPaths": [
+            "${workspaceFolder}/backend/src",
+            "${workspaceFolder}/bot/src"
+        ]
+    }
+}
