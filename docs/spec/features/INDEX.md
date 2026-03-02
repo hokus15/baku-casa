@@ -1,0 +1,17 @@
+# Índice de Features
+
+- [F-0001-acceso-y-autenticacion-operador](F-0001-acceso-y-autenticacion-operador.md)
+- [F-0002-propietarios-sujetos-fiscales](F-0002-propietarios-sujetos-fiscales.md)
+- [F-0003-propiedades-y-titularidad](F-0003-propiedades-y-titularidad.md)
+- [F-0004-datos-economicos-de-la-propiedad-adquisicion-venta-y-base-fiscal](F-0004-datos-economicos-de-la-propiedad-adquisicion-venta-y-base-fiscal.md)
+- [F-0005-gastos-recurrentes-de-la-propiedad-master-data](F-0005-gastos-recurrentes-de-la-propiedad-master-data.md)
+- [F-0006-contratos-estructura-base](F-0006-contratos-estructura-base.md)
+- [F-0007-historico-de-rentas-master-data](F-0007-historico-de-rentas-master-data.md)
+- [F-0008-clausulas-de-actualizacion-de-renta-master-data](F-0008-clausulas-de-actualizacion-de-renta-master-data.md)
+- [F-0009-clausulas-de-asignacion-de-gastos-recurrentes-de-la-propiedad](F-0009-clausulas-de-asignacion-de-gastos-recurrentes-de-la-propiedad.md)
+- [F-0010-devengos-fuente-unica-de-ingresos-y-gastos](F-0010-devengos-fuente-unica-de-ingresos-y-gastos.md)
+- [F-0011-pagos-asignacion-fifo-y-credito-por-contrato](F-0011-pagos-asignacion-fifo-y-credito-por-contrato.md)
+- [F-0012-facturacion](F-0012-facturacion.md)
+- [F-0013-tareas](F-0013-tareas.md)
+- [F-0014-automatizacion-creacion-de-tareas](F-0014-automatizacion-creacion-de-tareas.md)
+- [F-0015-reports-fiscales](F-0015-reports-fiscales.md)
