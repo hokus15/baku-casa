@@ -3,9 +3,12 @@ name: Bootstrap PR Checks
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   required_checks_definition:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -31,7 +34,7 @@ jobs:
           fi
 
   backend_ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -43,7 +46,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install backend tooling
-        run: python -m pip install --upgrade pip pytest ruff mypy
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e "./backend[dev]"
 
       - name: Validate backend structure
         run: |
@@ -61,7 +66,7 @@ jobs:
         run: pytest -q backend/tests/test_backend_smoke.py
 
   bot_ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -73,7 +78,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install bot tooling
-        run: python -m pip install --upgrade pip pytest ruff mypy
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e "./bot[dev]"
 
       - name: Validate bot structure
         run: |
@@ -91,7 +98,7 @@ jobs:
         run: pytest -q bot/tests/test_bot_smoke.py
 
   scope_guardrails:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
