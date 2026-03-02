@@ -12,10 +12,10 @@
             // "name": "Baku bot",
             "path": "./bot"
         },
-        {
-         	// "name": "Baku Docker",
-         	"path": "./docker"
-        },
+        // {
+        // 	// "name": "Baku Docker",
+        // 	"path": "./docker"
+        // },
         // {
         // 	// "name": "Baku Scripts",
         // 	"path": "./scripts"
@@ -32,8 +32,8 @@
         "terminal.integrated.cwd": "",
         "python.terminal.activateEnvironment": false,
         "python.analysis.extraPaths": [
-            "${workspaceFolder}/backend",
-            "${workspaceFolder}/bot"
+            "${workspaceFolder}/backend/src",
+            "${workspaceFolder}/bot/src"
         ]
     }
 }
