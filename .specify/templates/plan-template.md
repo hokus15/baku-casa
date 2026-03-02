@@ -31,7 +31,15 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] Layer boundaries preserved (Domain/Application/Interfaces/Infrastructure)
+- [ ] No cross-root runtime coupling introduced; integration only through versioned contracts
+- [ ] Contract impact classified (breaking/non-breaking) and versioning impact declared
+- [ ] Typed error mapping and stable error codes defined for new failure modes
+- [ ] Financial/time invariants respected (Decimal-only money, percentage 0–100, UTC aware datetime)
+- [ ] Contract tests included when any contract surface changes
+- [ ] Spec updates identified for behavior changes
+- [ ] ADR updates/new ADR identified for structural or architectural changes
+- [ ] CI quality gates impacted by this feature are listed (lint, type-check, tests, contracts)
 
 ## Project Structure
 

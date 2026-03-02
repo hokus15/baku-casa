@@ -95,6 +95,16 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Constitution Alignment *(mandatory)*
+
+- **CA-001**: Layer boundary impact MUST be stated (Domain/Application/Interfaces/Infrastructure).
+- **CA-002**: Contract surface impact MUST be stated (none / changed) and versioning impact declared.
+- **CA-003**: If contract changed, required contract tests MUST be listed.
+- **CA-004**: Financial and time invariants impact MUST be stated (Decimal/percentages/UTC).
+- **CA-005**: Documentation impact MUST be stated:
+  - behavior change → spec update REQUIRED
+  - structural change → ADR update/new ADR REQUIRED
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]
