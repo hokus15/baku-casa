@@ -16,8 +16,8 @@ Este enabler introduce una estructura modular para la configuración de la aplic
 
 - creación de la aplicación HTTP
 - registro de dependencias
-- registro de middleware
-- registro de routers
+- registro de `middleware`
+- registro de `routers`
 - registro de manejadores de errores
 
 El objetivo es mantener el composition root claro y facilitar la evolución del sistema conforme crezca el número de dependencias y adaptadores.
@@ -30,7 +30,7 @@ Este enabler incluye:
 
 - reorganización del código de inicialización del backend HTTP
 - extracción de la configuración de dependencias a un módulo dedicado
-- separación del registro de middleware, routers y error handlers
+- separación del registro de `middleware`, `routers` y manejadores de errores
 - simplificación del punto de entrada de la aplicación
 
 ---
@@ -50,7 +50,7 @@ Este enabler no incluye:
 
 - El módulo principal de arranque del backend queda limitado a la creación de la aplicación.
 - La configuración de dependencias se encuentra en un módulo separado.
-- Middleware, routers y error handlers se registran mediante funciones de configuración dedicadas.
+- `Middleware`, `routers` y manejadores de errores se registran mediante funciones de configuración dedicadas.
 - No se modifica el comportamiento observable de la API.
 
 ---
@@ -60,7 +60,7 @@ Este enabler no incluye:
 Este enabler debe respetar:
 
 - la arquitectura hexagonal definida en la constitución
-- la separación estricta entre Interfaces e Infrastructure
+- la separación estricta entre las capas **Interfaces (Adapters)** e **Infrastructure**, tal como se define en ADR-0002
 - el principio de composition root como único lugar donde se conectan implementaciones concretas
 
 No debe introducir nuevos frameworks de inyección de dependencias.
