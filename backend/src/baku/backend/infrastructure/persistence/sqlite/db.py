@@ -1,4 +1,9 @@
-"""SQLite engine and session factory."""
+"""SQLite engine and session factory.
+
+Schema lifecycle is managed through versioned migrations (ADR-0003),
+not via runtime metadata creation.
+"""
+
 from __future__ import annotations
 
 import os
@@ -7,8 +12,6 @@ from typing import Any
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
-
-from baku.backend.infrastructure.persistence.sqlite.orm_models import Base
 
 _engine: Engine | None = None
 _SessionFactory: sessionmaker[Session] | None = None
@@ -29,16 +32,13 @@ def get_engine() -> Engine:
         if is_memory:
             kwargs["poolclass"] = StaticPool
         _engine = create_engine(url, **kwargs)
-        Base.metadata.create_all(_engine)
     return _engine
 
 
 def get_session_factory() -> sessionmaker[Session]:
     global _SessionFactory
     if _SessionFactory is None:
-        _SessionFactory = sessionmaker(
-            bind=get_engine(), autocommit=False, autoflush=False
-        )
+        _SessionFactory = sessionmaker(bind=get_engine(), autocommit=False, autoflush=False)
     return _SessionFactory
 
 

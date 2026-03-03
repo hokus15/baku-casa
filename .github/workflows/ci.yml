@@ -34,6 +34,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev]" || python -m pip install -e .
 
+      - name: Verify migrations (backend only)
+        if: matrix.name == 'backend'
+        working-directory: ${{ matrix.path }}
+        run: python -m alembic -c alembic.ini upgrade head
+
       - name: Run tests
         working-directory: ${{ matrix.path }}
         run: pytest

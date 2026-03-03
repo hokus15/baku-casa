@@ -1,4 +1,5 @@
 """Shared test fixtures for auth integration and contract tests."""
+
 from __future__ import annotations
 
 import pytest
@@ -6,13 +7,14 @@ from fastapi.testclient import TestClient
 
 from baku.backend.infrastructure.config.auth_settings import reset_auth_settings
 from baku.backend.infrastructure.persistence.sqlite.db import reset_engine
+from baku.backend.infrastructure.persistence.sqlite.migrations import upgrade_to_head
 from baku.backend.main import app
 
 
 @pytest.fixture(autouse=True)
 def _reset_singletons(tmp_path, monkeypatch):
-    """Isolate each test with a fresh in-memory SQLite DB and auth settings."""
-    db_url = "sqlite://"  # in-memory
+    """Isolate each test with a migrated SQLite DB and auth settings."""
+    db_url = f"sqlite:///{tmp_path / 'test.db'}"
     monkeypatch.setenv("DATABASE_URL", db_url)
     monkeypatch.setenv("AUTH_JWT_SECRET", "test-secret-key-for-testing-only")
     monkeypatch.setenv("AUTH_TOKEN_TTL_SECONDS", "3600")
@@ -21,6 +23,7 @@ def _reset_singletons(tmp_path, monkeypatch):
 
     reset_engine()
     reset_auth_settings()
+    upgrade_to_head(db_url)
 
     yield
 

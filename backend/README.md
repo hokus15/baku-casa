@@ -6,7 +6,7 @@ Root independiente del backend para bootstrap EN-0100.
 - Solo estructura mínima (`pyproject`, `src`, `tests`).
 - Sin endpoints reales.
 - Sin lógica de dominio.
-- Sin migraciones ni eventos.
+- Con migraciones versionadas para esquema de datos (ADR-0003).
 
 ## Feature F-0001: Acceso y Autenticación (Operador)
 
@@ -41,6 +41,24 @@ python -m ruff check src/ tests/ && python -m mypy src/ && pytest tests/
 
 ```bash
 pip install -e ".[dev]"
+```
+
+## Migraciones (Alembic)
+
+La aplicación no crea/actualiza esquema en runtime. El esquema se gestiona
+exclusivamente por migraciones versionadas.
+
+Ejecutar desde `backend/`:
+
+```bash
+# Aplicar todas las migraciones
+python -m alembic -c alembic.ini upgrade head
+
+# Ver historial
+python -m alembic -c alembic.ini history
+
+# Ver revisión actual
+python -m alembic -c alembic.ini current
 ```
 
 ### Dependencias de producción
