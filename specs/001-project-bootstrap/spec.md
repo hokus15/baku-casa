@@ -9,7 +9,7 @@
 
 ### Session 2026-03-02
 
-- Q: ¿Cuál es el alcance mínimo obligatorio de CI para EN-0100? → A: CI mínimo = lint + tipado + smoke tests por root en PR.
+- Q: ¿Cuál es el alcance mínimo obligatorio de CI para EN-0100? → A: CI mínimo = smoke tests por root en PR.
 
 ## User Scenarios & Testing *(mandatory)*
 

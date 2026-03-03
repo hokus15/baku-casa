@@ -12,6 +12,14 @@
             // "name": "Baku bot",
             "path": "./bot"
         },
+        {
+            // "name": "Docs",
+            "path": "./docs"
+        },
+        {
+            // "name": "Specs",
+            "path": "./specs"
+        },
         // {
         // 	// "name": "Baku Docker",
         // 	"path": "./docker"

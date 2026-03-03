@@ -33,5 +33,6 @@ Este enabler define la estructura inicial del monorepo multi-root y garantiza qu
 - Existe un `README.md` en la raíz.
 - Existen `docs/spec/` y `docs/adr/`.
 - Existe un workflow de CI que ejecuta tests de `backend` y `bot` en PR.
+- El mínimo obligatorio de CI en cada PR es ejecutar smoke tests por cada root del monorepo.
 - Existen tests mínimos en `backend/` y `bot/` que pasan en CI.
 - No se han implementado funcionalidades de dominio ni endpoints como parte de este enabler.
