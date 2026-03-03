@@ -21,7 +21,7 @@ El sistema debe permitir:
 
 - **Bootstrap**: establecer credenciales iniciales del operador (primer arranque).
 - **Autenticación**: iniciar sesión con credenciales válidas.
-- **Cierre de sesión**: finalizar sesión activa.
+- **Cierre de sesión**: finalizar sesión activa mediante revocación explícita del token actual.
 - **Gestión de credenciales**: cambiar contraseña del operador.
 - **Revocación**: invalidar sesiones/tokens existentes tras cambio de contraseña (TBD mecanismo exacto).
 
@@ -31,6 +31,11 @@ El sistema debe permitir:
 
 - Todas las operaciones funcionales del sistema requieren autenticación.
 - Un intento de acceso sin autenticar debe ser rechazado.
+- El sistema debe implementar protección frente a fuerza bruta mediante bloqueo temporal tras intentos fallidos consecutivos.
+- La política mínima de bloqueo será:
+  - 5 intentos fallidos consecutivos.
+  - Bloqueo durante 15 minutos.
+- Los parámetros de intentos máximos y duración del bloqueo deben ser configurables.
 - Las credenciales del operador deben poder rotarse (cambio de contraseña).
 - Las credenciales del operador deber guardarse encriptadas si se persisten.
 - Tras cambio de contraseña, las sesiones/tokens existentes deben quedar revocados.
@@ -38,10 +43,15 @@ El sistema debe permitir:
 
 ---
 
-## Auditoría mínima (opcional pero recomendada)
+## Auditoría mínima
 
-- Registrar `last_login_at`.
-- Registrar `created_at` / `updated_at` para el usuario operador.
+El usuario operador debe mantener los siguientes campos de auditoría:
+
+- `created_at` (obligatorio).
+- `last_login_at` (obligatorio).
+- `updated_at` (obligatorio en el modelo; puede ser `null` hasta que exista una actualización efectiva).
+
+`updated_at` debe establecerse únicamente cuando se produzca una modificación del operador.
 
 ---
 

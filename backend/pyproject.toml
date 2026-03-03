@@ -8,17 +8,29 @@ version = "0.1.0"
 description = "Baku Casa backend bootstrap root"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "fastapi>=0.110.0",
+  "uvicorn[standard]>=0.27.0",
+  "PyJWT>=2.8.0",
+  "bcrypt>=4.0.1",
+  "SQLAlchemy>=2.0.0",
+]
 
 [project.optional-dependencies]
 dev = [
   "pytest==8.3.2",
+  "pytest-asyncio>=0.23.0",
+  "httpx>=0.27.0",
   "ruff==0.6.8",
   "mypy==1.11.2",
 ]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+[tool.mypy]
+namespace_packages = true
+explicit_package_bases = true
+python_version = "3.11"
+ignore_missing_imports = true
+disable_error_code = ["import-untyped"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -28,9 +40,16 @@ where = ["src"]
 include = ["baku*"]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py311"
 
-[tool.mypy]
-python_version = "3.11"
-strict = true
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = []
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+

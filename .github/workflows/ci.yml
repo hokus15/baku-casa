@@ -37,3 +37,26 @@ jobs:
       - name: Run tests
         working-directory: ${{ matrix.path }}
         run: pytest
+
+  cross-root-imports:
+    runs-on: ubuntu-latest
+    name: Cross-root import gate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check no backend→bot cross-root imports
+        run: |
+          if grep -r 'from baku\.bot' backend/src/ backend/tests/ 2>/dev/null; then
+            echo "ERROR: backend imports from baku.bot (ADR-0001 violation)"
+            exit 1
+          fi
+          echo "OK: no backend→bot cross-root imports"
+
+      - name: Check no bot→backend cross-root imports
+        run: |
+          if grep -r 'from baku\.backend' bot/src/ bot/tests/ 2>/dev/null; then
+            echo "ERROR: bot imports from baku.backend (ADR-0001 violation)"
+            exit 1
+          fi
+          echo "OK: no bot→backend cross-root imports"
