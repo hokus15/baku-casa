@@ -50,7 +50,7 @@ Este enabler no incluye:
 
 - El módulo principal de arranque del backend queda limitado a la creación de la aplicación.
 - La configuración de dependencias se encuentra en un módulo separado.
-- `Middleware`, `routers` y manejadores de errores se registran mediante funciones de configuración dedicadas.
+- `middleware`, `routers` y manejadores de errores se registran mediante funciones de configuración dedicadas.
 - No se modifica el comportamiento observable de la API.
 
 ---
