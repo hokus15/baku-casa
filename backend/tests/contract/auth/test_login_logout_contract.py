@@ -72,8 +72,12 @@ def test_logout_returns_204(bootstrapped_client: TestClient, auth_token: str) ->
     assert resp.status_code == 204
 
 
-def test_logout_without_token_returns_403_or_401(
+def test_logout_without_token_returns_401_with_error_schema(
     bootstrapped_client: TestClient,
 ) -> None:
     resp = bootstrapped_client.post("/api/v1/auth/logout")
-    assert resp.status_code in (401, 403)
+    assert resp.status_code == 401
+    body = resp.json()
+    assert body["error_code"] == "AUTH_TOKEN_INVALID"
+    assert "message" in body
+    assert "correlation_id" in body

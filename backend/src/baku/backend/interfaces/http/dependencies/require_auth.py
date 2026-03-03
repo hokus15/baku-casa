@@ -26,16 +26,25 @@ from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
 from baku.backend.infrastructure.persistence.sqlite.db import get_session_factory
 from baku.backend.infrastructure.security.jwt_service import TokenClaims, decode_token
 
-_bearer = HTTPBearer()
+# auto_error=False: FastAPI must NOT produce its own generic 403.
+# Missing / malformed Authorization headers are caught below and raised
+# as typed AuthErrors so the error mapper returns a contract-compliant body
+# (error_code / Spanish message / correlation_id — ADR-0009).
+_bearer = HTTPBearer(auto_error=False)
 
 
 def get_current_claims(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(_bearer)],
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
 ) -> TokenClaims:
     """Validate bearer token and return verified TokenClaims.
 
     Raises TokenExpired, TokenRevoked, or TokenInvalid on failure.
+    Missing Authorization header raises TokenInvalid to keep the response
+    body contract-compliant instead of producing FastAPI's generic 403.
     """
+    if credentials is None:
+        raise TokenInvalid()
+
     settings = get_auth_settings()
     token = credentials.credentials
 
