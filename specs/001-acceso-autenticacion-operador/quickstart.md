@@ -51,9 +51,9 @@ En PR de F-0001 deben pasar al menos:
 
 ## Resultado de validación — F-0001 implementación completa
 
-**Fecha de validación**: 2025-01 (implementación inicial)
+**Fecha de validación**: 2026-03-03 (implementación inicial)
 
-**Método de validación**: Suite de tests automática (35 tests).
+**Método de validación**: Suite de tests automática (34 tests).
 
 | Escenario | Resultado |
 |---|---|

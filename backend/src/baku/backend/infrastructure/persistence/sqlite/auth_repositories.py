@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from baku.backend.domain.auth.entities import (
@@ -16,6 +17,7 @@ from baku.backend.domain.auth.entities import (
     RevocationReason,
     RevokedToken,
 )
+from baku.backend.domain.auth.errors import BootstrapAlreadyCompleted
 from baku.backend.domain.auth.repositories import (
     OperatorRepository,
     RevokedTokenRepository,
@@ -91,6 +93,7 @@ class SqliteOperatorRepository(OperatorRepository):  # type: ignore[misc]
 
     def save(self, operator: Operator) -> None:
         row = self._session.get(OperatorORM, operator.operator_id)
+        is_new = row is None
         if row is None:
             row = OperatorORM(operator_id=operator.operator_id)
             self._session.add(row)
@@ -101,7 +104,17 @@ class SqliteOperatorRepository(OperatorRepository):  # type: ignore[misc]
         row.updated_at = _dt_to_str(operator.updated_at) if operator.updated_at else None
         row.last_login_at = _dt_to_str(operator.last_login_at) if operator.last_login_at else None
         row.is_active = operator.is_active
-        self._session.flush()
+        row.singleton_guard = 1
+        try:
+            self._session.flush()
+        except IntegrityError as exc:
+            if is_new:
+                # A concurrent bootstrap already committed — the UNIQUE constraint on
+                # singleton_guard (or username) fired.  Map deterministically to the
+                # typed domain error so the router can return the correct 409.
+                self._session.rollback()
+                raise BootstrapAlreadyCompleted() from exc
+            raise
 
 
 class SqliteRevokedTokenRepository(RevokedTokenRepository):  # type: ignore[misc]
