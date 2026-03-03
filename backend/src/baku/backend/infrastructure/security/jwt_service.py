@@ -62,12 +62,38 @@ def decode_token(
     """Decode and verify JWT signature + expiry. Raises jwt.ExpiredSignatureError or
     jwt.InvalidTokenError on failure — callers must map to domain errors."""
     payload = jwt.decode(token, secret, algorithms=[algorithm])
-    exp_ts: int = payload["exp"]
-    iat_ts: int = payload["iat"]
+
+    # Explicitly validate required claims and types so callers only see
+    # jwt.InvalidTokenError / jwt.ExpiredSignatureError, never raw KeyError/TypeError.
+    try:
+        raw_exp = payload["exp"]
+        raw_iat = payload["iat"]
+        raw_sub = payload["sub"]
+        raw_ver = payload["ver"]
+        raw_jti = payload["jti"]
+    except KeyError as exc:
+        # Normalize missing-claim errors to InvalidTokenError so upstream
+        # error mapping remains consistent (e.g. AUTH_TOKEN_INVALID).
+        claim_name = exc.args[0] if exc.args else "unknown"
+        raise jwt.InvalidTokenError(f"Missing required claim: {claim_name}") from exc
+
+    try:
+        exp_ts = int(raw_exp)
+        iat_ts = int(raw_iat)
+        ver = int(raw_ver)
+    except (TypeError, ValueError) as exc:
+        raise jwt.InvalidTokenError("Invalid claim type in token payload") from exc
+
+    try:
+        iat_dt = datetime.fromtimestamp(iat_ts, tz=timezone.utc)
+        exp_dt = datetime.fromtimestamp(exp_ts, tz=timezone.utc)
+    except (OSError, OverflowError, ValueError) as exc:
+        raise jwt.InvalidTokenError("Invalid timestamp in token claims") from exc
+
     return TokenClaims(
-        sub=str(payload["sub"]),
-        ver=int(payload["ver"]),
-        jti=str(payload["jti"]),
-        iat=datetime.fromtimestamp(iat_ts, tz=timezone.utc),
-        exp=datetime.fromtimestamp(exp_ts, tz=timezone.utc),
+        sub=str(raw_sub),
+        ver=ver,
+        jti=str(raw_jti),
+        iat=iat_dt,
+        exp=exp_dt,
     )
