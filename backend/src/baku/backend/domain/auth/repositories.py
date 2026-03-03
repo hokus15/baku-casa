@@ -1,4 +1,5 @@
 """Domain repository ports (abstract interfaces) for authentication."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -35,3 +36,14 @@ class ThrottleStateRepository(ABC):
 
     @abstractmethod
     def save(self, state: LoginThrottleState) -> None: ...
+
+
+class UnitOfWorkPort(ABC):
+    """Minimal transaction boundary port.
+
+    Use cases call commit() after completing a cohesive write operation.
+    Infrastructure supplies a concrete implementation backed by the ORM session.
+    """
+
+    @abstractmethod
+    def commit(self) -> None: ...

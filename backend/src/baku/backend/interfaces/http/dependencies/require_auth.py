@@ -1,30 +1,25 @@
-"""FastAPI dependency: require authenticated request.
+"""FastAPI dependency: require authenticated request (ADR-0002).
 
-Validates JWT signature + expiry, checks credential_version against DB
-(global revocation on password change), and checks per-jti revocation (logout).
-Raises the appropriate AuthError subclass on any failure.
+This adapter depends only on the Application layer (TokenValidatorPort,
+TokenClaims) and the Domain layer (AuthErrors).  No Infrastructure modules
+are imported here.
+
+The concrete TokenValidatorPort implementation (JwtTokenValidator) is wired
+at the composition root in main.py via app.dependency_overrides so that the
+dependency direction stays:
+
+    Interfaces → Application ← Infrastructure
 """
 
 from __future__ import annotations
 
 from typing import Annotated
 
-import jwt as pyjwt
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from baku.backend.domain.auth.errors import (
-    TokenExpired,
-    TokenInvalid,
-    TokenRevoked,
-)
-from baku.backend.infrastructure.config.auth_settings import get_auth_settings
-from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
-    SqliteOperatorRepository,
-    SqliteRevokedTokenRepository,
-)
-from baku.backend.infrastructure.persistence.sqlite.db import get_session_factory
-from baku.backend.infrastructure.security.jwt_service import TokenClaims, decode_token
+from baku.backend.application.auth.token_validator import TokenClaims, TokenValidatorPort
+from baku.backend.domain.auth.errors import TokenInvalid
 
 # auto_error=False: FastAPI must NOT produce its own generic 403.
 # Missing / malformed Authorization headers are caught below and raised
@@ -33,8 +28,23 @@ from baku.backend.infrastructure.security.jwt_service import TokenClaims, decode
 _bearer = HTTPBearer(auto_error=False)
 
 
+def get_token_validator() -> TokenValidatorPort:
+    """Abstract stub — overridden at composition root via app.dependency_overrides.
+
+    Raises NotImplementedError if called without an override in place, which
+    will surface as a 500 during startup integration tests and signal a wiring
+    mistake rather than silently failing.
+    """
+    raise NotImplementedError(
+        "TokenValidatorPort not wired. "
+        "Add app.dependency_overrides[get_token_validator] = get_jwt_token_validator "
+        "in the composition root (main.py)."
+    )
+
+
 def get_current_claims(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    validator: Annotated[TokenValidatorPort, Depends(get_token_validator)],
 ) -> TokenClaims:
     """Validate bearer token and return verified TokenClaims.
 
@@ -44,28 +54,4 @@ def get_current_claims(
     """
     if credentials is None:
         raise TokenInvalid()
-
-    settings = get_auth_settings()
-    token = credentials.credentials
-
-    try:
-        claims = decode_token(token, settings.jwt_secret, settings.jwt_algorithm)
-    except pyjwt.ExpiredSignatureError as err:
-        raise TokenExpired() from err
-    except pyjwt.InvalidTokenError as err:
-        raise TokenInvalid() from err
-
-    # Per-jti revocation check (logout)
-    session_factory = get_session_factory()
-    with session_factory() as session:
-        revoked_repo = SqliteRevokedTokenRepository(session)
-        if revoked_repo.is_revoked(claims.jti):
-            raise TokenRevoked()
-
-        # Global revocation check (credential_version mismatch after password change)
-        op_repo = SqliteOperatorRepository(session)
-        operator = op_repo.find_active()
-        if operator is None or operator.credential_version != claims.ver:
-            raise TokenRevoked()
-
-    return claims
+    return validator.validate(credentials.credentials)

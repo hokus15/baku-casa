@@ -4,22 +4,23 @@ Raises:
   LockedTemporarily  — operator is in active lockout window.
   InvalidCredentials — username not found or password mismatch.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from sqlalchemy.orm import Session
-
+from baku.backend.application.auth.auth_policy_port import AuthPolicyPort
+from baku.backend.application.auth.password_hasher_port import PasswordHasherPort
+from baku.backend.application.auth.token_issuer_port import TokenIssuerPort
+from baku.backend.application.auth.token_validator import TokenClaims
 from baku.backend.application.common.utc_clock import utcnow
 from baku.backend.domain.auth.entities import LoginThrottleState
 from baku.backend.domain.auth.errors import InvalidCredentials, LockedTemporarily
-from baku.backend.infrastructure.config.auth_settings import get_auth_settings
-from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
-    SqliteOperatorRepository,
-    SqliteThrottleStateRepository,
+from baku.backend.domain.auth.repositories import (
+    OperatorRepository,
+    ThrottleStateRepository,
+    UnitOfWorkPort,
 )
-from baku.backend.infrastructure.security.jwt_service import TokenClaims, issue_token
-from baku.backend.infrastructure.security.password_hasher import verify_password
 
 
 @dataclass
@@ -28,12 +29,17 @@ class LoginResult:
     claims: TokenClaims
 
 
-def login_operator(username: str, password: str, session: Session) -> LoginResult:
-    settings = get_auth_settings()
-    op_repo = SqliteOperatorRepository(session)
-    throttle_repo = SqliteThrottleStateRepository(session)
+def login_operator(
+    username: str,
+    password: str,
+    op_repo: OperatorRepository,
+    throttle_repo: ThrottleStateRepository,
+    policy: AuthPolicyPort,
+    hasher: PasswordHasherPort,
+    token_issuer: TokenIssuerPort,
+    uow: UnitOfWorkPort,
+) -> LoginResult:
     now = utcnow()
-
     operator = op_repo.find_by_username(username)
 
     # Load or initialise throttle state
@@ -47,15 +53,15 @@ def login_operator(username: str, password: str, session: Session) -> LoginResul
             raise LockedTemporarily()
 
     # Validate credentials
-    if operator is None or not verify_password(password, operator.password_hash):
+    if operator is None or not hasher.verify(password, operator.password_hash):
         if operator is not None and throttle is not None:
             throttle.record_failure(
                 now,
-                settings.max_failed_attempts,
-                settings.lockout_minutes,
+                policy.max_failed_attempts,
+                policy.lockout_minutes,
             )
             throttle_repo.save(throttle)
-            session.commit()
+            uow.commit()
         raise InvalidCredentials()
 
     # Successful login
@@ -65,13 +71,11 @@ def login_operator(username: str, password: str, session: Session) -> LoginResul
 
     operator.record_login(now)
     op_repo.save(operator)
-    session.commit()
+    uow.commit()
 
-    token, claims = issue_token(
+    access_token, claims = token_issuer.issue(
         operator_id=operator.operator_id,
         credential_version=operator.credential_version,
-        secret=settings.jwt_secret,
-        algorithm=settings.jwt_algorithm,
-        ttl_seconds=settings.token_ttl_seconds,
+        ttl_seconds=policy.token_ttl_seconds,
     )
-    return LoginResult(access_token=token, claims=claims)
+    return LoginResult(access_token=access_token, claims=claims)

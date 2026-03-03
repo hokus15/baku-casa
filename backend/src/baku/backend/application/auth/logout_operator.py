@@ -5,20 +5,18 @@ Creates a RevokedToken with reason=logout so the jti cannot be reused.
 
 from __future__ import annotations
 
-from sqlalchemy.orm import Session
-
+from baku.backend.application.auth.token_validator import TokenClaims
 from baku.backend.application.common.utc_clock import utcnow
 from baku.backend.domain.auth.entities import RevocationReason, RevokedToken
-from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
-    SqliteRevokedTokenRepository,
-)
-from baku.backend.infrastructure.security.jwt_service import TokenClaims
+from baku.backend.domain.auth.repositories import RevokedTokenRepository, UnitOfWorkPort
 
 
-def logout_operator(claims: TokenClaims, session: Session) -> None:
+def logout_operator(
+    claims: TokenClaims,
+    revoked_repo: RevokedTokenRepository,
+    uow: UnitOfWorkPort,
+) -> None:
     """Revoke the current token explicitly. Idempotent if jti already revoked."""
-    revoked_repo = SqliteRevokedTokenRepository(session)
-
     if revoked_repo.is_revoked(claims.jti):
         return  # already revoked — idempotent
 
@@ -30,4 +28,4 @@ def logout_operator(claims: TokenClaims, session: Session) -> None:
         reason=RevocationReason.LOGOUT,
     )
     revoked_repo.save(revoked)
-    session.commit()
+    uow.commit()

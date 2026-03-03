@@ -3,6 +3,7 @@
 Maps between domain entities and ORM models.  All state-changing operations
 are transactional (ADR-0003).
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -19,6 +20,7 @@ from baku.backend.domain.auth.repositories import (
     OperatorRepository,
     RevokedTokenRepository,
     ThrottleStateRepository,
+    UnitOfWorkPort,
 )
 from baku.backend.infrastructure.persistence.sqlite.orm_models import (
     LoginThrottleStateORM,
@@ -80,19 +82,11 @@ class SqliteOperatorRepository(OperatorRepository):  # type: ignore[misc]
         self._session = session
 
     def find_active(self) -> Operator | None:
-        row = (
-            self._session.query(OperatorORM)
-            .filter(OperatorORM.is_active.is_(True))
-            .first()
-        )
+        row = self._session.query(OperatorORM).filter(OperatorORM.is_active.is_(True)).first()
         return _orm_to_operator(row) if row else None
 
     def find_by_username(self, username: str) -> Operator | None:
-        row = (
-            self._session.query(OperatorORM)
-            .filter(OperatorORM.username == username)
-            .first()
-        )
+        row = self._session.query(OperatorORM).filter(OperatorORM.username == username).first()
         return _orm_to_operator(row) if row else None
 
     def save(self, operator: Operator) -> None:
@@ -105,9 +99,7 @@ class SqliteOperatorRepository(OperatorRepository):  # type: ignore[misc]
         row.credential_version = operator.credential_version
         row.created_at = _dt_to_str(operator.created_at)
         row.updated_at = _dt_to_str(operator.updated_at) if operator.updated_at else None
-        row.last_login_at = (
-            _dt_to_str(operator.last_login_at) if operator.last_login_at else None
-        )
+        row.last_login_at = _dt_to_str(operator.last_login_at) if operator.last_login_at else None
         row.is_active = operator.is_active
         self._session.flush()
 
@@ -133,9 +125,7 @@ class SqliteRevokedTokenRepository(RevokedTokenRepository):  # type: ignore[misc
 
     def delete_expired(self, now: datetime) -> None:
         cutoff = _dt_to_str(now)
-        self._session.query(RevokedTokenORM).filter(
-            RevokedTokenORM.expires_at <= cutoff
-        ).delete()
+        self._session.query(RevokedTokenORM).filter(RevokedTokenORM.expires_at <= cutoff).delete()
         self._session.flush()
 
 
@@ -154,7 +144,13 @@ class SqliteThrottleStateRepository(ThrottleStateRepository):  # type: ignore[mi
             self._session.add(row)
         row.failed_attempts = state.failed_attempts
         row.blocked_until = _dt_to_str(state.blocked_until) if state.blocked_until else None
-        row.last_failed_at = (
-            _dt_to_str(state.last_failed_at) if state.last_failed_at else None
-        )
+        row.last_failed_at = _dt_to_str(state.last_failed_at) if state.last_failed_at else None
         self._session.flush()
+
+
+class SqliteUnitOfWork(UnitOfWorkPort):  # type: ignore[misc]
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
+    def commit(self) -> None:
+        self._session.commit()

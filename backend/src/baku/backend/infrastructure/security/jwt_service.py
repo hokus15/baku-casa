@@ -3,25 +3,23 @@
 Claims: sub (operator_id), ver (credential_version), jti (unique token id),
         iat (issued at UTC), exp (expiry UTC).
 Revocation: global via credential_version mismatch; per-token via jti lookup.
+
+TokenClaims is defined in the application layer (application.auth.token_validator)
+because it is an application-level value object.  It is re-exported here so
+existing call sites that import it from jwt_service continue to work.
 """
+
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import jwt
 
+from baku.backend.application.auth.token_validator import TokenClaims  # re-exported
 from baku.backend.application.common.utc_clock import utcnow
 
-
-@dataclass
-class TokenClaims:
-    sub: str  # operator_id
-    ver: int  # credential_version
-    jti: str  # unique token identifier
-    iat: datetime
-    exp: datetime
+__all__ = ["TokenClaims", "issue_token", "decode_token"]
 
 
 def issue_token(
