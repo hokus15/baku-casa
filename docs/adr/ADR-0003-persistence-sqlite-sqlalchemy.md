@@ -38,7 +38,8 @@ The system SHALL use:
 - All state-changing use cases MUST execute within a single explicit database transaction.
 - The transaction boundary MUST be owned by the Application layer (unit-of-work pattern) and implemented by Infrastructure.
 - If a use case fails, the transaction MUST rollback fully (no partial commits).
-- An in-memory persistence adapter MAY exist for isolated testing purposes only, but MUST NOT be used in production or integration environments.
+- An in-memory SQLite database MUST be used for automated tests (including integration tests) to ensure speed and isolation.
+- In-memory persistence MUST NOT be used in production runtime deployments.
 
 ### Concurrency and Locking Policy
 
