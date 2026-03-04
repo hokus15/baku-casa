@@ -137,7 +137,7 @@ Las palabras DEBE, NO DEBE, DEBERÍA y PUEDE deben interpretarse con fuerza norm
 
 - La API DEBE ser orientada a recursos.
 - Las operaciones DEBEN mapearse semánticamente a métodos HTTP estándar.
-- Todo endpoint de colección DEBE estar paginado.
+- Todo endpoint de colección DEBE estar paginado mediante parámetros consistentes y una estructura de respuesta uniforme.
 - Está PROHIBIDO devolver listas no acotadas.
 - El contrato de paginación DEBE ser consistente.
 - Filtros y ordenación DEBEN ser explícitos.
@@ -180,6 +180,8 @@ Las palabras DEBE, NO DEBE, DEBERÍA y PUEDE deben interpretarse con fuerza norm
 - Logs técnicos en inglés.
 - Correlation ID obligatorio.
 - Logging estructurado con contexto suficiente.
+- Cada registro de log DEBE incluir al menos: timestamp (UTC), level, service name, correlation_id, message.
+- Rotación de ficheros de log diaria a medianoche (Europe/Madrid).
 - Logs NO deben incluir PII por defecto.
 
 ---
