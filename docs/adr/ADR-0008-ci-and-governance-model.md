@@ -53,7 +53,7 @@ The pipeline MUST include the following jobs:
 
 ### 4. Integration Tests
 
-- Database-backed tests using SQLite.
+- Database-backed tests using SQLite (in-memory).
 - Transaction rollback behavior verification.
 - Migration upgrade tests (see ADR-0003).
 
