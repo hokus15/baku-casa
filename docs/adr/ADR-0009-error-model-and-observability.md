@@ -91,11 +91,38 @@ Logs MUST include at minimum:
 
 ---
 
+### Log Storage and Rotation
+
+Services MUST persist logs to file in self-hosted deployments.
+
+Log files MUST rotate daily at **00:00 (Europe/Madrid)**.
+
+Retention MUST be enforced automatically (time-based or file-count based) and MUST be configurable per environment.
+
+Rotation policy MUST NOT affect the log event timestamp policy (timestamps remain UTC).
+
+---
+
 ### Log Language
 
 - Log messages MUST be in English.
 - Error codes MUST be in English.
 - User-facing messages MAY be in Spanish.
+
+---
+
+### Domain Event Logging
+
+Relevant domain events MAY be recorded in the structured logging system to improve functional traceability.
+
+Domain event logs:
+
+- MUST include `correlation_id`
+- SHOULD include identifiers of affected domain entities
+- MUST NOT replace technical error logs
+- MUST NOT implement event sourcing or message publishing
+
+Their purpose is operational observability of business processes.
 
 ---
 
