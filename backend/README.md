@@ -2,7 +2,10 @@
 
 Root independiente del backend para bootstrap EN-0100.
 
-## Alcance
+## Enabler E-0100: Project Bootstrap
+
+Establecer la base mínima del repositorio para habilitar el desarrollo reproducible mediante Spec Driven Development (SDD), antes de implementar cualquier funcionalidad de dominio.
+
 - Solo estructura mínima (`pyproject`, `src`, `tests`).
 - Sin endpoints reales.
 - Sin lógica de dominio.
