@@ -4,6 +4,13 @@ Composition root: this is the only module that imports from both the
 Interfaces and Infrastructure layers simultaneously in order to wire
 concrete implementations into the dependency graph (ADR-0002).
 
+Startup sequence (ADR-0013 fail-fast):
+  1. Centralized configuration is loaded and validated inside the lifespan
+     handler — before the application begins serving requests.  If required
+     keys are missing the process aborts with a full aggregated error report.
+  2. Auth settings are derived from the validated centralized profile.
+  3. Routers are included only after configuration is confirmed valid.
+
 Dependency direction enforced via app.dependency_overrides:
   Interfaces layer stubs → Infrastructure concrete implementations
   All other modules must import only from Application or Domain.
@@ -11,7 +18,8 @@ Dependency direction enforced via app.dependency_overrides:
 
 from __future__ import annotations
 
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
+from contextlib import asynccontextmanager
 from typing import cast
 
 from fastapi import Depends, FastAPI
@@ -27,7 +35,8 @@ from baku.backend.domain.auth.repositories import (
     UnitOfWorkPort,
 )
 from baku.backend.infrastructure.config.auth_policy_provider import AuthSettingsPolicy
-from baku.backend.infrastructure.config.auth_settings import get_auth_settings
+from baku.backend.infrastructure.config.auth_settings import get_auth_settings, init_auth_settings
+from baku.backend.infrastructure.config.runtime_settings import RuntimeConfigurationProvider
 from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
     SqliteOperatorRepository,
     SqliteRevokedTokenRepository,
@@ -55,10 +64,23 @@ from baku.backend.interfaces.http.dependencies.service_deps import (
 from baku.backend.interfaces.http.error_mapper import register_error_handlers
 from baku.backend.interfaces.http.middleware.correlation_id import CorrelationIdMiddleware
 
+
+# ── Centralized configuration bootstrap (ADR-0013, fail-fast) ────────────────
+# Validation is deferred to the lifespan handler so that the module can be
+# imported in test suites before fixtures have set the required env vars.
+@asynccontextmanager
+async def _lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    provider = RuntimeConfigurationProvider()
+    provider.get_profile()  # aborts if required keys missing
+    init_auth_settings(provider)  # inject concrete provider; no Infrastructure import in auth_settings
+    yield
+
+
 app = FastAPI(
     title="Baku Casa Backend",
     version="1.0.0",
     description="Baku Casa property management backend — MVP1",
+    lifespan=_lifespan,
 )
 
 # ── Concrete dependency implementations (infrastructure) ──────────────────────

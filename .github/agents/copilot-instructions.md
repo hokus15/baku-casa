@@ -5,6 +5,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-02
 ## Active Technologies
 - Python 3.11 (roots `backend` y `bot`) + FastAPI (adapter HTTP), JWT stateless, pytest, mypy, ruff (001-acceso-autenticacion-operador)
 - SQLite (estado de operador, versión de credencial, revocación por token actual, auditoría, bloqueo temporal) (001-acceso-autenticacion-operador)
+- Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv (backend root) (001-configuration-system)
+- SQLite (sin cambios de esquema para este item) (001-configuration-system)
 
 - Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI (001-project-bootstrap)
 
@@ -24,6 +26,7 @@ cd src; pytest; ruff check .
 Python 3.x por root (versionado exacto definido en cada `pyproject.toml`): Follow standard conventions
 
 ## Recent Changes
+- 001-configuration-system: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv (backend root)
 - 001-acceso-autenticacion-operador: Added Python 3.11 (roots `backend` y `bot`) + FastAPI (adapter HTTP), JWT stateless, pytest, mypy, ruff
 
 - 001-project-bootstrap: Added Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI
@@ -35,10 +38,6 @@ This project follows strict Spec Driven Development (SDD).
 
 All generated code MUST comply with:
 
-- Constitution
-- ADR-0001 to ADR-0012
-- Feature specification
-- Implementation plan
 
 If a suggestion conflicts with any ADR, it MUST be considered invalid.
 

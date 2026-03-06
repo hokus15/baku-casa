@@ -2,23 +2,27 @@
 
 Schema lifecycle is managed through versioned migrations (ADR-0003),
 not via runtime metadata creation.
+
+The database URL is resolved through the centralized configuration provider
+(ADR-0013); no direct ``os.getenv`` calls are made here.
 """
 
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from baku.backend.infrastructure.config.runtime_settings import RuntimeConfigurationProvider
+
 _engine: Engine | None = None
 _SessionFactory: sessionmaker[Session] | None = None
 
 
 def get_db_url() -> str:
-    return os.getenv("DATABASE_URL", "sqlite:///./baku.db")
+    return RuntimeConfigurationProvider().get_profile().require("persistence.database_url")
 
 
 def get_engine() -> Engine:

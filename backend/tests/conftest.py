@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
+
 import pytest
 from fastapi.testclient import TestClient
 
 from baku.backend.infrastructure.config.auth_settings import reset_auth_settings
+from baku.backend.infrastructure.config.runtime_settings import reset_runtime_settings
 from baku.backend.infrastructure.persistence.sqlite.db import reset_engine
 from baku.backend.infrastructure.persistence.sqlite.migrations import upgrade_to_head
 from baku.backend.main import app
@@ -23,17 +26,20 @@ def _reset_singletons(tmp_path, monkeypatch):
 
     reset_engine()
     reset_auth_settings()
+    reset_runtime_settings()
     upgrade_to_head(db_url)
 
     yield
 
     reset_engine()
     reset_auth_settings()
+    reset_runtime_settings()
 
 
 @pytest.fixture()
-def client() -> TestClient:
-    return TestClient(app, raise_server_exceptions=False)
+def client(_reset_singletons: None) -> Generator[TestClient, None, None]:
+    with TestClient(app, raise_server_exceptions=False) as c:
+        yield c
 
 
 @pytest.fixture()

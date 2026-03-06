@@ -86,3 +86,11 @@ Baku está diseñado para ser:
 En desarrollo activo.
 
 Las funcionalidades se implementan siguiendo un modelo de desarrollo basado en especificaciones formales y decisiones arquitectónicas documentadas.
+
+### MVP 0 — Platform Bootstrap
+
+| Item | Estado | Descripción |
+|---|---|---|
+| EN-0100 | ✅ Completado | Project Bootstrap |
+| F-0001 | ✅ Completado | Acceso y Autenticación |
+| EN-0202 | ✅ Completado | Configuration System — configuración centralizada y tipada |

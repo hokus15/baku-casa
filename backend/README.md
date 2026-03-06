@@ -73,3 +73,35 @@ python -m alembic -c alembic.ini current
 | `PyJWT` | Tokens JWT stateless (ADR-0005) |
 | `bcrypt` | Hash de contraseñas (sin passlib) |
 | `SQLAlchemy` | ORM + SQLite (ADR-0003) |
+| `python-dotenv` | Carga de fichero `.env` para desarrollo local |
+
+## Enabler EN-0202: Configuration System
+
+Sistema centralizado y tipado para gestionar configuración de la aplicación (ADR-0013).
+
+Toda la lectura de variables de entorno está centralizada en `infrastructure/config/sources.py`.
+Ningún otro módulo accede directamente a `os.getenv`.
+
+### Variables de entorno requeridas
+
+| Variable | Requerida | Default | Descripción |
+|---|---|---|---|
+| `AUTH_JWT_SECRET` | **SÍ** | — | Secreto de firma JWT. Sin valor por defecto; la aplicación falla en el arranque si no está definida. |
+| `AUTH_JWT_ALGORITHM` | NO | `HS256` | Algoritmo de firma JWT. |
+| `AUTH_TOKEN_TTL_SECONDS` | NO | `3600` | TTL del token de acceso en segundos. |
+| `AUTH_MAX_FAILED_ATTEMPTS` | NO | `5` | Máximo de intentos de login fallidos antes del lockout. |
+| `AUTH_LOCKOUT_MINUTES` | NO | `15` | Duración del lockout en minutos. |
+
+### Comportamiento de arranque
+
+1. La aplicación valida la configuración **antes** de incluir ningún router.
+2. Si alguna clave requerida está ausente, la aplicación aborta con el conjunto completo de errores de validación (fail-fast, ADR-0013).
+3. Las claves no declaradas emiten un `WARNING` estructurado pero no bloquean el arranque.
+
+### Precedencia de fuentes
+
+```
+environment variables > config file (.env) > built-in defaults
+```
+
+Para desarrollo local, crea un fichero `.env` en el raíz de `backend/` con las variables necesarias (ver `.env.example`).

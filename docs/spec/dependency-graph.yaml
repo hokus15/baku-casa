@@ -1,9 +1,19 @@
+version: 1
+
+rules:
+  propagate_enablers_to_future_features: true
+
 items:
   - id: EN-0100
     type: enabler
     status: done
     phase: MVP0
     depends_on: []
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
+      - project_bootstrap
 
   - id: F-0001
     type: feature
@@ -14,10 +24,15 @@ items:
 
   - id: EN-0202
     type: enabler
-    status: planned
+    status: done
     phase: MVP0
     depends_on:
       - F-0001
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
+      - configuration
 
   - id: EN-0200
     type: enabler
@@ -25,6 +40,12 @@ items:
     phase: MVP0
     depends_on:
       - EN-0202
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
+      - observability
+      - logging
 
   - id: EN-0201
     type: enabler
@@ -32,6 +53,12 @@ items:
     phase: MVP0
     depends_on:
       - EN-0202
+    scope: module
+    affects_future_features: true
+    applies_to:
+      - backend
+      - testing
+      - persistence_testing
 
   - id: EN-0300
     type: enabler
@@ -39,6 +66,12 @@ items:
     phase: MVP0
     depends_on:
       - EN-0202
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
+      - http
+      - composition_root
 
   - id: F-0002
     type: feature
@@ -105,6 +138,12 @@ items:
     depends_on:
       - F-0009
       - EN-0300
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
+      - application_services
+      - service_modularization
 
   - id: EN-0207
     type: enabler
@@ -113,6 +152,10 @@ items:
     depends_on:
       - F-0009
       - EN-0300
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
 
   - id: F-0010
     type: feature
@@ -127,6 +170,10 @@ items:
     phase: MVP2
     depends_on:
       - F-0010
+    scope: module
+    affects_future_features: false
+    applies_to:
+      - backend
 
   - id: F-0011
     type: feature
@@ -143,6 +190,10 @@ items:
     depends_on:
       - EN-0200
       - F-0011
+    scope: module
+    affects_future_features: false
+    applies_to:
+      - backend
 
   - id: F-0012
     type: feature
