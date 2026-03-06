@@ -1,66 +1,61 @@
-# EN-0300: HTTP Composition Root Refactoring
+# EN-0300 — HTTP Application Bootstrap Modularization
 
 ## Objetivo
 
-Mejorar la claridad y mantenibilidad del punto de entrada HTTP del backend separando las responsabilidades de inicialización de la aplicación en módulos dedicados.
-
-Este enabler asegura que el composition root permanezca simple y explícito, evitando que el módulo principal acumule lógica de configuración.
+Reducir el acoplamiento en el punto de entrada de la aplicación HTTP del backend separando las responsabilidades de inicialización y garantizando que el composition root siga siendo el único lugar donde se conectan interfaces de Application con implementaciones de Infrastructure.
 
 ---
 
 ## Descripción
 
-Actualmente el punto de entrada del backend concentra múltiples responsabilidades relacionadas con la inicialización de la aplicación HTTP.
+Actualmente el punto de entrada HTTP del backend concentra múltiples responsabilidades relacionadas con la inicialización de la aplicación, incluyendo la creación de la aplicación, el registro de dependencias, middleware, routers y manejadores de errores.
 
-Este enabler introduce una estructura modular para la configuración de la aplicación, separando:
+Esta acumulación de responsabilidades aumenta la complejidad del entrypoint y dificulta la mantenibilidad del composition root.
 
-- creación de la aplicación HTTP
-- registro de dependencias
-- registro de `middleware`
-- registro de `routers`
-- registro de manejadores de errores
+Este enabler introduce una separación clara de responsabilidades en el proceso de inicialización de la aplicación HTTP, de forma que cada aspecto del bootstrap pueda evolucionar de manera independiente sin aumentar el acoplamiento del punto de entrada.
 
-El objetivo es mantener el composition root claro y facilitar la evolución del sistema conforme crezca el número de dependencias y adaptadores.
+El punto de entrada de la aplicación debe limitarse a iniciar la aplicación HTTP y delegar el proceso de bootstrap a componentes especializados.
+
+La modularización del bootstrap permite que nuevos componentes de inicialización (por ejemplo middleware, routers o dependencias) puedan añadirse o modificarse sin alterar el punto de entrada de la aplicación.
 
 ---
 
-## Alcance
+## Root afectado
 
-Este enabler incluye:
+- `backend/`
 
-- reorganización del código de inicialización del backend HTTP
-- extracción de la configuración de dependencias a un módulo dedicado
-- separación del registro de `middleware`, `routers` y manejadores de errores
-- simplificación del punto de entrada de la aplicación
+---
+
+## Incluye
+
+- Separación de las responsabilidades del proceso de inicialización de la aplicación HTTP.
+- Delegación del proceso de bootstrap desde el punto de entrada hacia componentes especializados.
+- Organización del proceso de inicialización para mejorar la mantenibilidad del composition root.
+- Garantía de que el registro de dependencias entre capas se realiza en un único punto central.
 
 ---
 
 ## Fuera de alcance
 
-Este enabler no incluye:
-
-- cambios en la lógica de dominio
-- cambios en casos de uso de aplicación
-- cambios en contratos HTTP existentes
-- cambios en comportamiento funcional del sistema
-
----
-
-## Criterios de aceptación
-
-- El módulo principal de arranque del backend queda limitado a la creación de la aplicación.
-- La configuración de dependencias se encuentra en un módulo separado.
-- `middleware`, `routers` y manejadores de errores se registran mediante funciones de configuración dedicadas.
-- No se modifica el comportamiento observable de la API.
+- Cambios en la lógica de negocio.
+- Cambios en los contratos de la API HTTP.
+- Introducción de nuevos middleware o routers.
+- Modificaciones en el modelo de dominio o servicios de aplicación.
 
 ---
 
 ## Notas de arquitectura
 
-Este enabler debe respetar:
+El registro de dependencias debe seguir el principio de inversión de dependencias definido en **ADR-0002**, donde las interfaces de la capa Application se conectan con implementaciones de Infrastructure únicamente en el composition root.
 
-- la arquitectura hexagonal definida en la constitución
-- la separación estricta entre las capas **Interfaces (Adapters)** e **Infrastructure**, tal como se define en ADR-0002
-- el principio de composition root como único lugar donde se conectan implementaciones concretas
+La reorganización del proceso de inicialización no debe introducir dependencias que violen las reglas de arquitectura hexagonal.
 
-No debe introducir nuevos frameworks de inyección de dependencias.
+---
+
+## Criterios de aceptación
+
+1. El punto de entrada HTTP deja de concentrar múltiples responsabilidades de inicialización.
+2. El proceso de bootstrap de la aplicación se encuentra separado en componentes con responsabilidades claras.
+3. El registro de dependencias entre capas sigue realizándose exclusivamente en el composition root.
+4. La modularización del bootstrap mejora la claridad y mantenibilidad de la inicialización de la aplicación.
+5. No se introducen dependencias que violen la arquitectura hexagonal definida en el proyecto.
