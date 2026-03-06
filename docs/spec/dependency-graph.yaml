@@ -1,0 +1,174 @@
+items:
+  - id: EN-0100
+    type: enabler
+    status: done
+    phase: MVP0
+    depends_on: []
+
+  - id: F-0001
+    type: feature
+    status: done
+    phase: MVP0
+    depends_on:
+      - EN-0100
+
+  - id: EN-0202
+    type: enabler
+    status: planned
+    phase: MVP0
+    depends_on:
+      - F-0001
+
+  - id: EN-0200
+    type: enabler
+    status: planned
+    phase: MVP0
+    depends_on:
+      - EN-0202
+
+  - id: EN-0201
+    type: enabler
+    status: planned
+    phase: MVP0
+    depends_on:
+      - EN-0202
+
+  - id: EN-0300
+    type: enabler
+    status: planned
+    phase: MVP0
+    depends_on:
+      - EN-0202
+
+  - id: F-0002
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0001
+
+  - id: F-0003
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0002
+
+  - id: F-0004
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0003
+
+  - id: F-0005
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0003
+
+  - id: F-0006
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0002
+      - F-0003
+
+  - id: F-0007
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0006
+
+  - id: F-0008
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0006
+
+  - id: F-0009
+    type: feature
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0005
+      - F-0006
+
+  - id: EN-0301
+    type: enabler
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0009
+      - EN-0300
+
+  - id: EN-0207
+    type: enabler
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0009
+      - EN-0300
+
+  - id: F-0010
+    type: feature
+    status: planned
+    phase: MVP2
+    depends_on:
+      - F-0009
+
+  - id: EN-0209
+    type: enabler
+    status: planned
+    phase: MVP2
+    depends_on:
+      - F-0010
+
+  - id: F-0011
+    type: feature
+    status: planned
+    phase: MVP2
+    depends_on:
+      - F-0010
+      - EN-0209
+
+  - id: EN-0208
+    type: enabler
+    status: planned
+    phase: MVP2
+    depends_on:
+      - EN-0200
+      - F-0011
+
+  - id: F-0012
+    type: feature
+    status: planned
+    phase: MVP3
+    depends_on:
+      - F-0010
+
+  - id: F-0013
+    type: feature
+    status: planned
+    phase: MVP3
+    depends_on:
+      - F-0012
+
+  - id: F-0014
+    type: feature
+    status: planned
+    phase: MVP4
+    depends_on:
+      - F-0013
+      - EN-0208
+
+  - id: F-0015
+    type: feature
+    status: planned
+    phase: MVP5
+    depends_on:
+      - F-0010
