@@ -6,8 +6,10 @@ imports are allowed here (ADR-0002).
 
 from __future__ import annotations
 
+import types
 from dataclasses import dataclass
 from enum import Enum
+from typing import Mapping
 
 
 class ConfigurationIssueSeverity(str, Enum):
@@ -43,14 +45,24 @@ class ConfigurationParameterDefinition:
 class ResolvedConfigurationProfile:
     """Immutable snapshot of fully-resolved configuration values.
 
+    Both *values* and *source_map* are wrapped in ``types.MappingProxyType``
+    on construction, so the stored mappings are truly read-only.  Callers may
+    pass plain ``dict`` objects; a copy is taken before wrapping.
+
     Attributes:
-        values: Mapping of canonical key → resolved string value.
-        source_map: Mapping of canonical key → source name
+        values: Read-only mapping of canonical key → resolved string value.
+        source_map: Read-only mapping of canonical key → source name
             (``"env"``, ``"file"``, or ``"default"``).
     """
 
-    values: dict[str, str]
-    source_map: dict[str, str]
+    values: Mapping[str, str]
+    source_map: Mapping[str, str]
+
+    def __post_init__(self) -> None:
+        # Take a shallow copy then wrap in MappingProxyType so that neither
+        # the original dict nor the proxy can mutate the stored data.
+        object.__setattr__(self, "values", types.MappingProxyType(dict(self.values)))
+        object.__setattr__(self, "source_map", types.MappingProxyType(dict(self.source_map)))
 
     def get(self, key: str) -> str | None:
         """Return the resolved value for *key*, or ``None`` if absent."""

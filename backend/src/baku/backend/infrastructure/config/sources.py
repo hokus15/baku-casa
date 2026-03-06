@@ -28,6 +28,7 @@ from dotenv import dotenv_values
 # Mapping from env-var name to canonical dot-notation key.
 # Extend this mapping whenever a new configuration key is introduced.
 _ENV_VAR_TO_KEY: dict[str, str] = {
+    "DATABASE_URL": "persistence.database_url",
     "AUTH_JWT_SECRET": "auth.jwt_secret",
     "AUTH_JWT_ALGORITHM": "auth.jwt_algorithm",
     "AUTH_TOKEN_TTL_SECONDS": "auth.token_ttl_seconds",
@@ -40,6 +41,7 @@ _KEY_TO_ENV_VAR: dict[str, str] = {v: k for k, v in _ENV_VAR_TO_KEY.items()}
 
 # Built-in defaults for optional keys.
 _DEFAULTS: dict[str, str] = {
+    "persistence.database_url": "sqlite:///./baku.db",
     "auth.jwt_algorithm": "HS256",
     "auth.token_ttl_seconds": "3600",
     "auth.max_failed_attempts": "5",

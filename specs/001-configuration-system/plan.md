@@ -1,7 +1,7 @@
 # Implementation Plan: EN-0202 Configuration System
 
-**Branch**: `001-configuration-system` | **Date**: 2026-03-06 | **Spec**: `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\specs\001-configuration-system\spec.md`
-**Input**: Feature specification from `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\specs\001-configuration-system\spec.md`
+**Branch**: `001-configuration-system` | **Date**: 2026-03-06 | **Spec**: `specs\001-configuration-system\spec.md`
+**Input**: Feature specification from `specs\001-configuration-system\spec.md`
 
 ## Summary
 

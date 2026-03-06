@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -35,8 +37,9 @@ def _reset_singletons(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def client() -> TestClient:
-    return TestClient(app, raise_server_exceptions=False)
+def client(_reset_singletons: None) -> Generator[TestClient, None, None]:
+    with TestClient(app, raise_server_exceptions=False) as c:
+        yield c
 
 
 @pytest.fixture()

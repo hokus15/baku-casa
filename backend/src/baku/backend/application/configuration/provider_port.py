@@ -16,7 +16,9 @@ class ConfigurationProviderPort(ABC):
 
     The single concrete implementation lives in the Infrastructure layer
     (``infrastructure.config.runtime_settings``).  The composition root
-    (``main.py``) is the only module that imports the concrete class.
+    (``main.py``) is the primary module that imports the concrete class and
+    injects it via ``init_auth_settings()`` and similar entry points; other
+    Infrastructure modules depend only on this port.
 
     Usage::
 

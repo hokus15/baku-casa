@@ -4,13 +4,14 @@ Validates a ``ResolvedConfigurationProfile`` against a set of
 ``ConfigurationParameterDefinition`` instances.
 
 Behaviour:
-  - ERRORS: required keys missing from the resolved profile → aggregated into
-    ``AggregatedConfigurationError`` and raised (fail-fast).
+  - ERRORS: required keys missing or blank in the resolved profile → returned
+    as ``ConfigurationValidationIssue`` items with ``severity=ERROR``.
+    The caller is responsible for inspecting the list and raising if needed.
   - WARNINGS: keys present in the resolved profile that are not declared →
-    logged as structured warnings (no startup block).
+    returned as WARNING-severity issues and logged (no startup block).
 
-All errors are collected before raising so that operators can fix the full
-set in one cycle.
+All issues are collected in one pass so that operators can fix the full set
+in a single cycle.
 """
 
 from __future__ import annotations
@@ -18,7 +19,6 @@ from __future__ import annotations
 import logging
 import warnings
 
-from baku.backend.application.configuration.errors import AggregatedConfigurationError
 from baku.backend.application.configuration.models import (
     ConfigurationIssueSeverity,
     ConfigurationParameterDefinition,
@@ -44,27 +44,23 @@ def validate(
             present in the profile that is not covered by any definition.
 
     Returns:
-        A list of ``ConfigurationValidationIssue`` instances, one per finding.
-        Issues with ``severity=ERROR`` will have caused an
-        ``AggregatedConfigurationError`` to be raised before the list is
-        returned (this list is returned for informational/test purposes even
-        in the error path — callers should catch the exception).
-
-    Raises:
-        AggregatedConfigurationError: if any required key is absent from the
-            resolved profile.
+        A list of all ``ConfigurationValidationIssue`` instances found,
+        including both ERROR and WARNING severities.  The function never
+        raises; the caller is responsible for checking for ERROR-level issues
+        and raising ``AggregatedConfigurationError`` (or any other action) as
+        appropriate.
     """
     issues: list[ConfigurationValidationIssue] = []
     declared_keys = {d.key for d in definitions}
 
-    # --- 1. Check required keys ---
+    # --- 1. Check required keys (absent OR blank/whitespace-only) ---
     for defn in definitions:
-        if defn.required and defn.key not in profile.values:
+        if defn.required and not profile.values.get(defn.key, "").strip():
             issues.append(
                 ConfigurationValidationIssue(
                     key=defn.key,
                     severity=ConfigurationIssueSeverity.ERROR,
-                    message=f"Required configuration key '{defn.key}' is missing.",
+                    message=f"Required configuration key '{defn.key}' is missing or blank.",
                 )
             )
 
@@ -89,11 +85,5 @@ def validate(
                     "undeclared_config_key",
                     extra={"key": key, "severity": "WARNING"},
                 )
-
-    # --- 3. Raise aggregated error if any ERROR-level issues found ---
-    error_issues = [i for i in issues if i.severity == ConfigurationIssueSeverity.ERROR]
-    if error_issues:
-        error_messages = [i.message for i in error_issues]
-        raise AggregatedConfigurationError(errors=error_messages)
 
     return issues

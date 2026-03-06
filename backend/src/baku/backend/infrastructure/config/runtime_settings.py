@@ -16,7 +16,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from baku.backend.application.configuration.errors import AggregatedConfigurationError
 from baku.backend.application.configuration.models import (
+    ConfigurationIssueSeverity,
     ConfigurationParameterDefinition,
     ResolvedConfigurationProfile,
 )
@@ -34,6 +36,12 @@ from baku.backend.infrastructure.config.validator import validate
 # ---------------------------------------------------------------------------
 
 _PARAMETER_DEFINITIONS: list[ConfigurationParameterDefinition] = [
+    ConfigurationParameterDefinition(
+        key="persistence.database_url",
+        required=False,
+        default="sqlite:///./baku.db",
+        description="SQLAlchemy database URL.  Defaults to a file-based SQLite DB.",
+    ),
     ConfigurationParameterDefinition(
         key="auth.jwt_secret",
         required=True,
@@ -101,8 +109,10 @@ class RuntimeConfigurationProvider(ConfigurationProviderPort):
         default_source = load_default_source()
 
         profile = resolve(env_source, file_source, default_source)
-        # validate() raises AggregatedConfigurationError on any ERROR-severity issue.
-        validate(profile, _PARAMETER_DEFINITIONS)
+        issues = validate(profile, _PARAMETER_DEFINITIONS)
+        error_messages = [i.message for i in issues if i.severity == ConfigurationIssueSeverity.ERROR]
+        if error_messages:
+            raise AggregatedConfigurationError(errors=error_messages)
         return profile
 
 

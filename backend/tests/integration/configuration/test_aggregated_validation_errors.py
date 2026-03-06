@@ -1,16 +1,14 @@
 """Integration test: aggregated validation errors reporting (EN-0202 US2).
 
 Verifies that the startup validator collects ALL validation errors in a single
-pass and raises a single ``AggregatedConfigurationError`` containing the full
-error set — not just the first failure.
+pass — not just the first failure — and that the caller (RuntimeConfigurationProvider)
+converts those into a single ``AggregatedConfigurationError``.
 """
 
 from __future__ import annotations
 
-import pytest
-
-from baku.backend.application.configuration.errors import AggregatedConfigurationError
 from baku.backend.application.configuration.models import (
+    ConfigurationIssueSeverity,
     ConfigurationParameterDefinition,
     ResolvedConfigurationProfile,
 )
@@ -18,7 +16,7 @@ from baku.backend.infrastructure.config.validator import validate
 
 
 def test_validator_collects_all_missing_required_keys():
-    """All missing required keys appear in the aggregated error at once."""
+    """All missing required keys are returned as ERROR issues in a single pass."""
     definitions = [
         ConfigurationParameterDefinition(key="app.secret", required=True),
         ConfigurationParameterDefinition(key="app.api_key", required=True),
@@ -27,30 +25,28 @@ def test_validator_collects_all_missing_required_keys():
     # Empty profile — both required keys are absent
     profile = ResolvedConfigurationProfile(values={}, source_map={})
 
-    with pytest.raises(AggregatedConfigurationError) as exc_info:
-        validate(profile, definitions)
+    issues = validate(profile, definitions, warn_undeclared=False)
 
-    error = exc_info.value
-    assert len(error.errors) == 2
-    keys_in_errors = " ".join(error.errors)
+    error_issues = [i for i in issues if i.severity == ConfigurationIssueSeverity.ERROR]
+    assert len(error_issues) == 2
+    keys_in_errors = " ".join(i.message for i in error_issues)
     assert "app.secret" in keys_in_errors
     assert "app.api_key" in keys_in_errors
 
 
 def test_aggregated_error_message_lists_all_keys():
-    """The string representation of the error names every missing key."""
+    """Each missing required key appears in its own ERROR issue message."""
     definitions = [
         ConfigurationParameterDefinition(key="x.one", required=True),
         ConfigurationParameterDefinition(key="x.two", required=True),
     ]
     profile = ResolvedConfigurationProfile(values={}, source_map={})
 
-    with pytest.raises(AggregatedConfigurationError) as exc_info:
-        validate(profile, definitions)
+    issues = validate(profile, definitions, warn_undeclared=False)
 
-    msg = str(exc_info.value)
-    assert "x.one" in msg
-    assert "x.two" in msg
+    error_messages = " ".join(i.message for i in issues if i.severity == ConfigurationIssueSeverity.ERROR)
+    assert "x.one" in error_messages
+    assert "x.two" in error_messages
 
 
 def test_no_error_when_all_required_keys_present():
@@ -83,3 +79,37 @@ def test_optional_missing_key_does_not_cause_error():
     issues = validate(profile, definitions, warn_undeclared=False)
 
     assert not any(i.severity.value == "error" for i in issues)
+
+
+def test_empty_string_required_key_treated_as_missing():
+    """A required key present with an empty string value is treated as missing."""
+    definitions = [
+        ConfigurationParameterDefinition(key="app.secret", required=True),
+    ]
+    profile = ResolvedConfigurationProfile(
+        values={"app.secret": ""},
+        source_map={"app.secret": "env"},
+    )
+
+    issues = validate(profile, definitions, warn_undeclared=False)
+
+    error_issues = [i for i in issues if i.severity == ConfigurationIssueSeverity.ERROR]
+    assert len(error_issues) == 1
+    assert "app.secret" in error_issues[0].message
+
+
+def test_whitespace_only_required_key_treated_as_missing():
+    """A required key present with a whitespace-only value is treated as missing."""
+    definitions = [
+        ConfigurationParameterDefinition(key="app.secret", required=True),
+    ]
+    profile = ResolvedConfigurationProfile(
+        values={"app.secret": "   "},
+        source_map={"app.secret": "file"},
+    )
+
+    issues = validate(profile, definitions, warn_undeclared=False)
+
+    error_issues = [i for i in issues if i.severity == ConfigurationIssueSeverity.ERROR]
+    assert len(error_issues) == 1
+    assert "app.secret" in error_issues[0].message
