@@ -1,6 +1,6 @@
 # Spec-Kit Prompt Template — `/speckit.plan`
 
-Genera el **plan de implementación** para el Roadmap Item **<ID>**: "**<Título>**".
+Genera el **plan de implementación** para el Roadmap Item **<ID> - <Título>**.
 
 El item puede ser:
 
@@ -8,6 +8,8 @@ El item puede ser:
 - Enabler (EN-XXXX)
 
 El plan debe describir **cómo se implementará la especificación respetando la arquitectura y las decisiones definidas en los ADR**.
+
+Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los Enablers previos aplicables marcados en `docs/spec/dependency-graph.yaml` con `affects_future_features: true`, aunque no aparezcan repetidos explícitamente en la descripción de la Feature.
 
 ---
 
@@ -123,6 +125,53 @@ Si la implementación cambia el estado del item, el plan debe indicar la necesid
 
 - `docs/spec/roadmap.md`
 - `docs/spec/dependency-graph.yaml`
+
+Estados permitidos:
+
+- `planned`
+- `in_progress`
+- `done`
+
+---
+
+# Dependency Awareness
+
+Debes analizar `docs/spec/dependency-graph.yaml` antes de generar el resultado.
+
+## Enablers ya existentes
+
+Si el Roadmap Item es una Feature, debes identificar todos los Enablers con estado `done` o `in_progress` que ya formen parte del sistema y determinar cuáles le aplican directa o indirectamente según el dependency graph.
+
+La Feature debe asumir que esos Enablers ya existen y debe integrarse con ellos cuando sea aplicable.
+
+No debes:
+
+- ignorar Enablers ya implementados
+- redefinir capacidades ya cubiertas por Enablers existentes
+- duplicar responsabilidades técnicas ya introducidas por otros Roadmap Items
+
+## Impacto de Enablers sobre Features existentes
+
+Si el Roadmap Item es un Enabler, debes identificar todas las Features existentes en `docs/spec/features/` que dependan de este Enabler, directa o indirectamente, a través de toda la cadena de dependencias del dependency graph.
+
+Para cada Feature afectada debes reflejar los cambios necesarios en su especificación para integrar correctamente el Enabler, manteniendo coherencia con:
+
+- `docs/spec/roadmap.md`
+- `docs/spec/dependency-graph.yaml`
+- `docs/spec/constitution.md`
+- `docs/adr/ADR-0001..ADR-0014`
+
+No debes limitar el análisis a dependencias directas ni a la Feature actual.
+
+Solo deben actualizarse Features ya existentes en `docs/spec/features/`. No deben anticiparse ni inventarse cambios en Features aún no definidas documentalmente.
+
+## Dependencias transitivas
+
+Debes considerar no solo dependencias directas, sino también dependencias transitivas a través de toda la cadena del DAG.
+
+## Consistencia de estado
+
+Debes tomar como fuente de verdad el estado declarado en `docs/spec/dependency-graph.yaml`.
 
 Estados permitidos:
 

@@ -1,6 +1,6 @@
 # Spec-Kit Prompt Template — `/speckit.implement`
 
-Implementa el Roadmap Item **<ID>**: "**<Título>**" siguiendo las **tareas generadas por `/speckit.tasks`**.
+Implementa el Roadmap Item **<ID> - <Título>** siguiendo las **tareas generadas por `/speckit.tasks`**.
 
 El item puede ser:
 
