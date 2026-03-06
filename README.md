@@ -86,38 +86,3 @@ Baku está diseñado para ser:
 En desarrollo activo.
 
 Las funcionalidades se implementan siguiendo un modelo de desarrollo basado en especificaciones formales y decisiones arquitectónicas documentadas.
-
----
-
-## Bootstrap EN-0100
-
-El enabler EN-0100 establece una base mínima reproducible para dos roots independientes:
-
-- `backend`
-- `bot`
-
-Cada root incluye estructura mínima (`pyproject.toml`, `src/`, `tests/`) y un smoke test.
-
-### Validaciones básicas locales
-
-Backend:
-
-1. `python -m pip install "pytest==8.3.2" "ruff==0.6.8" "mypy==1.11.2"`
-2. `ruff check backend/src backend/tests`
-3. `mypy backend/src`
-4. `pytest -q backend/tests/test_backend_smoke.py`
-
-Bot:
-
-1. `python -m pip install "pytest==8.3.2" "ruff==0.6.8" "mypy==1.11.2"`
-2. `ruff check bot/src bot/tests`
-3. `mypy bot/src`
-4. `pytest -q bot/tests/test_bot_smoke.py`
-
-### Alcance EN-0100 (restricciones)
-
-- Sin endpoints reales.
-- Sin lógica de dominio.
-- Sin migraciones.
-- Sin publicación de eventos.
-- Sin acoplamiento runtime entre roots.
