@@ -45,9 +45,9 @@ Ejemplos:
 
 Ejemplos de enablers:
 
-- **EN-0200 — Structured Logging**
-- **EN-0201 — Configuration System**
-- **EN-0202 — Event Publishing Infrastructure**
+- **EN-0200: Application Logging Baseline with Daily Rotation**
+- **EN-0201: In-Memory Database Testing Baseline**
+- **EN-0202: Configuration System**
 
 ---
 
