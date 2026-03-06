@@ -52,25 +52,21 @@ _PARAMETER_DEFINITIONS: list[ConfigurationParameterDefinition] = [
     ConfigurationParameterDefinition(
         key="auth.jwt_algorithm",
         required=False,
-        default="HS256",
         description="JWT signing algorithm (e.g. HS256, RS256).",
     ),
     ConfigurationParameterDefinition(
         key="auth.token_ttl_seconds",
         required=False,
-        default="3600",
         description="Access token time-to-live in seconds.",
     ),
     ConfigurationParameterDefinition(
         key="auth.max_failed_attempts",
         required=False,
-        default="5",
         description="Maximum consecutive failed login attempts before lockout.",
     ),
     ConfigurationParameterDefinition(
         key="auth.lockout_minutes",
         required=False,
-        default="15",
         description="Operator account lockout duration in minutes.",
     ),
 ]
