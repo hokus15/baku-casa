@@ -104,6 +104,8 @@
 - **CA-005**: Documentation impact MUST be stated:
   - behavior change → spec update REQUIRED
   - structural change → ADR update/new ADR REQUIRED
+- **CA-006**: TDD impact MUST be stated for functional changes (tests first, red -> green -> refactor).
+- **CA-007**: If a constitutional rule lacks explicit ADR coverage, an `ADR Gap` entry MUST be created.
 
 ### Key Entities *(include if feature involves data)*
 

@@ -36,6 +36,7 @@
 - [ ] Contract impact classified (breaking/non-breaking) and versioning impact declared
 - [ ] Typed error mapping and stable error codes defined for new failure modes
 - [ ] Financial/time invariants respected (Decimal-only money, percentage 0–100, UTC aware datetime)
+- [ ] TDD strategy declared (red -> green -> refactor) for functional changes
 - [ ] Contract tests included when any contract surface changes
 - [ ] Spec updates identified for behavior changes
 - [ ] ADR updates/new ADR identified for structural or architectural changes
