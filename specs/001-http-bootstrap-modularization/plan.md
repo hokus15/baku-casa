@@ -21,7 +21,7 @@ Implementar una reorganizacion estructural del bootstrap HTTP del root `backend/
 
 ## Dependency Graph Check
 
-- Item objetivo: `EN-0300` (`planned`, `MVP0`).
+- Item objetivo: `EN-0300` (`done`, `MVP0`).
 - Dependencia declarada: `EN-0202` (`done`) -> satisfecha.
 - Orden DAG: no requiere features/enablers posteriores para su implementacion.
 - Dependencias implicitas nuevas: no detectadas.
