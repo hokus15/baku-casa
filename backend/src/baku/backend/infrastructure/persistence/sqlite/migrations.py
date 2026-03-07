@@ -6,7 +6,7 @@ from alembic import command
 from alembic.config import Config
 
 from baku.backend.infrastructure.persistence.sqlite.db import (
-    _is_sqlite_memory_url,
+    is_sqlite_memory_url,
     get_db_url,
     get_engine,
 )
@@ -23,7 +23,7 @@ def upgrade_to_head(db_url: str | None = None) -> None:
     cfg.set_main_option("script_location", str(migrations_dir))
     cfg.set_main_option("sqlalchemy.url", resolved_db_url)
 
-    if _is_sqlite_memory_url(resolved_db_url):
+    if is_sqlite_memory_url(resolved_db_url):
         # Initialise (or reuse) the application engine for resolved_db_url so
         # the migrated schema is visible to all sessions in the in-memory lifecycle.
         with get_engine(resolved_db_url).connect() as connection:
