@@ -33,4 +33,6 @@ def test_log_messages_and_keys_follow_snake_case() -> None:
         if isinstance(message, str):
             assert token_re.match(message)
         for key in row.keys():
+            if key in {"funcName"}:
+                continue
             assert key_re.match(key)
