@@ -61,6 +61,7 @@ El sistema debe permitir:
 - Consultar detalle de propietario
 - Listar propietarios
 - Buscar propietarios por `nif` y/o `nombre_razon_social`
+- Eliminar propietario mediante **soft delete** (estableciendo `deleted_at`)
 
 ---
 
@@ -68,6 +69,10 @@ El sistema debe permitir:
 
 - `nif` debe ser único por propietario.
 - `tipo_persona` debe ser uno de los valores permitidos.
+- `owner_id` debe ser estable e inmutable durante toda la vida del propietario.
+- `email` y `telefono`, cuando existan, son datos informativos de contacto y no forman parte de la identidad del propietario.
+- Los propietarios eliminados mediante `deleted_at` no deben aparecer en listados ni búsquedas por defecto.
+- El listado de propietarios debe permitir opcionalmente incluir propietarios eliminados mediante `deleted_at`.
 - No se requiere relación con propiedades en este MVP.
 
 ---
@@ -78,6 +83,7 @@ El sistema debe permitir:
 - Validación avanzada del formato de NIF/VAT por país.
 - Multi-usuario y permisos por propietario.
 - Cálculo de impuestos.
+- Integraciones externas y canales de comunicación (por ejemplo, bots o mensajería), que deberán modelarse en features o módulos independientes referenciando `owner_id`.
 
 ---
 
