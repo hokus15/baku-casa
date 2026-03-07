@@ -42,7 +42,7 @@ class JsonLogFormatter(logging.Formatter):
             "level": record.levelname,
             "logger": record.name,
             "module": record.module,
-            "funcName": record.funcName,
+            "func_name": record.funcName,
             "line": record.lineno,
             "service_name": getattr(record, "service_name", "baku-backend"),
             "environment": getattr(record, "environment", "dev"),
