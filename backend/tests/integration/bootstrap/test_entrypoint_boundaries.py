@@ -12,8 +12,9 @@ Spec: FR-001 — entry point bounded to initialization delegation.
 from __future__ import annotations
 
 import inspect
+import pytest
 
-
+pytestmark = pytest.mark.bootstrap_integration
 def test_main_module_exposes_app_instance() -> None:
     """main.py must expose an 'app' FastAPI instance."""
     from fastapi import FastAPI
