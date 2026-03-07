@@ -184,6 +184,26 @@ Las palabras DEBE, NO DEBE, DEBERÍA y PUEDE deben interpretarse con fuerza norm
 - Rotación de ficheros de log diaria a medianoche (Europe/Madrid).
 - Logs NO deben incluir PII por defecto.
 
+## Excepción explícita de configuración para logging framework (EN-0200)
+
+- Como excepción acotada, los perfiles de configuración del framework de logging PUEDEN
+  definirse como artefactos operativos externos en la raíz de `backend/` (por ejemplo,
+  `logging.dev.ini`, `logging.test.ini`, `logging.prod.ini`).
+- Esta excepción aplica solo a configuración específica del framework de logging y NO
+  puede extenderse a otros dominios de configuración runtime.
+- La aplicación PUEDE cargar directamente el perfil activo del framework de logging en
+  arranque.
+- Si el perfil falta o es inválido, la aplicación PUEDE aplicar fallback seguro del
+  framework, pero SIEMPRE manteniendo baseline mínimo obligatorio de logging
+  (timestamp UTC, level, service name, correlation_id, message); no se permite
+  operación efectiva sin logging.
+- Contrato de fallback por entorno (escritura en consola):
+  - `dev`: salida human-friendly.
+  - `test`: salida human-friendly minimalista.
+  - `prod`: salida JSON estructurada.
+- Esta excepción DEBE mantenerse alineada con ADR-0009 (observabilidad) y ADR-0013
+  (configuration system).
+
 ---
 
 # Principios de Ingeniería

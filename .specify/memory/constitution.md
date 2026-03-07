@@ -95,7 +95,13 @@ Rationale: reduce regresiones y mantiene trazabilidad entre intención, diseño 
 - Las migraciones MUST preservar restaurabilidad, integridad y trazabilidad de datos.
 - Cambios destructivos sin estrategia explícita de preservación y verificación están
 	PROHIBITED.
-- La configuración de runtime MUST ser tipada, centralizada y validada en arranque.
+- La configuración de runtime MUST ser tipada, centralizada y validada en arranque,
+	excepto los perfiles del framework de logging definidos como artefactos operativos
+	externos en la raíz de `backend/` (EN-0200), que MAY cargarse directamente y usar
+	fallback seguro del framework manteniendo baseline mínimo obligatorio de logging
+	(timestamp UTC, level, service name, correlation_id, message), sin modo "sin logging".
+	Contrato por entorno durante fallback (escritura en consola): `dev` human-friendly,
+	`test` human-friendly minimalista, `prod` JSON estructurada.
 
 ## ADR Gap
 
@@ -127,4 +133,4 @@ Rationale: reduce regresiones y mantiene trazabilidad entre intención, diseño 
 	- Incumplimientos MUST bloquear merge salvo excepción aprobada y registrada.
 	- Revisiones periódicas MUST verificar coherencia entre constitución, ADR y roadmap.
 
-**Version**: 1.1.1 | **Ratified**: 2026-03-02 | **Last Amended**: 2026-03-06
+**Version**: 1.1.2 | **Ratified**: 2026-03-02 | **Last Amended**: 2026-03-07

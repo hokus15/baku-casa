@@ -37,6 +37,7 @@ from baku.backend.domain.auth.repositories import (
 from baku.backend.infrastructure.config.auth_policy_provider import AuthSettingsPolicy
 from baku.backend.infrastructure.config.auth_settings import get_auth_settings, init_auth_settings
 from baku.backend.infrastructure.config.runtime_settings import RuntimeConfigurationProvider
+from baku.backend.infrastructure.logging.bootstrap import configure_framework_logging
 from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
     SqliteOperatorRepository,
     SqliteRevokedTokenRepository,
@@ -73,6 +74,7 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     provider = RuntimeConfigurationProvider()
     provider.get_profile()  # aborts if required keys missing
     init_auth_settings(provider)  # inject concrete provider; no Infrastructure import in auth_settings
+    configure_framework_logging()
     yield
 
 

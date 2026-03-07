@@ -105,3 +105,27 @@ environment variables > config file (.env) > built-in defaults
 ```
 
 Para desarrollo local, crea un fichero `.env` en el raíz de `backend/` con las variables necesarias (ver `.env.example`).
+
+## Enabler EN-0200: Application Logging Baseline
+
+El backend carga perfiles de logging por entorno desde la raíz de `backend/`:
+
+- `logging.dev.ini`
+- `logging.test.ini`
+- `logging.prod.ini`
+
+Baseline operativo:
+
+- Doble salida de fichero: JSON + human-friendly.
+- Campos mínimos por evento: `timestamp`, `level`, `service_name`, `correlation_id`, `message`.
+- Correlación por request con `X-Correlation-ID` (propagado o generado).
+- Rotación diaria a las 00:00 Europe/Madrid.
+- Retención inicial de 7 días para logs rotados (configurable por entorno).
+
+Fallback seguro:
+
+- Si el perfil activo no existe o es inválido, la app mantiene baseline mínimo en consola y continúa operativa.
+- Contrato de fallback por entorno:
+	- `dev`: human-friendly
+	- `test`: human-friendly minimalista
+	- `prod`: JSON estructurado

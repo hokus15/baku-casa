@@ -13,6 +13,7 @@ app.dependency_overrides (ADR-0002).
 
 from __future__ import annotations
 
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
@@ -49,6 +50,7 @@ from baku.backend.interfaces.http.dependencies.service_deps import (
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 CURRENT_CLAIMS_DEP = Depends(get_current_claims)
+logger = logging.getLogger(__name__)
 
 
 @router.post("/bootstrap", status_code=status.HTTP_201_CREATED)
@@ -59,7 +61,15 @@ def post_bootstrap(
     uow: Annotated[UnitOfWorkPort, Depends(get_unit_of_work)],
 ) -> Response:
     """Bootstrap operator credentials on first run (FR-001, FR-002)."""
+    logger.info(
+        "http_auth_bootstrap_started",
+        extra={"method": "POST", "path": "/api/v1/auth/bootstrap"},
+    )
     bootstrap_operator(body.username, body.password, op_repo, hasher, uow)
+    logger.info(
+        "http_auth_bootstrap_completed",
+        extra={"method": "POST", "path": "/api/v1/auth/bootstrap", "status_code": 201},
+    )
     return Response(status_code=status.HTTP_201_CREATED)
 
 
@@ -74,6 +84,10 @@ def post_login(
     uow: Annotated[UnitOfWorkPort, Depends(get_unit_of_work)],
 ) -> LoginResponse:
     """Authenticate operator and issue access token (FR-003, FR-016–FR-020)."""
+    logger.info(
+        "http_auth_login_started",
+        extra={"method": "POST", "path": "/api/v1/auth/login"},
+    )
     result = login_operator(
         body.username,
         body.password,
@@ -83,6 +97,10 @@ def post_login(
         hasher,
         token_issuer,
         uow,
+    )
+    logger.info(
+        "http_auth_login_completed",
+        extra={"method": "POST", "path": "/api/v1/auth/login", "status_code": 200},
     )
     return LoginResponse(
         access_token=result.access_token,
@@ -98,7 +116,15 @@ def post_logout(
     uow: Annotated[UnitOfWorkPort, Depends(get_unit_of_work)] = ...,  # type: ignore[assignment]
 ) -> Response:
     """Revoke current token explicitly (FR-006)."""
+    logger.info(
+        "http_auth_logout_started",
+        extra={"method": "POST", "path": "/api/v1/auth/logout"},
+    )
     logout_operator(claims, revoked_repo, uow)
+    logger.info(
+        "http_auth_logout_completed",
+        extra={"method": "POST", "path": "/api/v1/auth/logout", "status_code": 204},
+    )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -111,6 +137,10 @@ def put_password(
     uow: Annotated[UnitOfWorkPort, Depends(get_unit_of_work)] = ...,  # type: ignore[assignment]
 ) -> Response:
     """Rotate operator password, revoke prior tokens globally (FR-007, FR-008)."""
+    logger.info(
+        "http_auth_password_started",
+        extra={"method": "PUT", "path": "/api/v1/auth/password"},
+    )
     change_operator_password(
         operator_id=claims.sub,
         current_password=body.current_password,
@@ -118,5 +148,9 @@ def put_password(
         op_repo=op_repo,
         hasher=hasher,
         uow=uow,
+    )
+    logger.info(
+        "http_auth_password_completed",
+        extra={"method": "PUT", "path": "/api/v1/auth/password", "status_code": 204},
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

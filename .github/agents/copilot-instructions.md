@@ -7,6 +7,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-02
 - SQLite (estado de operador, versión de credencial, revocación por token actual, auditoría, bloqueo temporal) (001-acceso-autenticacion-operador)
 - Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv (backend root) (001-configuration-system)
 - SQLite (sin cambios de esquema para este item) (001-configuration-system)
+- Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv, stdlib logging (001-logging-baseline-rotation)
+- SQLite para datos de negocio (sin cambios de esquema); ficheros para logs operativos (001-logging-baseline-rotation)
 
 - Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI (001-project-bootstrap)
 
@@ -26,10 +28,10 @@ cd src; pytest; ruff check .
 Python 3.x por root (versionado exacto definido en cada `pyproject.toml`): Follow standard conventions
 
 ## Recent Changes
+- 001-logging-baseline-rotation: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv, stdlib logging
 - 001-configuration-system: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv (backend root)
 - 001-acceso-autenticacion-operador: Added Python 3.11 (roots `backend` y `bot`) + FastAPI (adapter HTTP), JWT stateless, pytest, mypy, ruff
 
-- 001-project-bootstrap: Added Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI
 
 <!-- MANUAL ADDITIONS START -->
 # Manual Copilot Instructions – Baku.Casa

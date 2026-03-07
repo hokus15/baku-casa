@@ -75,7 +75,7 @@ ADR Gap: None.
 
 ## Phase 0 - Research Output
 
-Archivo: `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\specs\001-configuration-system\research.md`
+Archivo: `specs/001-configuration-system/research.md`
 
 Resultados consolidados:
 - Precedencia global fija validada.
@@ -88,7 +88,7 @@ Resultados consolidados:
 
 ### Data Model
 
-Archivo: `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\specs\001-configuration-system\data-model.md`
+Archivo: `specs/001-configuration-system/data-model.md`
 
 Entidades de diseno:
 - `ConfigurationParameterDefinition`
@@ -98,13 +98,13 @@ Entidades de diseno:
 
 ### Contracts
 
-Archivo: `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\specs\001-configuration-system\contracts\no-contract-changes.md`
+Archivo: `specs/001-configuration-system/contracts/no-contract-changes.md`
 
 Decision: no hay cambios en contratos HTTP/eventos; sin impacto de versionado externo.
 
 ### Quickstart
 
-Archivo: `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\specs\001-configuration-system\quickstart.md`
+Archivo: `specs/001-configuration-system/quickstart.md`
 
 Incluye validacion de:
 - Precedencia determinista.
@@ -197,12 +197,12 @@ implementacion es exclusivo de `backend/`.
 ## Documentation Synchronization
 
 Actualizar durante implementacion:
-- `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\README.md`
-- `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\backend\README.md`
+- `README.md`
+- `backend/README.md`
 
 Actualizar solo si cambia estado del item:
-- `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\docs\spec\roadmap.md`
-- `c:\Users\hokus\OneDrive\Documentos\GitHub\baku-casa\docs\spec\dependency-graph.yaml`
+- `docs/spec/roadmap.md`
+- `docs/spec/dependency-graph.yaml`
 
 ## Complexity Tracking
 

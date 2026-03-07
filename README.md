@@ -148,3 +148,17 @@ Las funcionalidades se implementan siguiendo un modelo de desarrollo basado en *
 | EN-0100 | ✅ Completado | Project Bootstrap |
 | F-0001 | ✅ Completado | Acceso y Autenticación |
 | EN-0202 | ✅ Completado | Configuration System — configuración centralizada y tipada |
+| EN-0200 | ✅ Completado | Logging baseline con salida dual, correlación y rotación diaria |
+
+---
+
+## Observabilidad (EN-0200)
+
+El backend aplica un baseline de logging estructurado con contrato operativo por entorno.
+
+- Salida dual por evento: JSON + human-friendly.
+- Campos mínimos obligatorios: `timestamp`, `level`, `service_name`, `correlation_id`, `message`.
+- Timestamps de evento en UTC.
+- Rotación diaria a las 00:00 Europe/Madrid.
+- Retención inicial de 7 días para logs rotados (configurable por entorno).
+- Fallback seguro si el perfil de logging falta o es inválido; no existe modo sin logging.

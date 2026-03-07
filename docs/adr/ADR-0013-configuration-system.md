@@ -39,6 +39,29 @@ Secrets MUST NOT be baked into images (ADR-0007) and MUST be injectable at runti
 
 The configuration system MUST NOT introduce dependencies into the Domain layer.
 
+### Explicit Exception: Logging Framework Profiles (EN-0200)
+
+As an explicit exception to centralized runtime configuration, logging framework profile
+files MAY live as operational artifacts in the backend root (for example,
+`backend/logging.dev.ini`, `backend/logging.test.ini`, `backend/logging.prod.ini`).
+
+For this exception:
+
+- The application MAY load the active logging framework profile directly at startup.
+- The profile format and keys are framework-specific and are not required to be part of
+  the typed centralized configuration schema.
+- If the logging profile is missing or invalid, the application MAY apply a safe
+  framework fallback and continue operating, while preserving the mandatory minimum
+  logging baseline (timestamp UTC, level, service name, correlation_id, message).
+- Fallback contract by environment (console output):
+  - `dev`: human-friendly console output.
+  - `test`: minimal human-friendly console output for deterministic assertions.
+  - `prod`: structured JSON console output.
+- This exception applies only to logging framework profiles and MUST NOT be generalized
+  to other runtime configuration domains.
+
+Observability guarantees for this exception are governed by ADR-0009.
+
 ## Consequences
 
 ### Positive
@@ -54,7 +77,8 @@ The configuration system MUST NOT introduce dependencies into the Domain layer.
 
 ## Rules (Binding)
 
-- All configuration access MUST go through the centralized configuration interface.
+- All configuration access MUST go through the centralized configuration interface,
+  except the explicit EN-0200 logging framework profile files described above.
 - Modules MUST NOT read environment variables directly outside of the configuration system.
 - Configuration keys MUST be stable and documented.
 - Test configuration MUST be explicit and isolated from production settings.

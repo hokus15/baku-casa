@@ -30,8 +30,8 @@ El objetivo es asegurar que todos los eventos técnicos relevantes queden regist
 
 Adicionalmente, este enabler debe aplicarse sobre funcionalidades ya desarrolladas para incorporar logging homogéneo en los flujos existentes, incluyendo como mínimo:
 
-- enabler EN-0202
-- feature F-0001
+- EN-0202
+- F-0001
 
 ---
 
@@ -52,7 +52,9 @@ Definición de un sistema de logging consistente en toda la aplicación que incl
 - formato de registros human friendly
 - convenciones de nomenclatura de campos
 - persistencia en fichero
-- instrumentación del logging en funcionalidades ya implementadas, incluyendo enabler EN-0202 y feature F-0001
+- definición de configuración específica del framework de logging en ficheros en la raíz de `backend/`
+- definición de perfiles de logging por entorno (`dev`, `test`, `prod`) en esos artefactos del framework
+- instrumentación del logging en funcionalidades ya implementadas, incluyendo EN-0202 y F-0001
 
 
 ---
@@ -61,10 +63,12 @@ Definición de un sistema de logging consistente en toda la aplicación que incl
 
 El baseline de logging no debe limitarse a nuevas implementaciones. Debe incorporarse también en funcionalidades ya desarrolladas para asegurar trazabilidad operativa y consistencia técnica.
 
+Además del impacto técnico en la implementación, este enabler debe sincronizarse a nivel documental con todas las features existentes en `docs/spec/features/` para unificar criterios de observabilidad.
+
 Como parte de este enabler, se debe añadir logging estructurado al menos en:
 
-- flujos del enabler EN-0202
-- flujos de la feature F-0001
+- flujos de EN-0202
+- flujos de F-0001
 
 
 En estos flujos deben registrarse, como mínimo cuando aplique:
@@ -127,6 +131,38 @@ El formato human friendly no debe sacrificar legibilidad con payloads excesivame
 
 ---
 
+### Configuración de logging
+
+La configuración de logging debe definirse en **ficheros específicos del framework de logging** ubicados en la raíz de `backend/` (por ejemplo `logging.dev.ini`, `logging.test.ini`, `logging.prod.ini`).
+
+La organización por entorno debe realizarse mediante un **fichero dedicado distinto para cada entorno activo**, al menos para `dev`, `test` y `prod`, mantenido como configuración externa del framework.
+
+Como parte de este enabler se debe definir en los ficheros del framework de logging, al menos por entorno:
+
+- activación y nivel de logging
+- rutas o nombres de los dos ficheros de salida
+- formato de salida asociado a cada fichero
+- política de rotación diaria
+- política de retención
+
+Ejemplo de referencia para una implementación estándar: usar `logging` de Python con
+`logging.config.fileConfig`, dos `formatters` (JSON y human-friendly), dos `handlers`
+de fichero y rotación diaria mediante `logging.handlers.TimedRotatingFileHandler`.
+
+La solución debe permitir que el comportamiento de logging y la retención puedan configurarse por entorno sin modificar código de la aplicación.
+
+La configuración del framework de logging no debe quedar embebida en código y puede reducir la verbosidad mediante los propios perfiles del framework, pero siempre preservando el baseline mínimo obligatorio de logging.
+
+Si el fichero de logging correspondiente al entorno activo no existe, no puede cargarse o contiene una configuración inválida, la aplicación debe aplicar un fallback seguro del framework que mantenga el baseline mínimo obligatorio de logging (timestamp UTC, level, service_name, correlation_id, message) y continuar operativa. No se admite fallback equivalente a "sin logging".
+
+Contrato de fallback por entorno (escritura en consola):
+
+- `dev`: salida por consola en formato human-friendly.
+- `test`: salida por consola en formato human-friendly minimalista para aserciones.
+- `prod`: salida por consola en formato JSON estructurado.
+
+---
+
 ### Convenciones de logging
 
 Los registros de log deben seguir las siguientes convenciones:
@@ -149,7 +185,7 @@ El sistema de logging debe cumplir las siguientes condiciones:
 - Rotación automática de logs **diariamente a las 00:00 (Europe/Madrid)**.
 - Generación de nuevos ficheros de log tras cada rotación.
 - Convención de nombres que permita identificar fácilmente la fecha de cada fichero rotado.
-- Definición de una política de **retención automática** de logs (por ejemplo número máximo de días o ficheros).
+- Política de **retención automática** basada en días para logs rotados, con valor inicial de **7 días** y configuración por entorno, además de conservar los ficheros activos del día en curso.
 
 ---
 
