@@ -7,6 +7,7 @@ Raises:
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from baku.backend.application.auth.auth_policy_port import AuthPolicyPort
@@ -21,6 +22,8 @@ from baku.backend.domain.auth.repositories import (
     ThrottleStateRepository,
     UnitOfWorkPort,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,6 +42,7 @@ def login_operator(
     token_issuer: TokenIssuerPort,
     uow: UnitOfWorkPort,
 ) -> LoginResult:
+    logger.info("login_operator_started", extra={"operation": "login_operator", "username": username})
     now = utcnow()
     operator = op_repo.find_by_username(username)
 
@@ -50,6 +54,10 @@ def login_operator(
             throttle = LoginThrottleState(operator_id=operator.operator_id)
 
         if throttle.is_blocked(now):
+            logger.warning(
+                "login_operator_locked",
+                extra={"operation": "login_operator", "operator_id": operator.operator_id},
+            )
             raise LockedTemporarily()
 
     # Validate credentials
@@ -62,6 +70,16 @@ def login_operator(
             )
             throttle_repo.save(throttle)
             uow.commit()
+            logger.warning(
+                "login_operator_invalid_credentials",
+                extra={
+                    "operation": "login_operator",
+                    "operator_id": operator.operator_id,
+                    "failed_attempts": throttle.failed_attempts,
+                },
+            )
+        else:
+            logger.warning("login_operator_invalid_credentials", extra={"operation": "login_operator"})
         raise InvalidCredentials()
 
     # Successful login
@@ -77,5 +95,13 @@ def login_operator(
         operator_id=operator.operator_id,
         credential_version=operator.credential_version,
         ttl_seconds=policy.token_ttl_seconds,
+    )
+    logger.info(
+        "login_operator_completed",
+        extra={
+            "operation": "login_operator",
+            "operator_id": operator.operator_id,
+            "credential_version": operator.credential_version,
+        },
     )
     return LoginResult(access_token=access_token, claims=claims)

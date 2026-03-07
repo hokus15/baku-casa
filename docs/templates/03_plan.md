@@ -185,6 +185,7 @@ Estados permitidos:
 
 El plan **NO debe**:
 
+- usar rutas absolutas
 - incluir código
 - generar migraciones concretas
 - repetir la especificación funcional

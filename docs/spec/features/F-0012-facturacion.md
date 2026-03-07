@@ -181,3 +181,14 @@ Todos los importes persistidos son siempre positivos o cero.
 - ADR-0011
 - ADR-0012
 
+
+---
+
+## Baseline de observabilidad (EN-0200)
+
+Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+
+- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
+- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
+- Exclusion de secretos, tokens y contraseñas en registros.
+- Correlacion por request mediante `correlation_id`.

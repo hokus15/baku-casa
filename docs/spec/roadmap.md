@@ -74,6 +74,8 @@ Permite validar configuración en el arranque y garantizar consistencia entre en
 
 ## EN-0200 — Application Logging Baseline with Daily Rotation
 
+**Estado: ✅ Completado**
+
 Sistema de logging estructurado con formato consistente.
 
 Campos obligatorios:
@@ -85,6 +87,12 @@ Campos obligatorios:
 - message
 
 Los logs rotan diariamente a medianoche (Europe/Madrid).
+
+Incluye:
+
+- salida dual por evento (JSON + human-friendly)
+- correlacion por request con `X-Correlation-ID`
+- fallback seguro por entorno cuando el perfil de logging no es cargable
 
 ---
 

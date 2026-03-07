@@ -80,6 +80,19 @@ Internal exception details MUST NOT be exposed.
 
 All services MUST use structured logs (JSON or equivalent structured format).
 
+For the Python application components, including `backend` and `bot`, all logging MUST
+use the Python standard library `logging` module as the canonical logging framework.
+
+Features and enablers MUST NOT introduce alternative logging libraries as primary logging
+mechanisms.
+
+Structured JSON output, human-friendly output, correlation, rotation, retention, and any
+logging-specific extensions MUST be implemented on top of the Python `logging` module
+using handlers, formatters, filters, adapters, or equivalent integration points.
+
+Wrapper utilities are allowed only if they delegate to the Python `logging` module and
+preserve the common logging contract defined by this ADR.
+
 Logs MUST include at minimum:
 
 - timestamp (UTC)
@@ -186,7 +199,14 @@ Rejected because:
 - Hard to parse programmatically.
 - Not scalable for automated analysis.
 
-### 3. Exposing Internal Stack Traces
+### 3. Multiple Logging Frameworks in the Same Application
+
+Rejected because:
+- Breaks operational consistency across features and enablers.
+- Increases maintenance and integration cost.
+- Makes shared policies such as correlation, formatting, rotation, and retention harder to enforce.
+
+### 4. Exposing Internal Stack Traces
 
 Rejected because:
 - Security risk.
@@ -210,6 +230,7 @@ Rejected because:
 - Requires explicit error class definitions.
 - Slightly more boilerplate in mapping layers.
 - Structured logging configuration effort.
+- Logging extensions must integrate through Python `logging` instead of choosing independent frameworks.
 
 ---
 
@@ -218,6 +239,8 @@ Rejected because:
 - Logs must be persisted or accessible.
 - Correlation ID propagation must be implemented consistently.
 - Error codes must be version-stable.
+- Logging implementation must remain homogeneous across the Python application
+  components, including `backend` and `bot`, via the standard `logging` module.
 
 ---
 
