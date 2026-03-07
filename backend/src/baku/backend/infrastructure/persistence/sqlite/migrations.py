@@ -6,9 +6,9 @@ from alembic import command
 from alembic.config import Config
 
 from baku.backend.infrastructure.persistence.sqlite.db import (
-    is_sqlite_memory_url,
     get_db_url,
     get_engine,
+    is_sqlite_memory_url,
 )
 
 

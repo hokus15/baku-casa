@@ -62,7 +62,7 @@ items:
 
   - id: EN-0300
     type: enabler
-    status: planned
+    status: done
     phase: MVP0
     depends_on:
       - EN-0202

@@ -32,6 +32,8 @@ La modularización del bootstrap permite que nuevos componentes de inicializaci�
 - Delegación del proceso de bootstrap desde el punto de entrada hacia componentes especializados.
 - Organización del proceso de inicialización para mejorar la mantenibilidad del composition root.
 - Garantía de que el registro de dependencias entre capas se realiza en un único punto central.
+- Mantenimiento del comportamiento fail-fast ante errores críticos durante el bootstrap, sin degradación silenciosa.
+- Compatibilidad con los quality gates del proyecto, incluyendo como mínimo lint, type-check y tests de regresión relevantes del backend, incluyendo regresión contractual cuando aplique.
 
 ---
 
@@ -44,11 +46,30 @@ La modularización del bootstrap permite que nuevos componentes de inicializaci�
 
 ---
 
+### Bootstrap Responsibility Inventory (Closed Set)
+
+Para EN-0300, la cobertura de responsabilidades de bootstrap se mide sobre este inventario base cerrado:
+
+1. **App Creation**: construccion de la aplicacion HTTP y metadata base de arranque.
+2. **Lifespan Bootstrap**: inicializacion y cierre de recursos de arranque, incluyendo fail-fast ante errores criticos.
+3. **Dependency Composition Wiring**: composicion de dependencias entre interfaces de Application e implementaciones de Infrastructure en un unico punto.
+4. **Middleware Registration**: registro de middlewares HTTP requeridos por el baseline actual.
+5. **Error Handlers Registration**: registro de handlers de error tipificados del adapter HTTP.
+6. **Router Registration**: inclusion de routers/versionado HTTP vigente.
+
+Este inventario no puede ampliarse ni reducirse durante EN-0300 sin actualizar explicitamente esta especificacion.
+
+---
+
 ## Notas de arquitectura
 
 El registro de dependencias debe seguir el principio de inversión de dependencias definido en **ADR-0002**, donde las interfaces de la capa Application se conectan con implementaciones de Infrastructure únicamente en el composition root.
 
 La reorganización del proceso de inicialización no debe introducir dependencias que violen las reglas de arquitectura hexagonal.
+
+Los errores críticos durante el bootstrap deben interrumpir el arranque de forma explícita, preservando el comportamiento fail-fast existente.
+
+La modularización debe ser estructuralmente verificable: el entrypoint HTTP debe quedar limitado a un conjunto acotado de responsabilidades de arranque y el resto de responsabilidades de bootstrap debe quedar separado en componentes específicos y trazables.
 
 ---
 
@@ -57,5 +78,7 @@ La reorganización del proceso de inicialización no debe introducir dependencia
 1. El punto de entrada HTTP deja de concentrar múltiples responsabilidades de inicialización.
 2. El proceso de bootstrap de la aplicación se encuentra separado en componentes con responsabilidades claras.
 3. El registro de dependencias entre capas sigue realizándose exclusivamente en el composition root.
-4. La modularización del bootstrap mejora la claridad y mantenibilidad de la inicialización de la aplicación.
-5. No se introducen dependencias que violen la arquitectura hexagonal definida en el proyecto.
+4. El punto de entrada HTTP queda limitado a responsabilidades acotadas de arranque y las responsabilidades de bootstrap identificables quedan separadas en componentes específicos y trazables.
+5. Los errores críticos durante el bootstrap provocan fallo inmediato del arranque, sin degradación silenciosa.
+6. No se introducen dependencias que violen la arquitectura hexagonal definida en el proyecto.
+7. La reorganización mantiene el cumplimiento de lint, type-check y tests de regresión relevantes del backend, incluyendo regresión contractual cuando aplique.

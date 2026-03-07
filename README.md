@@ -150,6 +150,7 @@ Las funcionalidades se implementan siguiendo un modelo de desarrollo basado en *
 | EN-0202 | ✅ Completado | Configuration System — configuración centralizada y tipada |
 | EN-0200 | ✅ Completado | Logging baseline con salida dual, correlación y rotación diaria |
 | EN-0201 | ✅ Completado | Baseline de testing con DB en memoria para integración reproducible |
+| EN-0300 | ✅ Completado | HTTP Bootstrap Modularization — thin entrypoint, composition root único, fail-fast |
 
 ---
 
