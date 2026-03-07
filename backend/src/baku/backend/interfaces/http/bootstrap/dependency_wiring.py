@@ -1,11 +1,13 @@
 """Dependency wiring — composition root for Infrastructure → Interfaces mapping (ADR-0002).
 
 This is the single module in the Interfaces package that may import from both the
-Interfaces layer and the Infrastructure layer simultaneously. All other modules
-must import only from Application or Domain.
+Interfaces layer and the Infrastructure layer simultaneously. Other Interfaces
+modules may depend on Application and Domain code (plus external libraries and
+other `baku.backend.interfaces.*` modules), but must not import from
+`baku.backend.infrastructure.*` directly.
 
-The Interfaces layer never imports Infrastructure directly — all coupling flows
-through this mapping (ADR-0002 composition root discipline).
+Within the Interfaces layer, all coupling to Infrastructure flows through this
+mapping (ADR-0002 composition root discipline).
 
 Responsibility: DEPENDENCY_COMPOSITION_WIRING (BootstrapInventory)
 """
