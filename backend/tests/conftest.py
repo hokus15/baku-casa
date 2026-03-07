@@ -28,7 +28,7 @@ def test_db_url() -> str:
 
 @pytest.fixture(autouse=True)
 def _reset_singletons(test_db_url: str, monkeypatch):
-    """Isolate each test with a deterministic migrated in-memory SQLite DB."""
+    """Isolate each test with a unique, freshly migrated in-memory SQLite DB."""
     db_url = test_db_url
     monkeypatch.setenv("TEST_DATABASE_URL", db_url)
     monkeypatch.setenv("DATABASE_URL", db_url)
