@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -14,10 +15,22 @@ from baku.backend.infrastructure.persistence.sqlite.migrations import upgrade_to
 from baku.backend.main import app
 
 
+def _build_inmemory_db_url() -> str:
+    """Return a named shared in-memory SQLite URL for a single test case."""
+    return f"sqlite+pysqlite:///file:baku_test_{uuid4().hex}?mode=memory&cache=shared&uri=true"
+
+
+@pytest.fixture()
+def test_db_url() -> str:
+    """Expose the active test DB URL for integration assertions."""
+    return _build_inmemory_db_url()
+
+
 @pytest.fixture(autouse=True)
-def _reset_singletons(tmp_path, monkeypatch):
-    """Isolate each test with a migrated SQLite DB and auth settings."""
-    db_url = f"sqlite:///{tmp_path / 'test.db'}"
+def _reset_singletons(test_db_url: str, monkeypatch):
+    """Isolate each test with a deterministic migrated in-memory SQLite DB."""
+    db_url = test_db_url
+    monkeypatch.setenv("TEST_DATABASE_URL", db_url)
     monkeypatch.setenv("DATABASE_URL", db_url)
     monkeypatch.setenv("AUTH_JWT_SECRET", "test-secret-key-for-testing-only")
     monkeypatch.setenv("AUTH_TOKEN_TTL_SECONDS", "3600")

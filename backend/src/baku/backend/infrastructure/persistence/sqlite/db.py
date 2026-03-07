@@ -25,14 +25,24 @@ def get_db_url() -> str:
     return RuntimeConfigurationProvider().get_profile().require("persistence.database_url")
 
 
+def _is_sqlite_memory_url(url: str) -> bool:
+    """Return True when URL points to an in-memory SQLite database."""
+    if not url.startswith("sqlite"):
+        return False
+    return url == "sqlite://" or "mode=memory" in url
+
+
 def get_engine() -> Engine:
     global _engine
     if _engine is None:
         url = get_db_url()
-        # SQLite in-memory databases (sqlite://) require StaticPool so all
-        # connections within the same process share the same in-memory DB.
-        is_memory = url == "sqlite://"
-        kwargs: dict[str, Any] = {"connect_args": {"check_same_thread": False}}
+        # SQLite in-memory databases require StaticPool so all connections
+        # in this process reuse the same transient DB lifecycle.
+        is_memory = _is_sqlite_memory_url(url)
+        connect_args: dict[str, Any] = {"check_same_thread": False}
+        if "uri=true" in url:
+            connect_args["uri"] = True
+        kwargs: dict[str, Any] = {"connect_args": connect_args}
         if is_memory:
             kwargs["poolclass"] = StaticPool
         _engine = create_engine(url, **kwargs)
