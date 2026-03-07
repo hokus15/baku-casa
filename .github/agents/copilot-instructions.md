@@ -11,6 +11,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-02
 - SQLite para datos de negocio (sin cambios de esquema); ficheros para logs operativos (001-logging-baseline-rotation)
 - Python 3.11 + FastAPI, SQLAlchemy, pytest, tooling de calidad (`ruff`, `mypy`) (001-inmemory-db-testing)
 - SQLite en memoria para pruebas de integración; SQLite persistente fuera del contexto de testing (001-inmemory-db-testing)
+- Python 3.11 + FastAPI, SQLAlchemy, PyJWT, python-dotenv (001-http-bootstrap-modularization)
+- SQLite (sin cambios de esquema en EN-0300) (001-http-bootstrap-modularization)
 
 - Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI (001-project-bootstrap)
 
@@ -30,9 +32,9 @@ cd src; pytest; ruff check .
 Python 3.x por root (versionado exacto definido en cada `pyproject.toml`): Follow standard conventions
 
 ## Recent Changes
+- 001-http-bootstrap-modularization: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, python-dotenv
 - 001-inmemory-db-testing: Added Python 3.11 + FastAPI, SQLAlchemy, pytest, tooling de calidad (`ruff`, `mypy`)
 - 001-logging-baseline-rotation: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv, stdlib logging
-- 001-configuration-system: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, bcrypt, python-dotenv (backend root)
 
 
 <!-- MANUAL ADDITIONS START -->

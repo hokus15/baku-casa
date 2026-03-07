@@ -59,4 +59,5 @@ line-ending = "lf"
 asyncio_default_fixture_loop_scope = "function"
 markers = [
   "persistence_integration: Integration tests that require DB persistence baseline",
+  "bootstrap_integration: Integration tests for HTTP bootstrap modularization (EN-0300)",
 ]

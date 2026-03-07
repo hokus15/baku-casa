@@ -110,7 +110,17 @@ Baseline de testing con base de datos en memoria para permitir:
 
 ## EN-0300 — HTTP Composition Root Refactor
 
+**Estado: ✅ Completado**
+
 Reorganización del composition root HTTP para separar responsabilidades de bootstrap y mantener los límites de la arquitectura hexagonal.
+
+Incluye:
+
+- `main.py` reducido a thin entrypoint (sin responsibilities de bootstrap)
+- composition root único (`dependency_wiring.py`)
+- responsabilidades separadas en módulos dedicados (`lifespan.py`, `app_factory.py`, etc.)
+- fail-fast preservado (ADR-0013)
+- 37 tests de integración de validación de estructura y comportamiento
 
 ---
 

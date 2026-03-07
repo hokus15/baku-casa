@@ -22,6 +22,36 @@ Implementación del sistema de autenticación con arquitectura hexagonal (ADR-00
 - Throttle configurable por intentos fallidos
 - Middleware de `X-Correlation-ID` en todos los requests
 
+## Enabler EN-0300: HTTP Bootstrap Modularization
+
+**Estado**: ✅ Implementado (2026-03-07)
+
+Reorganización estructural del bootstrap HTTP (`interfaces/http/bootstrap/`). El `main.py`
+es ahora un thin entrypoint; todas las responsabilidades de arranque están separadas en
+componentes con responsabilidad única:
+
+| Responsabilidad | Módulo |
+|---|---|
+| App Creation | `interfaces/http/bootstrap/app_factory.py` |
+| Lifespan Bootstrap | `interfaces/http/bootstrap/lifespan.py` |
+| Dependency Composition Wiring | `interfaces/http/bootstrap/dependency_wiring.py` |
+| Middleware Registration | `interfaces/http/bootstrap/middleware_registry.py` |
+| Error Handlers Registration | `interfaces/http/bootstrap/error_handlers_registry.py` |
+| Router Registration | `interfaces/http/bootstrap/router_registry.py` |
+
+El composition root único (`dependency_wiring.py`) es el único módulo del paquete
+`interfaces/` con permiso de importar desde `infrastructure/` (ADR-0002).
+
+El comportamiento fail-fast ante configuración crítica ausente se mantiene intacto (ADR-0013).
+
+**Cobertura de tests**: 37 tests de integración en `tests/integration/bootstrap/` validan:
+- Límites del entrypoint (`test_entrypoint_boundaries.py`)
+- Separación de responsabilidades del inventario cerrado (`test_bootstrap_responsibility_separation.py`)
+- Composition root único y equivalencia de overrides (`test_single_composition_root.py`, `test_dependency_wiring_equivalence.py`)
+- Fail-fast y comportamiento del lifespan (`test_fail_fast_bootstrap_errors.py`)
+- Superficie HTTP invariante (`test_http_surface_unchanged.py`)
+- Trazabilidad de errores estructurados (`test_bootstrap_error_traceability.py`)
+
 ## Gates de calidad locales
 
 Ejecutar desde el directorio `backend/`:
