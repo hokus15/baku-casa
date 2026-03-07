@@ -54,8 +54,13 @@ _DEFAULTS: dict[str, str] = {
 def load_env_source() -> dict[str, str]:
     """Return configuration values from the process environment.
 
-    Only keys declared in ``_ENV_VAR_TO_KEY`` are mapped; undeclared env vars
-    are ignored at this level (warning logic lives in the validator).
+    Keys declared in ``_ENV_VAR_TO_KEY`` are mapped to their canonical names.
+    Additionally, ``TEST_DATABASE_URL`` (when set) overrides
+    ``persistence.database_url`` with higher precedence than ``DATABASE_URL``,
+    so test suites can inject an isolated database URL without touching the
+    standard env-var mapping.
+    Undeclared env vars are ignored at this level (warning logic lives in the
+    validator).
     """
     result: dict[str, str] = {}
     test_db_url = os.environ.get(_TEST_DB_ENV_VAR)
