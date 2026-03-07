@@ -91,6 +91,7 @@ Ningún otro módulo accede directamente a `os.getenv`.
 | `AUTH_TOKEN_TTL_SECONDS` | NO | `3600` | TTL del token de acceso en segundos. |
 | `AUTH_MAX_FAILED_ATTEMPTS` | NO | `5` | Máximo de intentos de login fallidos antes del lockout. |
 | `AUTH_LOCKOUT_MINUTES` | NO | `15` | Duración del lockout en minutos. |
+| `TEST_DATABASE_URL` | NO (solo tests) | — | Override explícito para persistencia en tests; tiene prioridad sobre `DATABASE_URL` en suites de testing. |
 
 ### Comportamiento de arranque
 
@@ -129,3 +130,18 @@ Fallback seguro:
 	- `dev`: human-friendly
 	- `test`: human-friendly minimalista
 	- `prod`: JSON estructurado
+
+## Enabler EN-0201: In-Memory Database Testing Baseline
+
+El backend incluye baseline explícito para pruebas de integración con persistencia en memoria.
+
+- Activación de testing DB: `TEST_DATABASE_URL` (si está presente) tiene prioridad sobre `DATABASE_URL`.
+- Las pruebas de integración de persistencia están en `tests/integration/persistence/`.
+- Clasificación de pruebas con marker: `persistence_integration`.
+- El esquema se inicializa por migraciones en cada caso de prueba y se aísla con DB en memoria por test.
+
+Ejecutar únicamente la suite de persistencia:
+
+```bash
+pytest tests/integration/persistence -m persistence_integration
+```

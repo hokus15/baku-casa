@@ -91,3 +91,13 @@ Esta feature debe alinearse con el baseline de logging transversal definido por 
 - Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
 - Exclusion de secretos, tokens y contraseñas en registros.
 - Correlacion por request mediante `correlation_id`.
+
+---
+
+## Baseline de testing de persistencia (EN-0201)
+
+Las pruebas de integración de esta feature deben ejecutarse sobre el baseline EN-0201 cuando requieran persistencia:
+
+- DB en memoria activada por configuración de test explícita.
+- Inicialización determinista de esquema mediante migraciones.
+- Aislamiento de estado entre casos para evitar dependencias temporales entre tests.

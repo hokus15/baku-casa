@@ -36,6 +36,8 @@ _ENV_VAR_TO_KEY: dict[str, str] = {
     "AUTH_LOCKOUT_MINUTES": "auth.lockout_minutes",
 }
 
+_TEST_DB_ENV_VAR = "TEST_DATABASE_URL"
+
 # Reverse mapping: canonical key → env-var name (for diagnostic messages).
 _KEY_TO_ENV_VAR: dict[str, str] = {v: k for k, v in _ENV_VAR_TO_KEY.items()}
 
@@ -52,11 +54,22 @@ _DEFAULTS: dict[str, str] = {
 def load_env_source() -> dict[str, str]:
     """Return configuration values from the process environment.
 
-    Only keys declared in ``_ENV_VAR_TO_KEY`` are mapped; undeclared env vars
-    are ignored at this level (warning logic lives in the validator).
+    Keys declared in ``_ENV_VAR_TO_KEY`` are mapped to their canonical names.
+    Additionally, ``TEST_DATABASE_URL`` (when set) overrides
+    ``persistence.database_url`` with higher precedence than ``DATABASE_URL``,
+    so test suites can inject an isolated database URL without touching the
+    standard env-var mapping.
+    Undeclared env vars are ignored at this level (warning logic lives in the
+    validator).
     """
     result: dict[str, str] = {}
+    test_db_url = os.environ.get(_TEST_DB_ENV_VAR)
+    if test_db_url is not None:
+        result["persistence.database_url"] = test_db_url
+
     for env_var, key in _ENV_VAR_TO_KEY.items():
+        if key == "persistence.database_url" and "persistence.database_url" in result:
+            continue
         value = os.environ.get(env_var)
         if value is not None:
             result[key] = value
@@ -84,7 +97,15 @@ def load_file_source(env_file: Path | None = None) -> dict[str, str]:
 
     raw: dict[str, str | None] = dotenv_values(dotenv_path=env_file)
     result: dict[str, str] = {}
+
+    if _TEST_DB_ENV_VAR not in os.environ:
+        test_db_url = raw.get(_TEST_DB_ENV_VAR)
+        if test_db_url is not None:
+            result["persistence.database_url"] = test_db_url
+
     for env_var, key in _ENV_VAR_TO_KEY.items():
+        if key == "persistence.database_url" and "persistence.database_url" in result:
+            continue
         # Skip if already present in the process environment (env has higher precedence)
         if env_var in os.environ:
             continue

@@ -50,6 +50,7 @@ Este enabler define los requisitos mínimos para que los tests puedan levantar u
 - La base de datos en memoria se utiliza exclusivamente para tests y no debe afectar a la configuración de runtime normal.
 - Los tests con DB deben validar interacciones de persistencia reales sin filtrar lógica de negocio hacia adaptadores.
 - La configuración de testing debe poder activarse de manera explícita y segura (sin riesgo de ejecutar contra entornos persistentes por error).
+- El acceso a persistencia en tests debe resolverse mediante configuración específica de entorno, utilizando un backend transitorio no persistente.
 - El diseño debe permitir mantener el modelo de dominio desacoplado de detalles ORM.
 
 ---

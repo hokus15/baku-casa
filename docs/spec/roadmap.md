@@ -98,6 +98,8 @@ Incluye:
 
 ## EN-0201 — In-Memory Database Testing Baseline
 
+**Estado: ✅ Completado**
+
 Baseline de testing con base de datos en memoria para permitir:
 
 - tests de integración rápidos
