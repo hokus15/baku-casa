@@ -139,11 +139,31 @@ def update_owner(
     if patch.is_provided(patch.email):
         owner.email = patch.email or None
     if patch.is_provided(patch.land_line):
-        owner.land_line = patch.land_line or None
+        new_land_line = patch.land_line or None
+        owner.land_line = new_land_line
+        # Apply default/cleanup behavior for land_line_country_code when not explicitly provided
+        if not patch.is_provided(patch.land_line_country_code):
+            if new_land_line:
+                # If there is a land_line and no country code, default to 34
+                if owner.land_line_country_code is None:
+                    owner.land_line_country_code = 34
+            else:
+                # If land_line is cleared, also clear its country code
+                owner.land_line_country_code = None
     if patch.is_provided(patch.land_line_country_code):
         owner.land_line_country_code = patch.land_line_country_code
     if patch.is_provided(patch.mobile):
-        owner.mobile = patch.mobile or None
+        new_mobile = patch.mobile or None
+        owner.mobile = new_mobile
+        # Apply default/cleanup behavior for mobile_country_code when not explicitly provided
+        if not patch.is_provided(patch.mobile_country_code):
+            if new_mobile:
+                # If there is a mobile and no country code, default to 34
+                if owner.mobile_country_code is None:
+                    owner.mobile_country_code = 34
+            else:
+                # If mobile is cleared, also clear its country code
+                owner.mobile_country_code = None
     if patch.is_provided(patch.mobile_country_code):
         owner.mobile_country_code = patch.mobile_country_code
     if patch.is_provided(patch.stamp_image):
