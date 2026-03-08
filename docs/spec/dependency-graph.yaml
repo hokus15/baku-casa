@@ -75,7 +75,7 @@ items:
 
   - id: F-0002
     type: feature
-    status: planned
+    status: done
     phase: MVP1
     depends_on:
       - F-0001

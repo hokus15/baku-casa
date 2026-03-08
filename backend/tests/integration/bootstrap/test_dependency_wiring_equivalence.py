@@ -12,6 +12,10 @@ from fastapi import FastAPI
 
 from baku.backend.interfaces.http.bootstrap.dependency_wiring import wire_dependencies
 from baku.backend.interfaces.http.dependencies.db_session import get_session
+from baku.backend.interfaces.http.dependencies.owner_deps import (
+    get_owner_repo,
+    get_owner_unit_of_work,
+)
 from baku.backend.interfaces.http.dependencies.repo_deps import (
     get_operator_repo,
     get_revoked_token_repo,
@@ -36,6 +40,8 @@ EXPECTED_OVERRIDES = frozenset(
         get_token_issuer,
         get_auth_policy,
         get_token_validator,
+        get_owner_repo,
+        get_owner_unit_of_work,
     }
 )
 

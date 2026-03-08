@@ -11,13 +11,15 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-# Canonical HTTP surface for the application post-EN-0300.
+# Canonical HTTP surface for the application post-F-0002.
 # This set is the immutable sentinel: any deviation is a contract breach.
 EXPECTED_ROUTE_METHODS: dict[str, set[str]] = {
     "/api/v1/auth/bootstrap": {"POST"},
     "/api/v1/auth/login": {"POST"},
     "/api/v1/auth/logout": {"POST"},
     "/api/v1/auth/password": {"PUT"},
+    "/api/v1/owners": {"POST", "GET"},
+    "/api/v1/owners/{owner_id}": {"GET", "PATCH", "DELETE"},
 }
 
 

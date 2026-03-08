@@ -1,0 +1,411 @@
+openapi: 3.0.3
+info:
+  title: API de propietarios de Baku Casa
+  version: 1.0.0
+  description: Superficie contractual introducida por F-0002 para la gestion de propietarios como datos maestros.
+paths:
+  /api/v1/owners:
+    post:
+      summary: Crear propietario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerCreateRequest'
+      responses:
+        '201':
+          description: Propietario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerResponse'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflicto por unicidad de tax_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Listar y buscar propietarios
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+          required: false
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+          required: false
+        - in: query
+          name: tax_id
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: legal_name
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: include_deleted
+          schema:
+            type: boolean
+            default: false
+          required: false
+      responses:
+        '200':
+          description: Lista paginada de propietarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerListResponse'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/owners/{owner_id}:
+    get:
+      summary: Obtener propietario por identificador
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: include_deleted
+          schema:
+            type: boolean
+            default: false
+          required: false
+      responses:
+        '200':
+          description: Propietario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Propietario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      summary: Actualizar propietario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerUpdateRequest'
+      responses:
+        '200':
+          description: Propietario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerResponse'
+        '400':
+          description: Error de validacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Propietario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflicto por unicidad de tax_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Eliminar propietario con borrado logico
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Propietario eliminado logicamente
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Propietario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    OwnerCreateRequest:
+      type: object
+      required:
+        - entity_type
+        - first_name
+        - last_name
+        - legal_name
+        - tax_id
+        - fiscal_address_line1
+        - fiscal_address_city
+        - fiscal_address_postal_code
+      properties:
+        entity_type:
+          type: string
+          enum: [PERSONA_FISICA, PERSONA_JURIDICA, ESPJ]
+        first_name:
+          type: string
+        last_name:
+          type: string
+        legal_name:
+          type: string
+        tax_id:
+          type: string
+        stamp_image:
+          type: string
+          nullable: true
+          description: Imagen en base64 con prefijo mime type (ej. data:image/png;base64,...)
+        fiscal_address_line1:
+          type: string
+        fiscal_address_city:
+          type: string
+        fiscal_address_postal_code:
+          type: string
+        fiscal_address_country:
+          type: string
+          default: ES
+        email:
+          type: string
+          nullable: true
+        land_line:
+          type: string
+          nullable: true
+        land_line_country_code:
+          type: integer
+          default: 34
+          nullable: true
+        mobile:
+          type: string
+          nullable: true
+        mobile_country_code:
+          type: integer
+          default: 34
+          nullable: true
+    OwnerUpdateRequest:
+      type: object
+      properties:
+        entity_type:
+          type: string
+          enum: [PERSONA_FISICA, PERSONA_JURIDICA, ESPJ]
+        first_name:
+          type: string
+        last_name:
+          type: string
+        legal_name:
+          type: string
+        tax_id:
+          type: string
+        stamp_image:
+          type: string
+          nullable: true
+        fiscal_address_line1:
+          type: string
+        fiscal_address_city:
+          type: string
+        fiscal_address_postal_code:
+          type: string
+        fiscal_address_country:
+          type: string
+        email:
+          type: string
+          nullable: true
+        land_line:
+          type: string
+          nullable: true
+        land_line_country_code:
+          type: integer
+          default: 34
+          nullable: true
+        mobile:
+          type: string
+          nullable: true
+        mobile_country_code:
+          type: integer
+          default: 34
+          nullable: true
+    OwnerResponse:
+      type: object
+      required:
+        - owner_id
+        - entity_type
+        - first_name
+        - last_name
+        - legal_name
+        - tax_id
+        - fiscal_address_line1
+        - fiscal_address_city
+        - fiscal_address_postal_code
+        - fiscal_address_country
+        - created_at
+        - created_by
+        - updated_at
+        - updated_by
+      properties:
+        owner_id:
+          type: string
+        entity_type:
+          type: string
+          enum: [PERSONA_FISICA, PERSONA_JURIDICA, ESPJ]
+        first_name:
+          type: string
+        last_name:
+          type: string
+        legal_name:
+          type: string
+        tax_id:
+          type: string
+          description: Representacion normalizada del identificador fiscal
+        stamp_image:
+          type: string
+          nullable: true
+          description: Imagen en base64 con prefijo mime type (ej. data:image/png;base64,...)
+        fiscal_address_line1:
+          type: string
+        fiscal_address_city:
+          type: string
+        fiscal_address_postal_code:
+          type: string
+        fiscal_address_country:
+          type: string
+        email:
+          type: string
+          nullable: true
+        land_line:
+          type: string
+          nullable: true
+        land_line_country_code:
+          type: integer
+          nullable: true
+        mobile:
+          type: string
+          nullable: true
+        mobile_country_code:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          description: Marca temporal en UTC
+        created_by:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          description: Marca temporal en UTC
+        updated_by:
+          type: string
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Marca temporal en UTC
+        deleted_by:
+          type: string
+          nullable: true
+    OwnerListResponse:
+      type: object
+      required: [items, total, page, page_size]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OwnerResponse'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+    ErrorResponse:
+      type: object
+      required: [error_code, message, correlation_id]
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+          description: Mensaje descriptivo en espanol para la persona usuaria
+        correlation_id:
+          type: string

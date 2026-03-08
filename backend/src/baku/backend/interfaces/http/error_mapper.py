@@ -1,4 +1,4 @@
-"""HTTP error mapper — deterministic mapping of auth domain errors to HTTP responses.
+"""HTTP error mapper — deterministic mapping of domain errors to HTTP responses.
 
 All error responses include: error_code (stable English), message (Spanish),
 correlation_id (ADR-0009, constitution §III).
@@ -12,24 +12,25 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from baku.backend.domain.auth.errors import AuthError
+from baku.backend.domain.owners.errors import OwnerError
 from baku.backend.interfaces.http.middleware.correlation_id import get_correlation_id
 
 logger = logging.getLogger(__name__)
 
 
-def _error_response(error: AuthError) -> JSONResponse:
+def _json_error(error_code: str, message: str, http_status: int) -> JSONResponse:
     return JSONResponse(
-        status_code=error.http_status,
+        status_code=http_status,
         content={
-            "error_code": error.error_code,
-            "message": error.message,
+            "error_code": error_code,
+            "message": message,
             "correlation_id": get_correlation_id(),
         },
     )
 
 
 def register_error_handlers(app: FastAPI) -> None:
-    """Register all auth domain error handlers on the FastAPI application."""
+    """Register all domain error handlers on the FastAPI application."""
 
     @app.exception_handler(AuthError)
     async def auth_error_handler(request: Request, exc: AuthError) -> JSONResponse:
@@ -42,4 +43,17 @@ def register_error_handlers(app: FastAPI) -> None:
                 "path": str(request.url.path),
             },
         )
-        return _error_response(exc)
+        return _json_error(exc.error_code, exc.message, exc.http_status)
+
+    @app.exception_handler(OwnerError)
+    async def owner_error_handler(request: Request, exc: OwnerError) -> JSONResponse:
+        logger.warning(
+            "owner_error_mapped",
+            extra={
+                "error_code": exc.error_code,
+                "http_status": exc.http_status,
+                "method": request.method,
+                "path": str(request.url.path),
+            },
+        )
+        return _json_error(exc.error_code, exc.message, exc.http_status)

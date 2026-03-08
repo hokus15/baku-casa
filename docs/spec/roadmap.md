@@ -147,6 +147,8 @@ Disponer de un sistema navegable que permita modelar completamente el dominio in
 
 ## F-0002 — Propietarios (Sujetos Fiscales)
 
+**Estado: ✅ Completado**
+
 Definición de propietarios como entidades fiscales independientes.
 
 ---

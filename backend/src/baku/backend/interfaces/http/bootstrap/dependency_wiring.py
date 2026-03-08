@@ -29,6 +29,7 @@ from baku.backend.domain.auth.repositories import (
     ThrottleStateRepository,
     UnitOfWorkPort,
 )
+from baku.backend.domain.owners.repositories import OwnerRepository, OwnerUnitOfWorkPort
 from baku.backend.infrastructure.config.auth_policy_provider import AuthSettingsPolicy
 from baku.backend.infrastructure.config.auth_settings import get_auth_settings
 from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
@@ -38,10 +39,15 @@ from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
     SqliteUnitOfWork,
 )
 from baku.backend.infrastructure.persistence.sqlite.db import get_session_factory
+from baku.backend.infrastructure.persistence.sqlite.owners.repositories import (
+    SqliteOwnerRepository,
+    SqliteOwnerUnitOfWork,
+)
 from baku.backend.infrastructure.security.bcrypt_password_hasher import BcryptPasswordHasher
 from baku.backend.infrastructure.security.jwt_token_issuer import JwtTokenIssuer
 from baku.backend.infrastructure.security.jwt_token_validator import get_jwt_token_validator
 from baku.backend.interfaces.http.dependencies.db_session import get_session
+from baku.backend.interfaces.http.dependencies.owner_deps import get_owner_repo, get_owner_unit_of_work
 from baku.backend.interfaces.http.dependencies.repo_deps import (
     get_operator_repo,
     get_revoked_token_repo,
@@ -92,6 +98,14 @@ def _auth_policy() -> AuthPolicyPort:
     return AuthSettingsPolicy()
 
 
+def _owner_repo(session: object = Depends(get_session)) -> OwnerRepository:
+    return SqliteOwnerRepository(cast(Session, session))
+
+
+def _owner_unit_of_work(session: object = Depends(get_session)) -> OwnerUnitOfWorkPort:
+    return SqliteOwnerUnitOfWork(cast(Session, session))
+
+
 def wire_dependencies(app: FastAPI) -> None:
     """Override every abstract stub in the Interfaces layer with a concrete
     Infrastructure implementation.
@@ -110,5 +124,7 @@ def wire_dependencies(app: FastAPI) -> None:
             get_token_issuer: _token_issuer,
             get_auth_policy: _auth_policy,
             get_token_validator: get_jwt_token_validator,
+            get_owner_repo: _owner_repo,
+            get_owner_unit_of_work: _owner_unit_of_work,
         }
     )
