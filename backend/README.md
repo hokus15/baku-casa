@@ -15,7 +15,7 @@ CRUD de propietarios con arquitectura hexagonal:
   - Query param: `include_deleted=true` para incluir eliminados
 - Actualizar propietario (`PATCH /api/v1/owners/{owner_id}`) — 200 OK (solo campos enviados)
 - Eliminar propietario (soft-delete) (`DELETE /api/v1/owners/{owner_id}`) — 204 No Content
-  - Idempotent: re-llamar sobre propietario ya eliminado devuelve 204
+  - Segunda llamada sobre propietario ya eliminado devuelve 404 (OWNER_NOT_FOUND), según contrato `owners-api-v1.yaml`
 
 Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
 
