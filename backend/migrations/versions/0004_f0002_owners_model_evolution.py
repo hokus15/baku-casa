@@ -49,7 +49,13 @@ def upgrade() -> None:
 
     # 3. Backfill first_name / last_name from legal_name so NOT NULL is satisfied.
     conn.execute(sa.text("UPDATE owners SET first_name = legal_name WHERE first_name IS NULL"))
-    conn.execute(sa.text("UPDATE owners SET last_name = '' WHERE last_name IS NULL"))
+    conn.execute(
+        sa.text(
+            "UPDATE owners "
+            "SET last_name = legal_name "
+            "WHERE last_name IS NULL OR last_name = ''"
+        )
+    )
 
     # 4. Enforce NOT NULL on newly populated columns and drop old columns.
     with op.batch_alter_table("owners") as batch_op:
