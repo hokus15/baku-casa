@@ -143,6 +143,8 @@ Las palabras DEBE, NO DEBE, DEBERÍA y PUEDE deben interpretarse con fuerza norm
 - Filtros y ordenación DEBEN ser explícitos.
 - Las estructuras de respuesta NO DEBEN depender de modelos ORM.
 - Los DTOs públicos DEBEN ser explícitos y estables.
+- Los campos cuyo valor sea `null` NO DEBEN incluirse en las respuestas de la API pública, salvo que el contrato del endpoint requiera explícitamente su presencia.
+- La ausencia de un campo en la respuesta DEBE interpretarse como ausencia de valor (`null` o no aplicable) salvo que la documentación del endpoint indique lo contrario.
 - Cambios incompatibles requieren versionado mayor.
 - La versión MAYOR del contrato HTTP DEBE expresarse en la ruta base (p. ej. `/api/v1`).
 - Dentro de una misma versión MAYOR, los cambios DEBEN ser retrocompatibles (solo añadir campos opcionales; no renombrar/eliminar; no cambiar significado).

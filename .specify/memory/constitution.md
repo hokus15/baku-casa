@@ -1,16 +1,17 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 -> 1.1.1
+- Version change: 1.1.2 -> 1.2.0
 - Modified principles:
-	- None
+	- Principle II: Contratos explícitos — expandido con regla de omisión de campos null en
+	  respuestas de la API pública (propagado desde docs/spec/constitution.md §Diseño de API)
 - Added sections:
 	- None
 - Removed sections:
-	- Conflictos de fuentes autoritativas detectados (reemplazada por estado de validación)
+	- None
 - Templates requiring updates:
-	- ✅ .specify/templates/plan-template.md
-	- ✅ .specify/templates/spec-template.md
-	- ✅ .specify/templates/tasks-template.md (sin cambios; validado alineado)
+	- ✅ .specify/templates/plan-template.md (Constitution Check: añadido item null-field omission)
+	- ✅ .specify/templates/spec-template.md (validado; sin cambios requeridos)
+	- ✅ .specify/templates/tasks-template.md (validado; sin cambios requeridos)
 	- ✅ .specify/templates/commands/*.md (no existe directorio; no aplica)
 - Follow-up TODOs:
 	- None
@@ -33,7 +34,10 @@ Toda integración entre roots o componentes aislados MUST ocurrir exclusivamente
 contratos explícitos y versionados (HTTP y/o eventos). El acoplamiento runtime directo y
 los imports cruzados entre roots están PROHIBITED. Cambios incompatibles MUST incrementar
 MAJOR. Dentro de una misma MAJOR, eliminar/renombrar campos o cambiar semántica está
-PROHIBITED. Todo cambio de contrato MUST incluir contract tests en CI.
+PROHIBITED. Todo cambio de contrato MUST incluir contract tests en CI. Los campos con
+valor `null` NO DEBEN incluirse en respuestas de la API pública salvo que el contrato del
+endpoint los requiera explícitamente; su ausencia MUST interpretarse como ausencia de
+valor (`null` o no aplicable).
 
 Rationale: preserva compatibilidad evolutiva y evita romper consumidores de forma tácita.
 
@@ -133,4 +137,4 @@ Rationale: reduce regresiones y mantiene trazabilidad entre intención, diseño 
 	- Incumplimientos MUST bloquear merge salvo excepción aprobada y registrada.
 	- Revisiones periódicas MUST verificar coherencia entre constitución, ADR y roadmap.
 
-**Version**: 1.1.2 | **Ratified**: 2026-03-02 | **Last Amended**: 2026-03-07
+**Version**: 1.2.0 | **Ratified**: 2026-03-02 | **Last Amended**: 2026-03-08

@@ -91,6 +91,7 @@ Especialmente en aspectos como:
 - disciplina temporal (UTC)
 - modelo de errores
 - reglas del dominio económico
+- idioma de la documentacion y el código
 
 ---
 

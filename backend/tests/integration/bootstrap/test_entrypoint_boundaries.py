@@ -12,6 +12,7 @@ Spec: FR-001 — entry point bounded to initialization delegation.
 from __future__ import annotations
 
 import inspect
+
 import pytest
 
 pytestmark = pytest.mark.bootstrap_integration

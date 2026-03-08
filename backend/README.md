@@ -2,6 +2,33 @@
 
 Root independiente del backend para bootstrap EN-0100.
 
+## Feature F-0002: Propietarios (Sujetos Fiscales)
+
+**Estado**: ✅ Implementado
+
+CRUD de propietarios con arquitectura hexagonal:
+
+- Crear propietario (`POST /api/v1/owners`) — 201 Created
+- Listar propietarios con paginación y filtros (`GET /api/v1/owners`) — 200 OK
+  - Query params: `page` (1-based), `page_size` (1–100), `legal_name` (parcial, case-insensitive), `tax_id` (exact normalized), `include_deleted` (default: false)
+- Obtener propietario por ID (`GET /api/v1/owners/{owner_id}`) — 200 OK
+  - Query param: `include_deleted=true` para incluir eliminados
+- Actualizar propietario (`PATCH /api/v1/owners/{owner_id}`) — 200 OK (solo campos enviados)
+- Eliminar propietario (soft-delete) (`DELETE /api/v1/owners/{owner_id}`) — 204 No Content
+  - Segunda llamada sobre propietario ya eliminado devuelve 404 (OWNER_NOT_FOUND), según contrato `owners-api-v1.yaml`
+
+Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
+
+El `tax_id` se normaliza de forma determinista: trim → mayúsculas → sin espacios → sin guiones.
+
+**Evidencia de calidad (F-0002)**:
+
+```
+ruff check src/ tests/  →  All checks passed!
+mypy src/               →  Success: no issues found in 93 source files
+pytest -q               →  tests passed
+```
+
 ## Enabler E-0100: Project Bootstrap
 
 Establecer la base mínima del repositorio para habilitar el desarrollo reproducible mediante Spec Driven Development (SDD), antes de implementar cualquier funcionalidad de dominio.

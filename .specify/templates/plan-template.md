@@ -38,6 +38,7 @@
 - [ ] Financial/time invariants respected (Decimal-only money, percentage 0–100, UTC aware datetime)
 - [ ] TDD strategy declared (red -> green -> refactor) for functional changes
 - [ ] Contract tests included when any contract surface changes
+- [ ] API responses exclude null-valued optional fields unless the endpoint contract explicitly requires their presence
 - [ ] Spec updates identified for behavior changes
 - [ ] ADR updates/new ADR identified for structural or architectural changes
 - [ ] CI quality gates impacted by this feature are listed (lint, type-check, tests, contracts)
