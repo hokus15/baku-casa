@@ -3,6 +3,7 @@
 Raises:
   OwnerNotFound       — owner does not exist or is already deleted.
   OwnerTaxIdConflict  — new tax_id (normalized) conflicts with another active owner.
+  OwnerValidationError — required fields are blank or invalid.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from typing import Any
 
 from baku.backend.application.common.utc_clock import utcnow
 from baku.backend.domain.owners.entities import Owner
-from baku.backend.domain.owners.errors import OwnerNotFound, OwnerTaxIdConflict
+from baku.backend.domain.owners.errors import OwnerNotFound, OwnerTaxIdConflict, OwnerValidationError
 from baku.backend.domain.owners.repositories import OwnerRepository, OwnerUnitOfWorkPort
 from baku.backend.domain.owners.tax_id_normalizer import normalize_tax_id
 from baku.backend.domain.owners.value_objects import EntityType
@@ -60,8 +61,6 @@ class OwnerUpdate:
 
     @staticmethod
     def from_provided(provided: set[str], **kwargs: Any) -> "OwnerUpdate":
-        """Build patch from a set of field names that were actually in the request."""
-        patch = OwnerUpdate(
         """Build patch from a set of field names that were actually in the request."""
         patch = OwnerUpdate(
             entity_type=kwargs.get("entity_type", UNSET) if "entity_type" in provided else UNSET,
@@ -123,18 +122,32 @@ def update_owner(
     if patch.is_provided(patch.entity_type):
         owner.entity_type = EntityType(patch.entity_type)
     if patch.is_provided(patch.first_name):
+        if not patch.first_name or not str(patch.first_name).strip():
+            raise OwnerValidationError("first_name must not be blank.")
         owner.first_name = patch.first_name
     if patch.is_provided(patch.last_name):
+        if not patch.last_name or not str(patch.last_name).strip():
+            raise OwnerValidationError("last_name must not be blank.")
         owner.last_name = patch.last_name
     if patch.is_provided(patch.legal_name):
+        if not patch.legal_name or not str(patch.legal_name).strip():
+            raise OwnerValidationError("legal_name must not be blank.")
         owner.legal_name = patch.legal_name
     if patch.is_provided(patch.fiscal_address_line1):
+        if not patch.fiscal_address_line1 or not str(patch.fiscal_address_line1).strip():
+            raise OwnerValidationError("fiscal_address_line1 must not be blank.")
         owner.fiscal_address_line1 = patch.fiscal_address_line1
     if patch.is_provided(patch.fiscal_address_city):
+        if not patch.fiscal_address_city or not str(patch.fiscal_address_city).strip():
+            raise OwnerValidationError("fiscal_address_city must not be blank.")
         owner.fiscal_address_city = patch.fiscal_address_city
     if patch.is_provided(patch.fiscal_address_postal_code):
+        if not patch.fiscal_address_postal_code or not str(patch.fiscal_address_postal_code).strip():
+            raise OwnerValidationError("fiscal_address_postal_code must not be blank.")
         owner.fiscal_address_postal_code = patch.fiscal_address_postal_code
     if patch.is_provided(patch.fiscal_address_country):
+        if not patch.fiscal_address_country or not str(patch.fiscal_address_country).strip():
+            raise OwnerValidationError("fiscal_address_country must not be blank.")
         owner.fiscal_address_country = patch.fiscal_address_country
     if patch.is_provided(patch.email):
         owner.email = patch.email or None

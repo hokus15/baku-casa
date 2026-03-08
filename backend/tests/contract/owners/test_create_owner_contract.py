@@ -120,7 +120,7 @@ def test_create_owner_returns_400_with_missing_required_field(auth_token: str, c
         json=payload,
         headers={"Authorization": f"Bearer {auth_token}"},
     )
-    assert resp.status_code == 422
+    assert resp.status_code == 400
 
 
 def test_create_owner_default_country_is_ES(auth_token: str, client: TestClient) -> None:

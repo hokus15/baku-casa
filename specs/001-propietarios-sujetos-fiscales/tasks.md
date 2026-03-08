@@ -94,7 +94,7 @@
 
 - [X] T026 [P] [US2] Contract test de `GET /api/v1/owners/{owner_id}` en `backend/tests/contract/owners/test_get_owner_detail_contract.py`
 - [X] T027 [P] [US2] Integration test de `include_deleted` en detalle en `backend/tests/integration/owners/test_get_owner_detail_flow.py`
-- [ ] T059 [P] [US2] Observability test: logs de detail incluyen `correlation_id` y excluyen PII en `backend/tests/integration/owners/test_get_owner_detail_observability.py`
+- [~] T059 [P] [US2] Observability test: logs de detail incluyen `correlation_id` y excluyen PII en `backend/tests/integration/owners/test_get_owner_detail_observability.py` *(diferido explícitamente; fuera del alcance de cierre de F-0002)*
 
 ### Implementation for US2
 

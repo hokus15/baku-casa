@@ -44,6 +44,35 @@ class Owner:
     deleted_at: datetime | None = None
     deleted_by: str | None = None
 
+    def __post_init__(self) -> None:
+        if not self.owner_id or not self.owner_id.strip():
+            raise ValueError("owner_id must not be blank.")
+        if not self.tax_id or not self.tax_id.strip():
+            raise ValueError("tax_id must not be blank.")
+        if not self.first_name or not self.first_name.strip():
+            raise ValueError("first_name must not be blank.")
+        if not self.last_name or not self.last_name.strip():
+            raise ValueError("last_name must not be blank.")
+        if not self.legal_name or not self.legal_name.strip():
+            raise ValueError("legal_name must not be blank.")
+        if not self.fiscal_address_line1 or not self.fiscal_address_line1.strip():
+            raise ValueError("fiscal_address_line1 must not be blank.")
+        if not self.fiscal_address_city or not self.fiscal_address_city.strip():
+            raise ValueError("fiscal_address_city must not be blank.")
+        if not self.fiscal_address_postal_code or not self.fiscal_address_postal_code.strip():
+            raise ValueError("fiscal_address_postal_code must not be blank.")
+        if not self.fiscal_address_country or not self.fiscal_address_country.strip():
+            raise ValueError("fiscal_address_country must not be blank.")
+        if self.created_at.tzinfo is None or self.created_at.tzinfo.utcoffset(self.created_at) is None:
+            raise ValueError("created_at must be UTC-aware.")
+        if self.updated_at.tzinfo is None or self.updated_at.tzinfo.utcoffset(self.updated_at) is None:
+            raise ValueError("updated_at must be UTC-aware.")
+        if self.deleted_at is not None:
+            if self.deleted_at.tzinfo is None or self.deleted_at.tzinfo.utcoffset(self.deleted_at) is None:
+                raise ValueError("deleted_at must be UTC-aware.")
+            if not self.deleted_by or not self.deleted_by.strip():
+                raise ValueError("deleted_by is required when deleted_at is set.")
+
     @property
     def is_deleted(self) -> bool:
         return self.deleted_at is not None

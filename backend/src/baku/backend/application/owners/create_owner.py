@@ -18,6 +18,8 @@ from baku.backend.domain.owners.value_objects import EntityType
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_PHONE_COUNTRY_CODE = 34
+
 
 def create_owner(
     entity_type: EntityType,
@@ -51,6 +53,12 @@ def create_owner(
     existing = owner_repo.find_by_tax_id(normalized_tax_id)
     if existing is not None:
         raise OwnerTaxIdConflict()
+
+    # Apply default country code 34 when phone is provided without explicit code.
+    if land_line and land_line_country_code is None:
+        land_line_country_code = _DEFAULT_PHONE_COUNTRY_CODE
+    if mobile and mobile_country_code is None:
+        mobile_country_code = _DEFAULT_PHONE_COUNTRY_CODE
 
     now = utcnow()
     owner = Owner.new(
