@@ -3,6 +3,7 @@
 Raises:
   OwnerNotFound       — owner does not exist or is already deleted.
   OwnerTaxIdConflict  — new tax_id (normalized) conflicts with another active owner.
+  OwnerValidationError — required fields are blank or invalid.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from typing import Any
 
 from baku.backend.application.common.utc_clock import utcnow
 from baku.backend.domain.owners.entities import Owner
-from baku.backend.domain.owners.errors import OwnerNotFound, OwnerTaxIdConflict
+from baku.backend.domain.owners.errors import OwnerNotFound, OwnerTaxIdConflict, OwnerValidationError
 from baku.backend.domain.owners.repositories import OwnerRepository, OwnerUnitOfWorkPort
 from baku.backend.domain.owners.tax_id_normalizer import normalize_tax_id
 from baku.backend.domain.owners.value_objects import EntityType
@@ -62,8 +63,6 @@ class OwnerUpdate:
     def from_provided(provided: set[str], **kwargs: Any) -> "OwnerUpdate":
         """Build patch from a set of field names that were actually in the request."""
         patch = OwnerUpdate(
-        """Build patch from a set of field names that were actually in the request."""
-        patch = OwnerUpdate(
             entity_type=kwargs.get("entity_type", UNSET) if "entity_type" in provided else UNSET,
             first_name=kwargs.get("first_name", UNSET) if "first_name" in provided else UNSET,
             last_name=kwargs.get("last_name", UNSET) if "last_name" in provided else UNSET,
@@ -98,6 +97,12 @@ class OwnerUpdate:
         return not isinstance(value, _Unset)
 
 
+def _require_not_blank(value: Any, field_name: str) -> None:
+    """Raise OwnerValidationError if value is None or blank."""
+    if not value or not str(value).strip():
+        raise OwnerValidationError(f"{field_name} must not be blank.")
+
+
 def update_owner(
     owner_id: str,
     updated_by: str,
@@ -123,18 +128,25 @@ def update_owner(
     if patch.is_provided(patch.entity_type):
         owner.entity_type = EntityType(patch.entity_type)
     if patch.is_provided(patch.first_name):
+        _require_not_blank(patch.first_name, "first_name")
         owner.first_name = patch.first_name
     if patch.is_provided(patch.last_name):
+        _require_not_blank(patch.last_name, "last_name")
         owner.last_name = patch.last_name
     if patch.is_provided(patch.legal_name):
+        _require_not_blank(patch.legal_name, "legal_name")
         owner.legal_name = patch.legal_name
     if patch.is_provided(patch.fiscal_address_line1):
+        _require_not_blank(patch.fiscal_address_line1, "fiscal_address_line1")
         owner.fiscal_address_line1 = patch.fiscal_address_line1
     if patch.is_provided(patch.fiscal_address_city):
+        _require_not_blank(patch.fiscal_address_city, "fiscal_address_city")
         owner.fiscal_address_city = patch.fiscal_address_city
     if patch.is_provided(patch.fiscal_address_postal_code):
+        _require_not_blank(patch.fiscal_address_postal_code, "fiscal_address_postal_code")
         owner.fiscal_address_postal_code = patch.fiscal_address_postal_code
     if patch.is_provided(patch.fiscal_address_country):
+        _require_not_blank(patch.fiscal_address_country, "fiscal_address_country")
         owner.fiscal_address_country = patch.fiscal_address_country
     if patch.is_provided(patch.email):
         owner.email = patch.email or None

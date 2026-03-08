@@ -44,6 +44,37 @@ class Owner:
     deleted_at: datetime | None = None
     deleted_by: str | None = None
 
+    def __post_init__(self) -> None:
+        if not self.owner_id or not self.owner_id.strip():
+            raise ValueError("owner_id must not be blank.")
+        if not self.tax_id or not self.tax_id.strip():
+            raise ValueError("tax_id must not be blank.")
+        if not self.first_name or not self.first_name.strip():
+            raise ValueError("first_name must not be blank.")
+        if not self.last_name or not self.last_name.strip():
+            raise ValueError("last_name must not be blank.")
+        if not self.legal_name or not self.legal_name.strip():
+            raise ValueError("legal_name must not be blank.")
+        if not self.fiscal_address_line1 or not self.fiscal_address_line1.strip():
+            raise ValueError("fiscal_address_line1 must not be blank.")
+        if not self.fiscal_address_city or not self.fiscal_address_city.strip():
+            raise ValueError("fiscal_address_city must not be blank.")
+        if not self.fiscal_address_postal_code or not self.fiscal_address_postal_code.strip():
+            raise ValueError("fiscal_address_postal_code must not be blank.")
+        if not self.fiscal_address_country or not self.fiscal_address_country.strip():
+            raise ValueError("fiscal_address_country must not be blank.")
+        self._require_utc_aware(self.created_at, "created_at")
+        self._require_utc_aware(self.updated_at, "updated_at")
+        if self.deleted_at is not None:
+            self._require_utc_aware(self.deleted_at, "deleted_at")
+            if not self.deleted_by or not self.deleted_by.strip():
+                raise ValueError("deleted_by is required when deleted_at is set.")
+
+    @staticmethod
+    def _require_utc_aware(dt: datetime, name: str) -> None:
+        if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+            raise ValueError(f"{name} must be UTC-aware.")
+
     @property
     def is_deleted(self) -> bool:
         return self.deleted_at is not None

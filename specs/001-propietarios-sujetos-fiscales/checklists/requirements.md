@@ -35,4 +35,4 @@
 
 All checklist items pass. The specification is ready for `/speckit.clarify` or `/speckit.plan`.
 
-**Assumption to revisit**: The `deleted_by` field is deferred given single-user context (F-0001). Its absence is documented in the Assumptions section and must be revisited when multi-user support is introduced.
+**Note on `deleted_by`**: The spec (FR-014, FR-019) requires recording and exposing `deleted_by`. In the current single-user context (F-0001), the authenticated operator's identity is captured as `deleted_by`. This field must be revisited and validated for correctness when multi-user support is introduced.

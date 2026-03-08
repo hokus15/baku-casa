@@ -1,15 +1,18 @@
 """SQLite repositories for owners — infrastructure layer.
 
-Uniqueness of tax_id among active records is enforced at the application layer
-by calling find_by_tax_id before save, so no DB unique constraint is required
-(SQLite lacks partial unique indexes on filtered expressions before 3.32).
+Uniqueness of tax_id among active records is enforced at both the application
+layer (find_by_tax_id before save) and the DB level (partial unique index
+uix_owners_tax_id_active). IntegrityError is caught and re-raised as
+OwnerTaxIdConflict to handle concurrent insert races.
 """
 
 from __future__ import annotations
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from baku.backend.domain.owners.entities import Owner
+from baku.backend.domain.owners.errors import OwnerTaxIdConflict
 from baku.backend.domain.owners.repositories import OwnerPage, OwnerRepository, OwnerUnitOfWorkPort
 from baku.backend.infrastructure.persistence.sqlite.owners.mappers import orm_to_owner, owner_to_orm
 from baku.backend.infrastructure.persistence.sqlite.owners.models import OwnerORM
@@ -45,7 +48,11 @@ class SqliteOwnerRepository(OwnerRepository):  # type: ignore[misc]
         row = owner_to_orm(owner, existing)
         if existing is None:
             self._session.add(row)
-        self._session.flush()
+        try:
+            self._session.flush()
+        except IntegrityError as exc:
+            self._session.rollback()
+            raise OwnerTaxIdConflict() from exc
 
     def list(
         self,
