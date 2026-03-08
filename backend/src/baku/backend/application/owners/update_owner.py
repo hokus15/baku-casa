@@ -42,28 +42,26 @@ UNSET: Any = _Unset()
 class OwnerUpdate:
     """Fields to update. UNSET sentinel means the field was not provided."""
 
-    entity_type: Any = field(default=None)
-    first_name: Any = field(default=None)
-    last_name: Any = field(default=None)
-    legal_name: Any = field(default=None)
-    raw_tax_id: Any = field(default=None)
-    fiscal_address_line1: Any = field(default=None)
-    fiscal_address_city: Any = field(default=None)
-    fiscal_address_postal_code: Any = field(default=None)
-    fiscal_address_country: Any = field(default=None)
-    email: Any = field(default=None)
-    land_line: Any = field(default=None)
-    land_line_country_code: Any = field(default=None)
-    mobile: Any = field(default=None)
-    mobile_country_code: Any = field(default=None)
-    stamp_image: Any = field(default=None)
-
-    def __post_init__(self) -> None:
-        # Set all fields to UNSET if they were not explicitly set
-        pass
+    entity_type: Any = field(default=UNSET)
+    first_name: Any = field(default=UNSET)
+    last_name: Any = field(default=UNSET)
+    legal_name: Any = field(default=UNSET)
+    raw_tax_id: Any = field(default=UNSET)
+    fiscal_address_line1: Any = field(default=UNSET)
+    fiscal_address_city: Any = field(default=UNSET)
+    fiscal_address_postal_code: Any = field(default=UNSET)
+    fiscal_address_country: Any = field(default=UNSET)
+    email: Any = field(default=UNSET)
+    land_line: Any = field(default=UNSET)
+    land_line_country_code: Any = field(default=UNSET)
+    mobile: Any = field(default=UNSET)
+    mobile_country_code: Any = field(default=UNSET)
+    stamp_image: Any = field(default=UNSET)
 
     @staticmethod
     def from_provided(provided: set[str], **kwargs: Any) -> "OwnerUpdate":
+        """Build patch from a set of field names that were actually in the request."""
+        patch = OwnerUpdate(
         """Build patch from a set of field names that were actually in the request."""
         patch = OwnerUpdate(
             entity_type=kwargs.get("entity_type", UNSET) if "entity_type" in provided else UNSET,
