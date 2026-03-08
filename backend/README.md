@@ -26,7 +26,7 @@ El `tax_id` se normaliza de forma determinista: trim → mayúsculas → sin esp
 ```
 ruff check src/ tests/  →  All checks passed!
 mypy src/               →  Success: no issues found in 93 source files
-pytest -q               →  174 passed, 3 warnings in 77.90s
+pytest -q               →  tests passed
 ```
 
 ## Enabler E-0100: Project Bootstrap
