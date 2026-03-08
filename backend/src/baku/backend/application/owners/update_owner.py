@@ -97,6 +97,12 @@ class OwnerUpdate:
         return not isinstance(value, _Unset)
 
 
+def _require_not_blank(value: Any, field_name: str) -> None:
+    """Raise OwnerValidationError if value is None or blank."""
+    if not value or not str(value).strip():
+        raise OwnerValidationError(f"{field_name} must not be blank.")
+
+
 def update_owner(
     owner_id: str,
     updated_by: str,
@@ -122,32 +128,25 @@ def update_owner(
     if patch.is_provided(patch.entity_type):
         owner.entity_type = EntityType(patch.entity_type)
     if patch.is_provided(patch.first_name):
-        if not patch.first_name or not str(patch.first_name).strip():
-            raise OwnerValidationError("first_name must not be blank.")
+        _require_not_blank(patch.first_name, "first_name")
         owner.first_name = patch.first_name
     if patch.is_provided(patch.last_name):
-        if not patch.last_name or not str(patch.last_name).strip():
-            raise OwnerValidationError("last_name must not be blank.")
+        _require_not_blank(patch.last_name, "last_name")
         owner.last_name = patch.last_name
     if patch.is_provided(patch.legal_name):
-        if not patch.legal_name or not str(patch.legal_name).strip():
-            raise OwnerValidationError("legal_name must not be blank.")
+        _require_not_blank(patch.legal_name, "legal_name")
         owner.legal_name = patch.legal_name
     if patch.is_provided(patch.fiscal_address_line1):
-        if not patch.fiscal_address_line1 or not str(patch.fiscal_address_line1).strip():
-            raise OwnerValidationError("fiscal_address_line1 must not be blank.")
+        _require_not_blank(patch.fiscal_address_line1, "fiscal_address_line1")
         owner.fiscal_address_line1 = patch.fiscal_address_line1
     if patch.is_provided(patch.fiscal_address_city):
-        if not patch.fiscal_address_city or not str(patch.fiscal_address_city).strip():
-            raise OwnerValidationError("fiscal_address_city must not be blank.")
+        _require_not_blank(patch.fiscal_address_city, "fiscal_address_city")
         owner.fiscal_address_city = patch.fiscal_address_city
     if patch.is_provided(patch.fiscal_address_postal_code):
-        if not patch.fiscal_address_postal_code or not str(patch.fiscal_address_postal_code).strip():
-            raise OwnerValidationError("fiscal_address_postal_code must not be blank.")
+        _require_not_blank(patch.fiscal_address_postal_code, "fiscal_address_postal_code")
         owner.fiscal_address_postal_code = patch.fiscal_address_postal_code
     if patch.is_provided(patch.fiscal_address_country):
-        if not patch.fiscal_address_country or not str(patch.fiscal_address_country).strip():
-            raise OwnerValidationError("fiscal_address_country must not be blank.")
+        _require_not_blank(patch.fiscal_address_country, "fiscal_address_country")
         owner.fiscal_address_country = patch.fiscal_address_country
     if patch.is_provided(patch.email):
         owner.email = patch.email or None

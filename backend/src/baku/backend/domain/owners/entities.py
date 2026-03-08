@@ -63,15 +63,17 @@ class Owner:
             raise ValueError("fiscal_address_postal_code must not be blank.")
         if not self.fiscal_address_country or not self.fiscal_address_country.strip():
             raise ValueError("fiscal_address_country must not be blank.")
-        if self.created_at.tzinfo is None or self.created_at.tzinfo.utcoffset(self.created_at) is None:
-            raise ValueError("created_at must be UTC-aware.")
-        if self.updated_at.tzinfo is None or self.updated_at.tzinfo.utcoffset(self.updated_at) is None:
-            raise ValueError("updated_at must be UTC-aware.")
+        self._require_utc_aware(self.created_at, "created_at")
+        self._require_utc_aware(self.updated_at, "updated_at")
         if self.deleted_at is not None:
-            if self.deleted_at.tzinfo is None or self.deleted_at.tzinfo.utcoffset(self.deleted_at) is None:
-                raise ValueError("deleted_at must be UTC-aware.")
+            self._require_utc_aware(self.deleted_at, "deleted_at")
             if not self.deleted_by or not self.deleted_by.strip():
                 raise ValueError("deleted_by is required when deleted_at is set.")
+
+    @staticmethod
+    def _require_utc_aware(dt: datetime, name: str) -> None:
+        if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+            raise ValueError(f"{name} must be UTC-aware.")
 
     @property
     def is_deleted(self) -> bool:
