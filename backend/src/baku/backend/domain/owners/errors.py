@@ -24,10 +24,9 @@ class OwnerNotFound(OwnerError):
     http_status = 404
 
 
-class OwnerAlreadyDeleted(OwnerError):
-    error_code = "OWNER_ALREADY_DELETED"
-    message = "El propietario ya ha sido eliminado."
-    http_status = 404
+class OwnerAlreadyDeleted(OwnerNotFound):
+    """Alias de compatibilidad: mismo código y estado que OWNER_NOT_FOUND."""
+    pass
 
 
 class OwnerTaxIdConflict(OwnerError):
