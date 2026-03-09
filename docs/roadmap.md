@@ -213,6 +213,22 @@ Incluye:
 
 ---
 
+## EN-0302 — Persistence Schema Rebaseline
+
+Consolidación del esquema de persistencia tras completar el modelo de dominio de MVP1.
+
+Permite reemplazar el historial inicial de migraciones por un **baseline limpio del esquema de base de datos**, antes de introducir el núcleo financiero del sistema.
+
+Incluye:
+
+- generación de un nuevo baseline de migración
+- eliminación o archivado de migraciones exploratorias previas
+- verificación de recreación completa del esquema desde cero
+
+No introduce cambios funcionales en el dominio.
+
+---
+
 Resultado MVP1:
 
 - modelo de dominio completo

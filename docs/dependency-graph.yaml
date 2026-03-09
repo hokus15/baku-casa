@@ -157,12 +157,26 @@ items:
     applies_to:
       - backend
 
+  - id: EN-0302
+    type: enabler
+    status: planned
+    phase: MVP1
+    depends_on:
+      - F-0009
+    scope: cross_cutting
+    affects_future_features: true
+    applies_to:
+      - backend
+      - persistence
+      - migrations
+
   - id: F-0010
     type: feature
     status: planned
     phase: MVP2
     depends_on:
       - F-0009
+      - EN-0302
 
   - id: EN-0209
     type: enabler
