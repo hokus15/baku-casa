@@ -23,8 +23,8 @@ Este slice habilita la base estructural para contratos, contabilidad y fiscalida
 ## Datos de la propiedad
 
 - `property_id`
-- `nombre`
-- `tipo` (lista cerrada):
+- `name`
+- `type` (lista cerrada):
   - Vivienda
   - Apartamento
   - Plaza de aparcamiento
@@ -33,36 +33,50 @@ Este slice habilita la base estructural para contratos, contabilidad y fiscalida
   - Oficina
   - Trastero
   - Otro
-- `descripción` (opcional)
-- `dirección` (opcional)
-- `ciudad` (opcional)
-- `codigo postal` (opcional)
-- `provincia` (opcional)
-- `pais` (opcional)
-- `referencia_catastral` (opcional)
-- `valor_catastral` (opcional)
-- `valor_catastral_suelo` (opcional)
-- `valor_catastral_construccion` (calculado = valor_catastral − valor_catastral_suelo) (opcional)
-- `proporcion_construccion` (calculado = valor_catastral_construccion / valor_catastral) (opcional)
-- `valor_catastral_revisado` (boolean) (opcional)
-- `fecha de adquisición` (opcional)
-- `tipo de adquisición` (opcional) (lista cerrada) Tipo de adquisición para el informe de IRPF:
+- `description` (opcional)
+- `address` (opcional)
+- `city` (opcional)
+- `postal_code` (opcional)
+- `province` (opcional)
+- `country` (opcional)
+- `cadastral_reference` (opcional)
+- `cadastral_value` (opcional)
+- `cadastral_land_value` (opcional)
+- `cadastral_construction_value` (calculado = valor_catastral − valor_catastral_suelo) (opcional)
+- `construction_ratio` (calculado = valor_catastral_construccion / valor_catastral) (opcional)
+- `cadastral_value_revised` (boolean) (opcional)
+- `acquisition_date` (opcional)
+- `acquisition_type` (opcional) (lista cerrada) Tipo de adquisición para el informe de IRPF:
   - Onerosa
   - Lucrativa
   - Ambas
-- `fecha de transmision` (opcional)
-- `tipo de transmision` (opcional) (lista cerrada) Tipo de transmision para el informe de IRPF:
+- `transfer_date` (opcional)
+- `transfer_type` (opcional) (lista cerrada) Tipo de transmision para el informe de IRPF:
   - Onerosa
   - Lucrativa
   - Ambas
-- `naturaleza fiscal` (opcional) (lista cerrada):
+- `fiscal_nature` (opcional) (lista cerrada):
   - Urbana
   - Rústica
-- `situacion fical` (opcional) (lista cerrada):
+- `fiscal_situation` (opcional) (lista cerrada):
   - Con referencia catastral
   - Situado en el Pais Vasco
   - Situado en Navarra
   - Sin referencia catastral
+
+### Metadatos de auditoría
+
+Todas las entidades creadas por esta feature deben incluir los siguientes campos de auditoría:
+
+- `created_at`
+- `created_by`
+- `updated_at`
+- `updated_by`
+- `deleted_at`
+- `deleted_by`
+
+La eliminación de propiedades debe implementarse mediante **soft-delete**, utilizando `deleted_at` y `deleted_by`.
+
 ---
 
 ## Titularidad
@@ -71,7 +85,9 @@ La relación Propiedad ↔ Propietario incluye:
 
 - `owner_id`
 - `property_id`
-- `porcentaje_participacion`
+- `ownership_percentage`
+
+Si una **propiedad es eliminada mediante soft-delete**, las relaciones de titularidad asociadas **no se eliminan físicamente**, pero deben considerarse **inactivas** y no deben aparecer en consultas normales de propiedades o titularidades activas.
 
 ---
 
@@ -87,14 +103,15 @@ El sistema debe permitir:
 - Modificar porcentajes de titularidad
 - Consultar propiedades de un propietario
 - Consultar propietarios de una propiedad
+- Eliminar propiedad (soft-delete)
 
 ---
 
 ## Reglas de negocio
 
 - Una propiedad debe tener al menos un propietario.
-- `tipo` debe ser uno de los valores permitidos.
-- `valor_catastral_construccion` y `proporcion_construccion` son campos derivados y no editables directamente.
+- `type` debe ser uno de los valores permitidos.
+- `cadastral_construction_value` y `construction_ratio` son campos derivados y no editables directamente.
 
 ---
 
@@ -135,7 +152,6 @@ El sistema debe permitir:
 - ADR-0011
 - ADR-0012
 
-
 ---
 
 ## Baseline de observabilidad (EN-0200)
@@ -146,3 +162,9 @@ Esta feature debe alinearse con el baseline de logging transversal definido por 
 - Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
 - Exclusion de secretos, tokens y contraseñas en registros.
 - Correlacion por request mediante `correlation_id`.
+
+---
+
+## Reglas de serialización API
+
+- En las respuestas de la API no deben incluirse campos con valor `null`.
