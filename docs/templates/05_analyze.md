@@ -9,7 +9,7 @@ El item puede ser:
 
 El objetivo es verificar que el Roadmap Item esté **correctamente definido dentro del sistema**, alineado con el roadmap y compatible con las decisiones arquitectónicas del proyecto.
 
-Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los Enablers previos aplicables marcados en `docs/spec/dependency-graph.yaml` con `affects_future_features: true`, aunque no aparezcan repetidos explícitamente en la descripción de la Feature.
+Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los Enablers previos aplicables marcados en `docs/dependency-graph.yaml` con `affects_future_features: true`, aunque no aparezcan repetidos explícitamente en la descripción de la Feature.
 
 ---
 
@@ -17,13 +17,13 @@ Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los 
 
 Debes basar el análisis exclusivamente en:
 
-- `docs/spec/constitution.md`
-- `docs/spec/context.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/constitution.md`
+- `docs/context.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 - `docs/spec/features/<feature-file>.md` (si es Feature)
 - `docs/spec/enablers/<enabler-file>.md` (si es Enabler)
-- `docs/spec/enablers-taxonomy.md`
+- `docs/enablers-taxonomy.md`
 - `docs/adr/ADR-0001..ADR-0014`
 
 El análisis **no puede contradecir ninguno de estos documentos**.
@@ -34,7 +34,7 @@ El análisis **no puede contradecir ninguno de estos documentos**.
 
 El roadmap está definido como un **DAG de dependencias** en:
 
-`docs/spec/dependency-graph.yaml`
+`docs/dependency-graph.yaml`
 
 Debes comprobar que el Roadmap Item:
 
@@ -69,7 +69,7 @@ ADR Gap
 
 Debes comprobar que el Roadmap Item sea compatible con las reglas definidas en:
 
-`docs/spec/constitution.md`
+`docs/constitution.md`
 
 Especialmente en aspectos como:
 
@@ -110,8 +110,8 @@ El objetivo es anticipar áreas del sistema que podrían verse impactadas por la
 
 Debes comprobar si existe alguna inconsistencia entre:
 
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 - la documentación del Roadmap Item
 
 Si detectas desalineaciones debes indicarlo.
@@ -120,7 +120,7 @@ Si detectas desalineaciones debes indicarlo.
 
 # Dependency Awareness
 
-Debes analizar `docs/spec/dependency-graph.yaml` antes de generar el resultado.
+Debes analizar `docs/dependency-graph.yaml` antes de generar el resultado.
 
 ## Enablers ya existentes
 
@@ -140,9 +140,9 @@ Si el Roadmap Item es un Enabler, debes identificar todas las Features existente
 
 Para cada Feature afectada debes reflejar los cambios necesarios en su especificación para integrar correctamente el Enabler, manteniendo coherencia con:
 
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
-- `docs/spec/constitution.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
+- `docs/constitution.md`
 - `docs/adr/ADR-0001..ADR-0014`
 
 No debes limitar el análisis a dependencias directas ni a la Feature actual.
@@ -155,7 +155,7 @@ Debes considerar no solo dependencias directas, sino también dependencias trans
 
 ## Consistencia de estado
 
-Debes tomar como fuente de verdad el estado declarado en `docs/spec/dependency-graph.yaml`.
+Debes tomar como fuente de verdad el estado declarado en `docs/dependency-graph.yaml`.
 
 Estados permitidos:
 

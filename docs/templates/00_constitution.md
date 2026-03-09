@@ -8,11 +8,11 @@ Genera la Constitución del proyecto a partir de la documentación existente, to
 
 Debes basarte exclusivamente en:
 
-- `docs/spec/constitution.md`
-- `docs/spec/context.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
-- `docs/spec/enablers-taxonomy.md`
+- `docs/constitution.md`
+- `docs/context.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
+- `docs/enablers-taxonomy.md`
 - `docs/spec/features/`
 - `docs/spec/enablers/`
 - `docs/adr/ADR-0001..ADR-0014`
@@ -21,7 +21,7 @@ La Constitución no puede contradecir ninguno de estos documentos.
 
 La fuente principal es:
 
-- `docs/spec/constitution.md`
+- `docs/constitution.md`
 
 En caso de conflicto, debes señalarlo explícitamente en lugar de resolverlo de forma implícita.
 
@@ -97,7 +97,7 @@ Debes comprobar la alineación entre:
 
 Si detectas inconsistencias o vacíos normativos debes señalarlos explícitamente.
 
-Debes priorizar la preservación de la intención normativa ya existente en `docs/spec/constitution.md`, refinándola y corrigiendo inconsistencias solo cuando sea necesario para mantener coherencia con el resto de documentación autoritativa.
+Debes priorizar la preservación de la intención normativa ya existente en `docs/constitution.md`, refinándola y corrigiendo inconsistencias solo cuando sea necesario para mantener coherencia con el resto de documentación autoritativa.
 
 ---
 

@@ -15,13 +15,13 @@ La implementación debe seguir estrictamente el **plan generado por `/speckit.pl
 
 Debes basar la implementación exclusivamente en:
 
-- `docs/spec/constitution.md`
-- `docs/spec/context.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/constitution.md`
+- `docs/context.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 - `docs/spec/features/<feature-file>.md` (si es Feature)
 - `docs/spec/enablers/<enabler-file>.md` (si es Enabler)
-- `docs/spec/enablers-taxonomy.md`
+- `docs/enablers-taxonomy.md`
 - `docs/adr/ADR-0001..ADR-0014`
 - el resultado de `/speckit.plan`
 - el resultado de `/speckit.tasks`
@@ -34,7 +34,7 @@ La implementación **no puede contradecir ninguno de estos documentos**.
 
 El roadmap está definido como un **DAG de dependencias** en:
 
-`docs/spec/dependency-graph.yaml`
+`docs/dependency-graph.yaml`
 
 Debes comprobar que:
 
@@ -68,7 +68,7 @@ ADR Gap
 
 La implementación debe respetar las reglas definidas en:
 
-`docs/spec/constitution.md`
+`docs/constitution.md`
 
 Especialmente en aspectos como:
 
@@ -101,8 +101,8 @@ Debes actualizar cuando corresponda:
 - `bot/README.md`
 - `frontend/README.md`
 - `README.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 
 ---
 
@@ -110,8 +110,8 @@ Debes actualizar cuando corresponda:
 
 Si el Roadmap Item cambia de estado, debes actualizar de forma consistente:
 
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 
 Estados permitidos:
 

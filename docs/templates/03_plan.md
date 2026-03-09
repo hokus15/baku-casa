@@ -9,7 +9,7 @@ El item puede ser:
 
 El plan debe describir **cómo se implementará la especificación respetando la arquitectura y las decisiones definidas en los ADR**.
 
-Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los Enablers previos aplicables marcados en `docs/spec/dependency-graph.yaml` con `affects_future_features: true`, aunque no aparezcan repetidos explícitamente en la descripción de la Feature.
+Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los Enablers previos aplicables marcados en `docs/dependency-graph.yaml` con `affects_future_features: true`, aunque no aparezcan repetidos explícitamente en la descripción de la Feature.
 
 ---
 
@@ -17,13 +17,13 @@ Al trabajar sobre una Feature, debes tratar como baseline del sistema todos los 
 
 Debes basar el plan exclusivamente en:
 
-- `docs/spec/constitution.md`
-- `docs/spec/context.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/constitution.md`
+- `docs/context.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 - `docs/spec/features/<feature-file>.md` (si es Feature)
 - `docs/spec/enablers/<enabler-file>.md` (si es Enabler)
-- `docs/spec/enablers-taxonomy.md`
+- `docs/enablers-taxonomy.md`
 - `docs/adr/ADR-0001..ADR-0014`
 
 El plan **no puede contradecir ninguno de estos documentos**.
@@ -34,7 +34,7 @@ El plan **no puede contradecir ninguno de estos documentos**.
 
 El roadmap está definido como un **DAG de dependencias** en:
 
-`docs/spec/dependency-graph.yaml`
+`docs/dependency-graph.yaml`
 
 Debes comprobar que:
 
@@ -82,7 +82,7 @@ Si existen cambios contractuales o de eventos debes indicar el **impacto en vers
 
 Debes comprobar que el plan respete las reglas definidas en:
 
-`docs/spec/constitution.md`
+`docs/constitution.md`
 
 Especialmente en aspectos como:
 
@@ -115,8 +115,8 @@ Debes considerar cuando corresponda:
 - `bot/README.md`
 - `frontend/README.md`
 - `README.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 
 ---
 
@@ -124,8 +124,8 @@ Debes considerar cuando corresponda:
 
 Si la implementación cambia el estado del item, el plan debe indicar la necesidad de actualizar de forma consistente:
 
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 
 Estados permitidos:
 
@@ -137,7 +137,7 @@ Estados permitidos:
 
 # Dependency Awareness
 
-Debes analizar `docs/spec/dependency-graph.yaml` antes de generar el resultado.
+Debes analizar `docs/dependency-graph.yaml` antes de generar el resultado.
 
 ## Enablers ya existentes
 
@@ -157,9 +157,9 @@ Si el Roadmap Item es un Enabler, debes identificar todas las Features existente
 
 Para cada Feature afectada debes reflejar los cambios necesarios en su especificación para integrar correctamente el Enabler, manteniendo coherencia con:
 
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
-- `docs/spec/constitution.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
+- `docs/constitution.md`
 - `docs/adr/ADR-0001..ADR-0014`
 
 No debes limitar el análisis a dependencias directas ni a la Feature actual.
@@ -172,7 +172,7 @@ Debes considerar no solo dependencias directas, sino también dependencias trans
 
 ## Consistencia de estado
 
-Debes tomar como fuente de verdad el estado declarado en `docs/spec/dependency-graph.yaml`.
+Debes tomar como fuente de verdad el estado declarado en `docs/dependency-graph.yaml`.
 
 Estados permitidos:
 
