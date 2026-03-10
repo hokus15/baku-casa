@@ -431,15 +431,29 @@ components:
         - SIN_REFERENCIA_CATASTRAL
     OwnershipItem:
       type: object
-      required: [owner_id, ownership_percentage]
+      required: [property_id, owner_id, ownership_percentage, created_at, created_by, updated_at, updated_by]
       properties:
+        property_id:
+          type: string
         owner_id:
           type: string
         ownership_percentage:
           type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
         updated_at:
           type: string
           format: date-time
+        updated_by:
+          type: string
+        deleted_at:
+          type: string
+          format: date-time
+        deleted_by:
+          type: string
     PropertyDetailResponse:
       type: object
       required: [property_id, name, type, ownerships]
