@@ -13,13 +13,16 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from baku.backend.domain.auth.errors import AuthError
-from baku.backend.domain.owners.errors import OwnerError, OwnerValidationError
+from baku.backend.domain.owners.errors import OwnerError
 from baku.backend.domain.properties.errors import PropertyError
 from baku.backend.interfaces.http.middleware.correlation_id import (
     get_correlation_id,
 )
 
 logger = logging.getLogger(__name__)
+
+_VALIDATION_ERROR_CODE = "VALIDATION_ERROR"
+_VALIDATION_ERROR_MESSAGE = "Los datos proporcionados no son válidos."
 
 
 def _json_error(
@@ -45,15 +48,13 @@ def register_error_handlers(app: FastAPI) -> None:
         logger.warning(
             "request_validation_error_mapped",
             extra={
-                "error_code": OwnerValidationError.error_code,
+                "error_code": _VALIDATION_ERROR_CODE,
                 "http_status": 400,
                 "method": request.method,
                 "path": str(request.url.path),
             },
         )
-        return _json_error(
-            OwnerValidationError.error_code, OwnerValidationError.message, 400
-        )
+        return _json_error(_VALIDATION_ERROR_CODE, _VALIDATION_ERROR_MESSAGE, 400)
 
     @app.exception_handler(AuthError)
     async def auth_error_handler(

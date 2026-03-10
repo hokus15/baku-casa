@@ -89,11 +89,6 @@ def _get_pagination_defaults() -> tuple[int, int]:
     return default_size, max_size
 
 
-def _cap_page_size(page_size: int) -> int:
-    _, max_size = _get_pagination_defaults()
-    return min(page_size, max_size)
-
-
 def _result_to_response(result: object) -> PropertyResponse:
     return PropertyResponse.model_validate(result)
 
@@ -192,7 +187,8 @@ def get_list_properties(
     page_size: int = Query(default=20, ge=1),
     include_deleted: bool = Query(default=False),
 ) -> PropertyListResponse:
-    capped = _cap_page_size(page_size)
+    _, max_size = _get_pagination_defaults()
+    capped = min(page_size, max_size)
     result = list_properties(
         property_repo=property_repo,
         ownership_repo=ownership_repo,
@@ -275,7 +271,8 @@ def get_owner_properties(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1),
 ) -> PropertyListResponse:
-    capped = _cap_page_size(page_size)
+    _, max_size = _get_pagination_defaults()
+    capped = min(page_size, max_size)
     result = list_owner_properties(
         owner_id=owner_id,
         ownership_repo=ownership_repo,

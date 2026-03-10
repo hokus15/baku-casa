@@ -68,6 +68,11 @@ def replace_property_ownership(
     now = utcnow()
     now_str = now.isoformat()
 
+    # Update property audit fields to reflect this ownership change
+    property_.updated_at = now
+    property_.updated_by = cmd.updated_by
+    property_repo.save(property_)
+
     # Soft-delete all current active ownerships for this property
     ownership_repo.soft_delete_active_by_property(
         property_id=cmd.property_id,

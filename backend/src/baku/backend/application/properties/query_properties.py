@@ -59,10 +59,14 @@ def list_properties(
     result = property_repo.list(
         page=page, page_size=page_size, include_deleted=include_deleted
     )
-    items = []
-    for prop in result.items:
-        ownerships = ownership_repo.list_active_by_property(prop.property_id)
-        items.append(_to_result(prop, ownerships))
+    property_ids = [prop.property_id for prop in result.items]
+    ownerships_by_property = ownership_repo.list_active_by_property_ids(
+        property_ids
+    )
+    items = [
+        _to_result(prop, ownerships_by_property.get(prop.property_id, []))
+        for prop in result.items
+    ]
     return PropertyListResult(
         items=items,
         total=result.total,
@@ -107,10 +111,14 @@ def list_owner_properties(
     result = ownership_repo.list_active_by_owner(
         owner_id=owner_id, page=page, page_size=page_size
     )
-    items = []
-    for prop in result.items:
-        ownerships = ownership_repo.list_active_by_property(prop.property_id)
-        items.append(_to_result(prop, ownerships))
+    property_ids = [prop.property_id for prop in result.items]
+    ownerships_by_property = ownership_repo.list_active_by_property_ids(
+        property_ids
+    )
+    items = [
+        _to_result(prop, ownerships_by_property.get(prop.property_id, []))
+        for prop in result.items
+    ]
     return PropertyListResult(
         items=items,
         total=result.total,
