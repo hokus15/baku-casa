@@ -104,6 +104,29 @@ class SqliteOwnershipRepository(OwnershipRepository):  # type: ignore[misc]
         )
         return [orm_to_ownership(r) for r in rows]
 
+    def list_active_by_property_ids(
+        self, property_ids: list[str]
+    ) -> dict[str, list[Ownership]]:
+        """Bulk-fetch active ownerships for multiple properties (avoids N+1)."""
+        if not property_ids:
+            return {}
+        rows = (
+            self._session.query(OwnershipORM)
+            .filter(
+                OwnershipORM.property_id.in_(property_ids),
+                OwnershipORM.deleted_at.is_(None),
+            )
+            .order_by(
+                OwnershipORM.property_id.asc(),
+                OwnershipORM.created_at.asc(),
+            )
+            .all()
+        )
+        result: dict[str, list[Ownership]] = {pid: [] for pid in property_ids}
+        for r in rows:
+            result[r.property_id].append(orm_to_ownership(r))
+        return result
+
     def list_active_by_owner(
         self,
         owner_id: str,
@@ -112,7 +135,7 @@ class SqliteOwnershipRepository(OwnershipRepository):  # type: ignore[misc]
     ) -> PropertyPage:
         """Return a paginated list of active properties for a given owner_id."""
         # Sub-select the distinct property_ids owned by this owner
-        subquery = select(OwnershipORM.property_id).where(
+        subquery = select(OwnershipORM.property_id).distinct().where(
             OwnershipORM.owner_id == owner_id,
             OwnershipORM.deleted_at.is_(None),
         )

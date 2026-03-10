@@ -175,7 +175,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnershipListResponse'
+                $ref: '#/components/schemas/PropertyDetailResponse'
         '400':
           description: Validation error
           content:
@@ -293,7 +293,7 @@ components:
   schemas:
     CreatePropertyRequest:
       type: object
-      required: [name, type, ownership]
+      required: [name, type, ownerships]
       properties:
         name:
           type: string
@@ -335,7 +335,7 @@ components:
           $ref: '#/components/schemas/FiscalNature'
         fiscal_situation:
           $ref: '#/components/schemas/FiscalSituation'
-        ownership:
+        ownerships:
           type: array
           minItems: 1
           items:
@@ -386,9 +386,9 @@ components:
       description: Derived fields are not editable through this contract.
     ReplaceOwnershipRequest:
       type: object
-      required: [ownership]
+      required: [ownerships]
       properties:
-        ownership:
+        ownerships:
           type: array
           minItems: 1
           items:
@@ -442,7 +442,7 @@ components:
           format: date-time
     PropertyDetailResponse:
       type: object
-      required: [property_id, name, type, ownership]
+      required: [property_id, name, type, ownerships]
       properties:
         property_id:
           type: string
@@ -489,7 +489,7 @@ components:
           $ref: '#/components/schemas/FiscalNature'
         fiscal_situation:
           $ref: '#/components/schemas/FiscalSituation'
-        ownership:
+        ownerships:
           type: array
           items:
             $ref: '#/components/schemas/OwnershipItem'
@@ -505,34 +505,18 @@ components:
           type: string
     PropertyListResponse:
       type: object
-      required: [items, page, page_size, total_items, total_pages]
+      required: [items, page, page_size, total]
       properties:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/PropertyListItem'
+            $ref: '#/components/schemas/PropertyDetailResponse'
         page:
           type: integer
         page_size:
           type: integer
-        total_items:
+        total:
           type: integer
-        total_pages:
-          type: integer
-    PropertyListItem:
-      type: object
-      required: [property_id, name, type]
-      properties:
-        property_id:
-          type: string
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/PropertyType'
-        city:
-          type: string
-        country:
-          type: string
     OwnershipListResponse:
       type: object
       required: [items]

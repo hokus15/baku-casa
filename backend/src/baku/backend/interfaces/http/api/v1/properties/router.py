@@ -189,10 +189,12 @@ def get_list_properties(
         OwnershipRepository, Depends(get_ownership_repo)
     ],
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1),
+    page_size: int | None = Query(default=None, ge=1),
     include_deleted: bool = Query(default=False),
 ) -> PropertyListResponse:
-    capped = _cap_page_size(page_size)
+    default_size, _ = _get_pagination_defaults()
+    resolved_size = page_size if page_size is not None else default_size
+    capped = _cap_page_size(resolved_size)
     result = list_properties(
         property_repo=property_repo,
         ownership_repo=ownership_repo,
@@ -273,9 +275,11 @@ def get_owner_properties(
         OwnershipRepository, Depends(get_ownership_repo)
     ],
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1),
+    page_size: int | None = Query(default=None, ge=1),
 ) -> PropertyListResponse:
-    capped = _cap_page_size(page_size)
+    default_size, _ = _get_pagination_defaults()
+    resolved_size = page_size if page_size is not None else default_size
+    capped = _cap_page_size(resolved_size)
     result = list_owner_properties(
         owner_id=owner_id,
         ownership_repo=ownership_repo,

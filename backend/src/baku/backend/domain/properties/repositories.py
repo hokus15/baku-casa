@@ -46,6 +46,11 @@ class OwnershipRepository(ABC):
     def list_active_by_property(self, property_id: str) -> list[Ownership]: ...
 
     @abstractmethod
+    def list_active_by_property_ids(
+        self, property_ids: list[str]
+    ) -> dict[str, list[Ownership]]: ...
+
+    @abstractmethod
     def list_active_by_owner(
         self,
         owner_id: str,

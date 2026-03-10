@@ -81,7 +81,11 @@ class OwnershipORM(Base):
         ForeignKey("properties.property_id", ondelete="RESTRICT"),
         nullable=False,
     )
-    owner_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    owner_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("owners.owner_id", ondelete="RESTRICT"),
+        nullable=False,
+    )
     ownership_percentage: Mapped[str] = mapped_column(
         String(32), nullable=False
     )
