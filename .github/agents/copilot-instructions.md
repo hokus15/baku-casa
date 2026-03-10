@@ -1,4 +1,4 @@
-# baku-casa Development Guidelines
+﻿# baku-casa Development Guidelines
 
 Auto-generated from all feature plans. Last updated: 2026-03-02
 
@@ -15,6 +15,7 @@ Auto-generated from all feature plans. Last updated: 2026-03-02
 - SQLite (sin cambios de esquema en EN-0300) (001-http-bootstrap-modularization)
 - Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff (001-propietarios-sujetos-fiscales)
 - SQLite con migraciones versionadas (001-propietarios-sujetos-fiscales)
+- SQLite con migraciones versionadas (Alembic) (001-propiedades-titularidad)
 
 - Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI (001-project-bootstrap)
 
@@ -34,9 +35,9 @@ cd src; pytest; ruff check .
 Python 3.x por root (versionado exacto definido en cada `pyproject.toml`): Follow standard conventions
 
 ## Recent Changes
+- 001-propiedades-titularidad: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff
 - 001-propietarios-sujetos-fiscales: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff
 - 001-propietarios-sujetos-fiscales: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff
-- 001-http-bootstrap-modularization: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, python-dotenv
 
 
 <!-- MANUAL ADDITIONS START -->

@@ -16,13 +16,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from baku.backend.application.configuration.errors import AggregatedConfigurationError
+from baku.backend.application.configuration.errors import (
+    AggregatedConfigurationError,
+)
 from baku.backend.application.configuration.models import (
     ConfigurationIssueSeverity,
     ConfigurationParameterDefinition,
     ResolvedConfigurationProfile,
 )
-from baku.backend.application.configuration.provider_port import ConfigurationProviderPort
+from baku.backend.application.configuration.provider_port import (
+    ConfigurationProviderPort,
+)
 from baku.backend.infrastructure.config.resolver import resolve
 from baku.backend.infrastructure.config.sources import (
     load_default_source,
@@ -46,7 +50,8 @@ _PARAMETER_DEFINITIONS: list[ConfigurationParameterDefinition] = [
         key="auth.jwt_secret",
         required=True,
         description=(
-            "JWT signing secret.  Must be a strong random value in production. " "Never hard-code.  See ADR-0005."
+            "JWT signing secret.  Must be a strong random value in production. "
+            "Never hard-code.  See ADR-0005."
         ),
     ),
     ConfigurationParameterDefinition(
@@ -68,6 +73,18 @@ _PARAMETER_DEFINITIONS: list[ConfigurationParameterDefinition] = [
         key="auth.lockout_minutes",
         required=False,
         description="Operator account lockout duration in minutes.",
+    ),
+    ConfigurationParameterDefinition(
+        key="pagination.default_page_size",
+        required=False,
+        default="20",
+        description="Default page size for paginated list endpoints (ADR-0013).",
+    ),
+    ConfigurationParameterDefinition(
+        key="pagination.max_page_size",
+        required=False,
+        default="100",
+        description="Maximum allowed page size for paginated list endpoints (ADR-0013).",
     ),
 ]
 
@@ -106,13 +123,19 @@ class RuntimeConfigurationProvider(ConfigurationProviderPort):
 
         profile = resolve(env_source, file_source, default_source)
         issues = validate(profile, _PARAMETER_DEFINITIONS)
-        error_messages = [i.message for i in issues if i.severity == ConfigurationIssueSeverity.ERROR]
+        error_messages = [
+            i.message
+            for i in issues
+            if i.severity == ConfigurationIssueSeverity.ERROR
+        ]
         if error_messages:
             raise AggregatedConfigurationError(errors=error_messages)
         return profile
 
 
-def get_runtime_provider(env_file: Path | None = None) -> RuntimeConfigurationProvider:
+def get_runtime_provider(
+    env_file: Path | None = None,
+) -> RuntimeConfigurationProvider:
     """Return the process-level ``RuntimeConfigurationProvider`` singleton."""
     return RuntimeConfigurationProvider(env_file=env_file)
 

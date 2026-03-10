@@ -1,0 +1,554 @@
+openapi: 3.0.3
+info:
+  title: Baku Casa Properties API
+  version: 1.0.0
+  description: Contract surface introduced by F-0003 for property and ownership management.
+paths:
+  /api/v1/properties:
+    post:
+      summary: Create a property with initial ownership state
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyRequest'
+      responses:
+        '201':
+          description: Property created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDetailResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Referenced owner not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict with ownership invariants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: List active properties (paginated)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Paginated property list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyListResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/properties/{property_id}:
+    get:
+      summary: Get property detail with active ownership state
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PropertyId'
+      responses:
+        '200':
+          description: Property detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDetailResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      summary: Update editable property fields
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PropertyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePropertyRequest'
+      responses:
+        '200':
+          description: Property updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDetailResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict with domain invariants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Soft-delete property and cascade soft-delete ownership relations
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PropertyId'
+      responses:
+        '204':
+          description: Property soft-deleted
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/properties/{property_id}/ownership:
+    put:
+      summary: Replace current ownership set for a property
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PropertyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceOwnershipRequest'
+      responses:
+        '200':
+          description: Ownership updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipListResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Property or owner not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Ownership conflict or duplicate active pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/properties/{property_id}/owners:
+    get:
+      summary: List active owners for a property
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PropertyId'
+      responses:
+        '200':
+          description: Active owners for property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipListResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/owners/{owner_id}/properties:
+    get:
+      summary: List active properties for an owner
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OwnerId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Paginated property list for owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyListResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Owner not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    PropertyId:
+      name: property_id
+      in: path
+      required: true
+      schema:
+        type: string
+    OwnerId:
+      name: owner_id
+      in: path
+      required: true
+      schema:
+        type: string
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: page_size
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+  schemas:
+    CreatePropertyRequest:
+      type: object
+      required: [name, type, ownership]
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/PropertyType'
+        description:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        postal_code:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+        cadastral_reference:
+          type: string
+        cadastral_value:
+          type: string
+          description: Decimal serialized as string
+        cadastral_land_value:
+          type: string
+          description: Decimal serialized as string
+        cadastral_value_revised:
+          type: boolean
+        acquisition_date:
+          type: string
+          format: date
+        acquisition_type:
+          $ref: '#/components/schemas/AcquisitionType'
+        transfer_date:
+          type: string
+          format: date
+        transfer_type:
+          $ref: '#/components/schemas/TransferType'
+        fiscal_nature:
+          $ref: '#/components/schemas/FiscalNature'
+        fiscal_situation:
+          $ref: '#/components/schemas/FiscalSituation'
+        ownership:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OwnershipInput'
+    UpdatePropertyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/PropertyType'
+        description:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        postal_code:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+        cadastral_reference:
+          type: string
+        cadastral_value:
+          type: string
+          description: Decimal serialized as string
+        cadastral_land_value:
+          type: string
+          description: Decimal serialized as string
+        cadastral_value_revised:
+          type: boolean
+        acquisition_date:
+          type: string
+          format: date
+        acquisition_type:
+          $ref: '#/components/schemas/AcquisitionType'
+        transfer_date:
+          type: string
+          format: date
+        transfer_type:
+          $ref: '#/components/schemas/TransferType'
+        fiscal_nature:
+          $ref: '#/components/schemas/FiscalNature'
+        fiscal_situation:
+          $ref: '#/components/schemas/FiscalSituation'
+      description: Derived fields are not editable through this contract.
+    ReplaceOwnershipRequest:
+      type: object
+      required: [ownership]
+      properties:
+        ownership:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OwnershipInput'
+    OwnershipInput:
+      type: object
+      required: [owner_id, ownership_percentage]
+      properties:
+        owner_id:
+          type: string
+        ownership_percentage:
+          type: string
+          description: Decimal percentage in range 0-100 with max 2 decimals
+    PropertyType:
+      type: string
+      enum:
+        - VIVIENDA
+        - APARTAMENTO
+        - PLAZA_APARCAMIENTO
+        - ESTUDIO
+        - LOCAL_COMERCIAL
+        - OFICINA
+        - TRASTERO
+        - OTRO
+    AcquisitionType:
+      type: string
+      enum: [ONEROSA, LUCRATIVA, AMBAS]
+    TransferType:
+      type: string
+      enum: [ONEROSA, LUCRATIVA, AMBAS]
+    FiscalNature:
+      type: string
+      enum: [URBANA, RUSTICA]
+    FiscalSituation:
+      type: string
+      enum:
+        - CON_REFERENCIA_CATASTRAL
+        - PAIS_VASCO
+        - NAVARRA
+        - SIN_REFERENCIA_CATASTRAL
+    OwnershipItem:
+      type: object
+      required: [owner_id, ownership_percentage]
+      properties:
+        owner_id:
+          type: string
+        ownership_percentage:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+    PropertyDetailResponse:
+      type: object
+      required: [property_id, name, type, ownership]
+      properties:
+        property_id:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/PropertyType'
+        description:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        postal_code:
+          type: string
+        province:
+          type: string
+        country:
+          type: string
+        cadastral_reference:
+          type: string
+        cadastral_value:
+          type: string
+        cadastral_land_value:
+          type: string
+        cadastral_construction_value:
+          type: string
+        construction_ratio:
+          type: string
+          description: Decimal percentage in range 0-100
+        cadastral_value_revised:
+          type: boolean
+        acquisition_date:
+          type: string
+          format: date
+        acquisition_type:
+          $ref: '#/components/schemas/AcquisitionType'
+        transfer_date:
+          type: string
+          format: date
+        transfer_type:
+          $ref: '#/components/schemas/TransferType'
+        fiscal_nature:
+          $ref: '#/components/schemas/FiscalNature'
+        fiscal_situation:
+          $ref: '#/components/schemas/FiscalSituation'
+        ownership:
+          type: array
+          items:
+            $ref: '#/components/schemas/OwnershipItem'
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+    PropertyListResponse:
+      type: object
+      required: [items, page, page_size, total_items, total_pages]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyListItem'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+    PropertyListItem:
+      type: object
+      required: [property_id, name, type]
+      properties:
+        property_id:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/PropertyType'
+        city:
+          type: string
+        country:
+          type: string
+    OwnershipListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OwnershipItem'
+    ErrorResponse:
+      type: object
+      required: [error_code, message, correlation_id]
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+          description: User-facing message in Spanish
+        correlation_id:
+          type: string

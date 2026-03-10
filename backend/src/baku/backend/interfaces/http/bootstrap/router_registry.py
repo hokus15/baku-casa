@@ -9,11 +9,23 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from baku.backend.interfaces.http.api.v1.auth_router import router as auth_router
-from baku.backend.interfaces.http.api.v1.owners.router import router as owners_router
+from baku.backend.interfaces.http.api.v1.auth_router import (
+    router as auth_router,
+)
+from baku.backend.interfaces.http.api.v1.owners.router import (
+    router as owners_router,
+)
+from baku.backend.interfaces.http.api.v1.properties.router import (
+    owners_cross_router as properties_owners_router,
+)
+from baku.backend.interfaces.http.api.v1.properties.router import (
+    router as properties_router,
+)
 
 
 def register_routers(app: FastAPI) -> None:
     """Register all API routers on the application."""
     app.include_router(auth_router)
     app.include_router(owners_router)
+    app.include_router(properties_router)
+    app.include_router(properties_owners_router)

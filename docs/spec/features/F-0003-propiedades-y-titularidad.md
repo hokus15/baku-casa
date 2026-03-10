@@ -44,6 +44,9 @@ Este slice habilita la base estructural para contratos, contabilidad y fiscalida
 - `cadastral_land_value` (opcional)
 - `cadastral_construction_value` (calculado = valor_catastral − valor_catastral_suelo) (opcional)
 - `construction_ratio` (calculado = valor_catastral_construccion / valor_catastral) (opcional)
+- Invariante del calculo catastral: `cadastral_construction_value = cadastral_value - cadastral_land_value`.
+- `cadastral_land_value` no puede ser mayor que `cadastral_value`.
+- `cadastral_construction_value` no puede ser negativo.
 - `cadastral_value_revised` (boolean) (opcional)
 - `acquisition_date` (opcional)
 - `acquisition_type` (opcional) (lista cerrada) Tipo de adquisición para el informe de IRPF:
@@ -77,6 +80,8 @@ Todas las entidades creadas por esta feature deben incluir los siguientes campos
 
 La eliminación de propiedades debe implementarse mediante **soft-delete**, utilizando `deleted_at` y `deleted_by`.
 
+La eliminación de titularidades debe implementarse mediante **soft-delete**, utilizando `deleted_at` y `deleted_by`.
+
 ---
 
 ## Titularidad
@@ -87,7 +92,11 @@ La relación Propiedad ↔ Propietario incluye:
 - `property_id`
 - `ownership_percentage`
 
-Si una **propiedad es eliminada mediante soft-delete**, las relaciones de titularidad asociadas **no se eliminan físicamente**, pero deben considerarse **inactivas** y no deben aparecer en consultas normales de propiedades o titularidades activas.
+`ownership_percentage` admite hasta 2 decimales.
+
+Solo puede existir una titularidad activa por cada par (`property_id`, `owner_id`).
+
+Si una **propiedad es eliminada mediante soft-delete**, las relaciones de titularidad asociadas **no se eliminan físicamente**, pero se debe aplicar sobre ellas un **soft-delete en cascada**, utilizando sus propios campos de auditoría de borrado, y no deben aparecer en consultas normales de propiedades o titularidades activas.
 
 ---
 
@@ -105,6 +114,10 @@ El sistema debe permitir:
 - Consultar propietarios de una propiedad
 - Eliminar propiedad (soft-delete)
 
+Los listados deben usar paginación con `page=1` y `page_size=20` por defecto.
+
+`max_page_size=100`, y tanto `page_size` como `max_page_size` deben ser configurables de forma transversal para todas las listas.
+
 ---
 
 ## Reglas de negocio
@@ -112,6 +125,11 @@ El sistema debe permitir:
 - Una propiedad debe tener al menos un propietario.
 - `type` debe ser uno de los valores permitidos.
 - `cadastral_construction_value` y `construction_ratio` son campos derivados y no editables directamente.
+- Los importes monetarios de esta feature no pueden ser negativos.
+- Si se informan `cadastral_value` y `cadastral_land_value`, debe cumplirse `cadastral_land_value <= cadastral_value`.
+- La suma permitida de `ownership_percentage` es 100.
+- Se acepta una suma total de `ownership_percentage` menor que 100.
+- Se rechaza una suma total de `ownership_percentage` mayor que 100.
 
 ---
 
@@ -129,7 +147,7 @@ El sistema debe permitir:
 ## Dependencias y trazabilidad
 
 ### Depende de
-- (ninguna explícita)
+- F-0002
 
 ### Impacto en contratos
 - HTTP API: (si aplica)
@@ -151,6 +169,9 @@ El sistema debe permitir:
 - ADR-0009
 - ADR-0011
 - ADR-0012
+- ADR-0013
+- ADR-0014
+
 
 ---
 
@@ -168,3 +189,5 @@ Esta feature debe alinearse con el baseline de logging transversal definido por 
 ## Reglas de serialización API
 
 - En las respuestas de la API no deben incluirse campos con valor `null`.
+- Los `timestamps` deben serializarse en formato ISO-8601 UTC con sufijo `Z`.
+- Las fechas puras deben serializarse en formato `YYYY-MM-DD`.

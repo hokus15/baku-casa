@@ -21,7 +21,9 @@ from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 
 from baku.backend.application.auth.auth_policy_port import AuthPolicyPort
-from baku.backend.application.auth.password_hasher_port import PasswordHasherPort
+from baku.backend.application.auth.password_hasher_port import (
+    PasswordHasherPort,
+)
 from baku.backend.application.auth.token_issuer_port import TokenIssuerPort
 from baku.backend.domain.auth.repositories import (
     OperatorRepository,
@@ -29,8 +31,18 @@ from baku.backend.domain.auth.repositories import (
     ThrottleStateRepository,
     UnitOfWorkPort,
 )
-from baku.backend.domain.owners.repositories import OwnerRepository, OwnerUnitOfWorkPort
-from baku.backend.infrastructure.config.auth_policy_provider import AuthSettingsPolicy
+from baku.backend.domain.owners.repositories import (
+    OwnerRepository,
+    OwnerUnitOfWorkPort,
+)
+from baku.backend.domain.properties.repositories import (
+    OwnershipRepository,
+    PropertyRepository,
+    PropertyUnitOfWorkPort,
+)
+from baku.backend.infrastructure.config.auth_policy_provider import (
+    AuthSettingsPolicy,
+)
 from baku.backend.infrastructure.config.auth_settings import get_auth_settings
 from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
     SqliteOperatorRepository,
@@ -38,23 +50,46 @@ from baku.backend.infrastructure.persistence.sqlite.auth_repositories import (
     SqliteThrottleStateRepository,
     SqliteUnitOfWork,
 )
-from baku.backend.infrastructure.persistence.sqlite.db import get_session_factory
+from baku.backend.infrastructure.persistence.sqlite.db import (
+    get_session_factory,
+)
 from baku.backend.infrastructure.persistence.sqlite.owners.repositories import (
     SqliteOwnerRepository,
     SqliteOwnerUnitOfWork,
 )
-from baku.backend.infrastructure.security.bcrypt_password_hasher import BcryptPasswordHasher
-from baku.backend.infrastructure.security.jwt_token_issuer import JwtTokenIssuer
-from baku.backend.infrastructure.security.jwt_token_validator import get_jwt_token_validator
+from baku.backend.infrastructure.persistence.sqlite.properties.repositories import (
+    SqliteOwnershipRepository,
+    SqlitePropertyRepository,
+    SqlitePropertyUnitOfWork,
+)
+from baku.backend.infrastructure.security.bcrypt_password_hasher import (
+    BcryptPasswordHasher,
+)
+from baku.backend.infrastructure.security.jwt_token_issuer import (
+    JwtTokenIssuer,
+)
+from baku.backend.infrastructure.security.jwt_token_validator import (
+    get_jwt_token_validator,
+)
 from baku.backend.interfaces.http.dependencies.db_session import get_session
-from baku.backend.interfaces.http.dependencies.owner_deps import get_owner_repo, get_owner_unit_of_work
+from baku.backend.interfaces.http.dependencies.owner_deps import (
+    get_owner_repo,
+    get_owner_unit_of_work,
+)
+from baku.backend.interfaces.http.dependencies.property_deps import (
+    get_ownership_repo,
+    get_property_repo,
+    get_property_unit_of_work,
+)
 from baku.backend.interfaces.http.dependencies.repo_deps import (
     get_operator_repo,
     get_revoked_token_repo,
     get_throttle_repo,
     get_unit_of_work,
 )
-from baku.backend.interfaces.http.dependencies.require_auth import get_token_validator
+from baku.backend.interfaces.http.dependencies.require_auth import (
+    get_token_validator,
+)
 from baku.backend.interfaces.http.dependencies.service_deps import (
     get_auth_policy,
     get_password_hasher,
@@ -69,15 +104,21 @@ def _sqlite_session() -> Generator[Session, None, None]:
         yield session
 
 
-def _operator_repo(session: object = Depends(get_session)) -> OperatorRepository:
+def _operator_repo(
+    session: object = Depends(get_session),
+) -> OperatorRepository:
     return SqliteOperatorRepository(cast(Session, session))
 
 
-def _revoked_token_repo(session: object = Depends(get_session)) -> RevokedTokenRepository:
+def _revoked_token_repo(
+    session: object = Depends(get_session),
+) -> RevokedTokenRepository:
     return SqliteRevokedTokenRepository(cast(Session, session))
 
 
-def _throttle_repo(session: object = Depends(get_session)) -> ThrottleStateRepository:
+def _throttle_repo(
+    session: object = Depends(get_session),
+) -> ThrottleStateRepository:
     return SqliteThrottleStateRepository(cast(Session, session))
 
 
@@ -102,8 +143,28 @@ def _owner_repo(session: object = Depends(get_session)) -> OwnerRepository:
     return SqliteOwnerRepository(cast(Session, session))
 
 
-def _owner_unit_of_work(session: object = Depends(get_session)) -> OwnerUnitOfWorkPort:
+def _owner_unit_of_work(
+    session: object = Depends(get_session),
+) -> OwnerUnitOfWorkPort:
     return SqliteOwnerUnitOfWork(cast(Session, session))
+
+
+def _property_repo(
+    session: object = Depends(get_session),
+) -> PropertyRepository:
+    return SqlitePropertyRepository(cast(Session, session))
+
+
+def _ownership_repo(
+    session: object = Depends(get_session),
+) -> OwnershipRepository:
+    return SqliteOwnershipRepository(cast(Session, session))
+
+
+def _property_unit_of_work(
+    session: object = Depends(get_session),
+) -> PropertyUnitOfWorkPort:
+    return SqlitePropertyUnitOfWork(cast(Session, session))
 
 
 def wire_dependencies(app: FastAPI) -> None:
@@ -126,5 +187,8 @@ def wire_dependencies(app: FastAPI) -> None:
             get_token_validator: get_jwt_token_validator,
             get_owner_repo: _owner_repo,
             get_owner_unit_of_work: _owner_unit_of_work,
+            get_property_repo: _property_repo,
+            get_ownership_repo: _ownership_repo,
+            get_property_unit_of_work: _property_unit_of_work,
         }
     )

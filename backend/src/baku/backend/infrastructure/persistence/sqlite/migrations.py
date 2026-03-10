@@ -12,8 +12,20 @@ from baku.backend.infrastructure.persistence.sqlite.db import (
 )
 
 
+def _find_backend_root() -> Path:
+    """Locate the backend project root, working both from source and installed packages."""
+    cwd = Path.cwd()
+    for candidate in [cwd, *cwd.parents]:
+        if (candidate / "alembic.ini").exists() and (
+            candidate / "migrations"
+        ).is_dir():
+            return candidate
+    # Fallback: __file__-relative (works for editable installs running from source)
+    return Path(__file__).resolve().parents[6]
+
+
 def upgrade_to_head(db_url: str | None = None) -> None:
-    backend_root = Path(__file__).resolve().parents[6]
+    backend_root = _find_backend_root()
     alembic_ini = backend_root / "alembic.ini"
     migrations_dir = backend_root / "migrations"
 
