@@ -10,11 +10,18 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from baku.backend.interfaces.http.bootstrap.dependency_wiring import wire_dependencies
+from baku.backend.interfaces.http.bootstrap.dependency_wiring import (
+    wire_dependencies,
+)
 from baku.backend.interfaces.http.dependencies.db_session import get_session
 from baku.backend.interfaces.http.dependencies.owner_deps import (
     get_owner_repo,
     get_owner_unit_of_work,
+)
+from baku.backend.interfaces.http.dependencies.property_deps import (
+    get_ownership_repo,
+    get_property_repo,
+    get_property_unit_of_work,
 )
 from baku.backend.interfaces.http.dependencies.repo_deps import (
     get_operator_repo,
@@ -22,7 +29,9 @@ from baku.backend.interfaces.http.dependencies.repo_deps import (
     get_throttle_repo,
     get_unit_of_work,
 )
-from baku.backend.interfaces.http.dependencies.require_auth import get_token_validator
+from baku.backend.interfaces.http.dependencies.require_auth import (
+    get_token_validator,
+)
 from baku.backend.interfaces.http.dependencies.service_deps import (
     get_auth_policy,
     get_password_hasher,
@@ -42,6 +51,9 @@ EXPECTED_OVERRIDES = frozenset(
         get_token_validator,
         get_owner_repo,
         get_owner_unit_of_work,
+        get_property_repo,
+        get_ownership_repo,
+        get_property_unit_of_work,
     }
 )
 

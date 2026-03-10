@@ -29,6 +29,37 @@ mypy src/               →  Success: no issues found in 93 source files
 pytest -q               →  tests passed
 ```
 
+## Feature F-0003: Propiedades y Titularidad
+
+**Estado**: ✅ Implementado
+
+Registro de inmuebles y vinculación a propietarios (sujetos fiscales) con arquitectura hexagonal:
+
+- Crear propiedad con titularidad inicial (`POST /api/v1/properties`) — 201 Created
+- Listar propiedades con paginación (`GET /api/v1/properties`) — 200 OK
+  - Query params: `page` (1-based), `page_size` (1–100)
+- Obtener detalle de propiedad (`GET /api/v1/properties/{property_id}`) — 200 OK
+- Actualizar propiedad (`PATCH /api/v1/properties/{property_id}`) — 200 OK (solo campos enviados)
+- Reemplazar titularidad completa (`PUT /api/v1/properties/{property_id}/ownership`) — 200 OK
+- Eliminar propiedad (soft-delete) (`DELETE /api/v1/properties/{property_id}`) — 204 No Content
+  - La eliminación aplica soft-delete en cascada sobre las titularidades activas
+- Consultar propietarios de una propiedad (`GET /api/v1/properties/{property_id}/owners`) — 200 OK
+- Consultar propiedades de un propietario (`GET /api/v1/owners/{owner_id}/properties`) — 200 OK
+
+Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
+
+Los campos derivados catastrales (`cadastral_construction_value`, `construction_ratio`) se calculan automáticamente y **no son editables directamente**.
+
+La suma de `ownership_percentage` de los propietarios activos de una propiedad no puede superar 100.
+
+**Evidencia de calidad (F-0003)**:
+
+```
+ruff check src/ tests/  →  All checks passed!
+mypy src/               →  Success: no issues found in 22 source files
+pytest -q               →  245 passed
+```
+
 ## Enabler E-0100: Project Bootstrap
 
 Establecer la base mínima del repositorio para habilitar el desarrollo reproducible mediante Spec Driven Development (SDD), antes de implementar cualquier funcionalidad de dominio.

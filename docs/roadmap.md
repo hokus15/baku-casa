@@ -9,7 +9,7 @@ Los **Enablers** no introducen funcionalidad visible para el usuario final, pero
 
 ## Regla de baseline técnico acumulado
 
-Las Features deben asumir como parte del sistema todos los Enablers previos que les apliquen según `docs/spec/dependency-graph.yaml`.
+Las Features deben asumir como parte del sistema todos los Enablers previos que les apliquen según `docs/dependency-graph.yaml`.
 
 En particular, cualquier Enabler marcado con `affects_future_features: true` debe considerarse integrado en toda Feature futura aplicable, aunque no se repita explícitamente en su descripción funcional.
 
@@ -137,7 +137,7 @@ Resultado MVP0:
 
 # MVP 1 — Master Data y Contratos (Sin Registro Contable)
 
-Las Features de MVP1 deben asumir como baseline todos los Enablers completados en MVP0 que les apliquen según `docs/spec/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
+Las Features de MVP1 deben asumir como baseline todos los Enablers completados en MVP0 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -154,6 +154,8 @@ Definición de propietarios como entidades fiscales independientes.
 ---
 
 ## F-0003 — Propiedades y Titularidad
+
+**Estado: ✅ Completado**
 
 Registro de inmuebles y vinculación a propietarios.
 
@@ -241,7 +243,7 @@ Resultado MVP1:
 
 # MVP 2 — Núcleo Financiero (Ledger)
 
-Las Features de MVP2 deben asumir como baseline todos los Enablers completados en MVP0 y MVP1 que les apliquen según `docs/spec/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
+Las Features de MVP2 deben asumir como baseline todos los Enablers completados en MVP0 y MVP1 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -296,7 +298,7 @@ Resultado MVP2:
 
 # MVP 3 — Documentación Operativa
 
-Las Features de MVP3 deben asumir como baseline todos los Enablers completados en MVP0, MVP1 y MVP2 que les apliquen según `docs/spec/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
+Las Features de MVP3 deben asumir como baseline todos los Enablers completados en MVP0, MVP1 y MVP2 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -326,7 +328,7 @@ Resultado MVP3:
 
 # MVP 4 — Automatización Supervisada
 
-Las Features de MVP4 deben asumir como baseline todos los Enablers completados en MVP0, MVP1, MVP2 y MVP3 que les apliquen según `docs/spec/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
+Las Features de MVP4 deben asumir como baseline todos los Enablers completados en MVP0, MVP1, MVP2 y MVP3 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -357,7 +359,7 @@ Resultado MVP4:
 
 # MVP 5 — Fiscalidad y Reporting
 
-Las Features de MVP5 deben asumir como baseline todos los Enablers completados en MVP0, MVP1, MVP2, MVP3 y MVP4 que les apliquen según `docs/spec/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
+Las Features de MVP5 deben asumir como baseline todos los Enablers completados en MVP0, MVP1, MVP2, MVP3 y MVP4 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 

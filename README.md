@@ -61,7 +61,8 @@ Este enfoque permite explorar si un flujo basado en especificaciones:
 
 ## Gestión de propiedades y contratos
 
-- Registro de propiedades
+- Registro de propiedades con titularidad (propietarios y porcentajes de participación)
+- Gestión de datos catastrales y fiscales del inmueble
 - Gestión de contratos de arrendamiento
 - Control de fechas de inicio y fin
 - Histórico de rentas

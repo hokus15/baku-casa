@@ -15,13 +15,13 @@ Las tareas deben derivar directamente del **plan generado por `/speckit.plan`** 
 
 Debes basarte exclusivamente en:
 
-- `docs/spec/constitution.md`
-- `docs/spec/context.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/constitution.md`
+- `docs/context.md`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 - `docs/spec/features/<feature-file>.md` (si es Feature)
 - `docs/spec/enablers/<enabler-file>.md` (si es Enabler)
-- `docs/spec/enablers-taxonomy.md`
+- `docs/enablers-taxonomy.md`
 - `docs/adr/ADR-0001..ADR-0014`
 - el resultado generado por `/speckit.plan` para este item
 
@@ -33,7 +33,7 @@ Las tareas **no pueden contradecir ninguno de estos documentos**.
 
 El roadmap está definido como un **DAG de dependencias** en:
 
-`docs/spec/dependency-graph.yaml`
+`docs/dependency-graph.yaml`
 
 Debes:
 
@@ -91,8 +91,8 @@ Debes considerar cuando corresponda:
 - `bot/README.md`
 - `frontend/README.md`
 - `README.md`
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 
 ---
 
@@ -100,8 +100,8 @@ Debes considerar cuando corresponda:
 
 Si la implementación cambia el estado del item, debe existir una tarea para actualizar de forma consistente:
 
-- `docs/spec/roadmap.md`
-- `docs/spec/dependency-graph.yaml`
+- `docs/roadmap.md`
+- `docs/dependency-graph.yaml`
 
 Estados permitidos:
 

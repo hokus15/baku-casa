@@ -7,7 +7,10 @@ import logging.config
 import os
 from pathlib import Path
 
-from baku.backend.infrastructure.logging.context import CorrelationIdFilter, ServiceNameFilter
+from baku.backend.infrastructure.logging.context import (
+    CorrelationIdFilter,
+    ServiceNameFilter,
+)
 from baku.backend.infrastructure.logging.formatters import JsonLogFormatter
 
 _ENV_TO_PROFILE = {
@@ -19,7 +22,11 @@ _ENV_TO_PROFILE = {
 
 def resolve_logging_environment() -> str:
     """Resolve active runtime environment for logging profile selection."""
-    value = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "dev").strip().lower()
+    value = (
+        (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "dev")
+        .strip()
+        .lower()
+    )
     return value if value in _ENV_TO_PROFILE else "dev"
 
 
@@ -29,6 +36,14 @@ def resolve_logging_profile_filename(environment: str) -> str:
 
 
 def _repo_backend_root() -> Path:
+    """Locate the backend project root, working both from source and installed packages."""
+    cwd = Path.cwd()
+    for candidate in [cwd, *cwd.parents]:
+        if any(
+            (candidate / name).exists() for name in _ENV_TO_PROFILE.values()
+        ):
+            return candidate
+    # Fallback: __file__-relative (works for editable installs running from source)
     # backend/src/baku/backend/infrastructure/logging/bootstrap.py -> backend/
     return Path(__file__).resolve().parents[5]
 
@@ -37,11 +52,17 @@ def _install_record_filters(environment: str) -> None:
     root = logging.getLogger()
     root.filters.clear()
     root.addFilter(CorrelationIdFilter())
-    root.addFilter(ServiceNameFilter(service_name="baku-backend", environment=environment))
+    root.addFilter(
+        ServiceNameFilter(service_name="baku-backend", environment=environment)
+    )
     for handler in root.handlers:
         handler.filters.clear()
         handler.addFilter(CorrelationIdFilter())
-        handler.addFilter(ServiceNameFilter(service_name="baku-backend", environment=environment))
+        handler.addFilter(
+            ServiceNameFilter(
+                service_name="baku-backend", environment=environment
+            )
+        )
 
 
 def _console_fallback_formatter(environment: str) -> logging.Formatter:
@@ -87,11 +108,17 @@ def configure_framework_logging() -> None:
 
     if profile_path.exists():
         try:
-            logging.config.fileConfig(profile_path, disable_existing_loggers=False)
+            logging.config.fileConfig(
+                profile_path, disable_existing_loggers=False
+            )
             _install_record_filters(environment)
             return
-        except Exception as exc:  # pragma: no cover - tested via integration fallback tests
-            _apply_safe_fallback(environment, f"invalid_profile:{type(exc).__name__}")
+        except (
+            Exception
+        ) as exc:  # pragma: no cover - tested via integration fallback tests
+            _apply_safe_fallback(
+                environment, f"invalid_profile:{type(exc).__name__}"
+            )
             return
 
     _apply_safe_fallback(environment, "missing_profile")

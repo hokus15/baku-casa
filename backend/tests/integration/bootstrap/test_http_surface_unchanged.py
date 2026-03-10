@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-# Canonical HTTP surface for the application post-F-0002.
+# Canonical HTTP surface for the application post-F-0003.
 # This set is the immutable sentinel: any deviation is a contract breach.
 EXPECTED_ROUTE_METHODS: dict[str, set[str]] = {
     "/api/v1/auth/bootstrap": {"POST"},
@@ -20,6 +20,11 @@ EXPECTED_ROUTE_METHODS: dict[str, set[str]] = {
     "/api/v1/auth/password": {"PUT"},
     "/api/v1/owners": {"POST", "GET"},
     "/api/v1/owners/{owner_id}": {"GET", "PATCH", "DELETE"},
+    "/api/v1/owners/{owner_id}/properties": {"GET"},
+    "/api/v1/properties": {"POST", "GET"},
+    "/api/v1/properties/{property_id}": {"GET", "PATCH", "DELETE"},
+    "/api/v1/properties/{property_id}/owners": {"GET"},
+    "/api/v1/properties/{property_id}/ownership": {"PUT"},
 }
 
 
@@ -29,7 +34,9 @@ def test_all_expected_routes_are_present(client: TestClient) -> None:
     assert resp.status_code == 200
     paths = set(resp.json()["paths"].keys())
     for route in EXPECTED_ROUTE_METHODS:
-        assert route in paths, f"Expected route {route!r} not found in HTTP surface: {paths}"
+        assert (
+            route in paths
+        ), f"Expected route {route!r} not found in HTTP surface: {paths}"
 
 
 def test_no_unexpected_routes_added(client: TestClient) -> None:
@@ -38,7 +45,9 @@ def test_no_unexpected_routes_added(client: TestClient) -> None:
     assert resp.status_code == 200
     paths = set(resp.json()["paths"].keys())
     unexpected = paths - set(EXPECTED_ROUTE_METHODS.keys())
-    assert not unexpected, f"Unexpected routes found in HTTP surface: {unexpected}"
+    assert (
+        not unexpected
+    ), f"Unexpected routes found in HTTP surface: {unexpected}"
 
 
 def test_route_http_methods_unchanged(client: TestClient) -> None:
