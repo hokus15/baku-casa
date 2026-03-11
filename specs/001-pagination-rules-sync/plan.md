@@ -209,7 +209,7 @@ Post-design Constitution Check: PASS (sin violaciones).
 
 | File | Change |
 |------|--------|
-| `backend/src/baku/backend/infrastructure/config/sources.py` | Added `PAGINATION_DEFAULT_PAGE_SIZE` and `PAGINATION_MAX_PAGE_SIZE` to `_ENV_VAR_TO_KEY` mapping |
+| `backend/src/baku/backend/infrastructure/config/sources.py` | Added `PAGINATION_DEFAULT_PAGE_SIZE` and `PAGINATION_MAX_PAGE_SIZE` to `_ENV_VAR_TO_KEY` mapping and defined their built-in default values used in the env > file > defaults precedence chain |
 | `backend/src/baku/backend/interfaces/http/api/v1/owners/router.py` | Switched to shared `get_pagination_defaults()` helper from `interfaces/http/api/v1/pagination.py`; changed `page_size` to `int | None`; applied config-driven capping |
 | `backend/src/baku/backend/infrastructure/persistence/sqlite/owners/repositories.py` | Removed `_MAX_PAGE_SIZE = 100` constant and secondary cap; capping is now exclusively at router level |
 | `backend/src/baku/backend/interfaces/http/api/v1/properties/router.py` | Changed `page_size` to `int | None`; resolved default via shared `get_pagination_defaults()` helper in both list endpoints |

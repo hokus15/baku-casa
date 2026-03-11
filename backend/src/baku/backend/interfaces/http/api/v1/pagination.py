@@ -7,26 +7,15 @@ source of truth for defaults and limits.
 
 from __future__ import annotations
 
-from baku.backend.infrastructure.config.runtime_settings import (
-    RuntimeConfigurationProvider,
+from baku.backend.infrastructure.config.pagination_settings import (
+    get_pagination_settings,
 )
 
 
 def get_pagination_defaults() -> tuple[int, int]:
-    """Return ``(default_page_size, max_page_size)`` from centralised config (ADR-0013)."""
-    profile = RuntimeConfigurationProvider().get_profile()
-    try:
-        default_size = int(profile.require("pagination.default_page_size"))
-    except (TypeError, ValueError) as exc:
-        raise ValueError(
-            "Invalid value for 'pagination.default_page_size'; expected an integer."
-        ) from exc
+    """Return ``(default_page_size, max_page_size)`` from centralised config (ADR-0013).
 
-    try:
-        max_size = int(profile.require("pagination.max_page_size"))
-    except (TypeError, ValueError) as exc:
-        raise ValueError(
-            "Invalid value for 'pagination.max_page_size'; expected an integer."
-        ) from exc
-
-    return default_size, max_size
+    Values are validated at startup (>= 1, max >= default) by ``PaginationSettings``.
+    """
+    settings = get_pagination_settings()
+    return settings.default_page_size, settings.max_page_size

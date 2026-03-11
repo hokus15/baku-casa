@@ -114,7 +114,7 @@ El sistema debe permitir:
 - Consultar propietarios de una propiedad
 - Eliminar propiedad (soft-delete)
 
-Los listados deben usar **paginacion obligatoria**. Los parámetros de paginación deben resolverse exclusivamente a través del configuration system definido en **EN-0202**, siguiendo la cadena de precedencia global:
+Los listados deben usar **paginación obligatoria**. Los parámetros de paginación deben resolverse exclusivamente a través del configuration system definido en **EN-0202**, siguiendo la cadena de precedencia global:
 
 `environment variables > config file > defaults`
 

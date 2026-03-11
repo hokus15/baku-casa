@@ -65,12 +65,12 @@ def test_owners_list_is_bounded_page_size_never_exceeds_max(
 ) -> None:
     """Response page_size must never exceed PAGINATION_MAX_PAGE_SIZE even when
     caller requests a higher value."""
-    from baku.backend.infrastructure.config.runtime_settings import (
-        reset_runtime_settings,
+    from baku.backend.infrastructure.config.pagination_settings import (
+        reset_pagination_settings,
     )
 
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "5")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     # Create 6 owners — more than the configured max
     for i in range(6):
@@ -131,12 +131,12 @@ def test_properties_list_is_bounded_page_size_never_exceeds_max(
     auth_token: str, client: TestClient, monkeypatch
 ) -> None:
     """Response page_size must never exceed PAGINATION_MAX_PAGE_SIZE."""
-    from baku.backend.infrastructure.config.runtime_settings import (
-        reset_runtime_settings,
+    from baku.backend.infrastructure.config.pagination_settings import (
+        reset_pagination_settings,
     )
 
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "3")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "F0010001")
     for i in range(5):
@@ -180,12 +180,12 @@ def test_owner_properties_list_is_bounded(
     auth_token: str, client: TestClient, monkeypatch
 ) -> None:
     """Cross-query /owners/{id}/properties must also respect max_page_size."""
-    from baku.backend.infrastructure.config.runtime_settings import (
-        reset_runtime_settings,
+    from baku.backend.infrastructure.config.pagination_settings import (
+        reset_pagination_settings,
     )
 
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "2")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "G0010001")
     for i in range(4):

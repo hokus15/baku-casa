@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from baku.backend.infrastructure.config.runtime_settings import (
-    reset_runtime_settings,
+from baku.backend.infrastructure.config.pagination_settings import (
+    reset_pagination_settings,
 )
 
 _OWNER_PAYLOAD = {
@@ -57,7 +57,7 @@ def test_env_pagination_max_page_size_overrides_builtin_default_for_owners(
     set, and asserts the response is capped at the env value.
     """
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "4")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(6):
         _create_owner(client, auth_token, f"IP1{i:05d}")
@@ -81,7 +81,7 @@ def test_env_pagination_max_page_size_overrides_builtin_default_for_properties(
 ) -> None:
     """PAGINATION_MAX_PAGE_SIZE env var overrides the built-in default for properties."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "2")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "IP20001")
     for i in range(5):
@@ -123,7 +123,7 @@ def test_env_pagination_default_page_size_used_when_caller_omits_page_size_owner
     """
     monkeypatch.setenv("PAGINATION_DEFAULT_PAGE_SIZE", "3")
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "50")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(5):
         _create_owner(client, auth_token, f"IP3{i:05d}")
@@ -148,7 +148,7 @@ def test_env_pagination_default_page_size_used_when_caller_omits_page_size_prope
     """PAGINATION_DEFAULT_PAGE_SIZE is used as default page_size for properties list."""
     monkeypatch.setenv("PAGINATION_DEFAULT_PAGE_SIZE", "2")
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "50")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "IP40001")
     for i in range(4):
@@ -189,7 +189,7 @@ def test_builtin_default_page_size_is_20_when_env_absent(
     """When no env override is set, registered default (20) applies."""
     monkeypatch.delenv("PAGINATION_DEFAULT_PAGE_SIZE", raising=False)
     monkeypatch.delenv("PAGINATION_MAX_PAGE_SIZE", raising=False)
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     resp = client.get(
         "/api/v1/owners",
