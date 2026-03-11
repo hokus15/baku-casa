@@ -114,15 +114,11 @@ El sistema debe permitir:
 - Consultar propietarios de una propiedad
 - Eliminar propiedad (soft-delete)
 
-Los listados deben usar **paginacion obligatoria** con `page=1` y `page_size=20` como valores por defecto.
-
-`max_page_size=100` es el limite maximo por defecto, y tanto `page_size` como `max_page_size` deben ser configurables de forma transversal para todas las listas.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
+Los listados deben usar **paginacion obligatoria**. Los parámetros de paginación deben resolverse exclusivamente a través del configuration system definido en **EN-0202**, siguiendo la cadena de precedencia global:
 
 `environment variables > config file > defaults`
+
+Los valores por defecto del registro de configuración EN-0202 son `page=1`, `page_size=20` y `max_page_size=100`, pero son configurables y no deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores.
 
 ---
 

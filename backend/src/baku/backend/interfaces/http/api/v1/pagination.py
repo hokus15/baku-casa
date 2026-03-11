@@ -15,8 +15,18 @@ from baku.backend.infrastructure.config.runtime_settings import (
 def get_pagination_defaults() -> tuple[int, int]:
     """Return ``(default_page_size, max_page_size)`` from centralised config (ADR-0013)."""
     profile = RuntimeConfigurationProvider().get_profile()
-    default_size = int(
-        profile.values.get("pagination.default_page_size", "20")
-    )
-    max_size = int(profile.values.get("pagination.max_page_size", "100"))
+    try:
+        default_size = int(profile.require("pagination.default_page_size"))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "Invalid value for 'pagination.default_page_size'; expected an integer."
+        ) from exc
+
+    try:
+        max_size = int(profile.require("pagination.max_page_size"))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "Invalid value for 'pagination.max_page_size'; expected an integer."
+        ) from exc
+
     return default_size, max_size

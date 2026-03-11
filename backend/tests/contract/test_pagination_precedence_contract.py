@@ -78,7 +78,7 @@ def test_properties_max_page_size_env_overrides_default(
 
     owner_id = _create_owner(client, auth_token, "P0020001")
     for i in range(4):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"PropP {i}",
@@ -89,6 +89,7 @@ def test_properties_max_page_size_env_overrides_default(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         "/api/v1/properties",
@@ -111,7 +112,7 @@ def test_owner_properties_max_page_size_env_overrides_default(
 
     owner_id = _create_owner(client, auth_token, "P0030001")
     for i in range(4):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"OP {i}",
@@ -122,6 +123,7 @@ def test_owner_properties_max_page_size_env_overrides_default(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         f"/api/v1/owners/{owner_id}/properties",

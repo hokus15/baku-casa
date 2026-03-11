@@ -1,13 +1,13 @@
 """Integration tests: EN-0202 precedence resolution for pagination parameters.
 
-Validates the precedence model `env > file > defaults` for pagination keys
-when collection endpoints execute real storage queries via SQLite in-memory
-(FR-003, FR-004, SC-002 from 001-pagination-rules-sync spec).
+Validates how environment-based pagination settings interact with built-in
+defaults when collection endpoints execute real storage queries via SQLite
+in-memory (FR-003, FR-004, SC-002 from 001-pagination-rules-sync spec).
 
 These tests complement the existing EN-0202 configuration precedence tests
 (backend/tests/integration/configuration/test_precedence_resolution.py) by
-exercising the full HTTP -> application -> storage round-trip rather than
-inspecting the configuration subsystem in isolation.
+exercising an HTTP -> application -> storage round-trip for env-vs-defaults
+behaviour rather than inspecting the configuration subsystem in isolation.
 """
 
 from __future__ import annotations
@@ -85,7 +85,7 @@ def test_env_pagination_max_page_size_overrides_builtin_default_for_properties(
 
     owner_id = _create_owner(client, auth_token, "IP20001")
     for i in range(5):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"IProp {i}",
@@ -96,6 +96,7 @@ def test_env_pagination_max_page_size_overrides_builtin_default_for_properties(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         "/api/v1/properties",
@@ -151,7 +152,7 @@ def test_env_pagination_default_page_size_used_when_caller_omits_page_size_prope
 
     owner_id = _create_owner(client, auth_token, "IP40001")
     for i in range(4):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"IPropD {i}",
@@ -162,6 +163,7 @@ def test_env_pagination_default_page_size_used_when_caller_omits_page_size_prope
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         "/api/v1/properties",
