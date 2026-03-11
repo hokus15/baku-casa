@@ -66,6 +66,22 @@ El sistema debe ser consistente y reproducible para los distintos entornos (dev,
 - La configuración de testing debe ser segura y explícita para evitar uso accidental de entornos persistentes.
 - La definición tipada y validada mejora la reproducibilidad del desarrollo y despliegue.
 
+### Resolución de parámetros configurables
+
+Todo parámetro declarado como configurable en una spec debe resolverse exclusivamente a través del configuration system definido en este enabler.
+
+Queda prohibido:
+
+- definir valores configurables mediante constantes hardcoded en el código de aplicación
+- duplicar valores configurables en múltiples capas
+- aplicar valores por defecto en adapters, servicios de aplicación o repositorios
+
+Debe existir **una única fuente de verdad** para cada parámetro configurable, resuelta por el configuration system siguiendo la precedencia global definida:
+
+`environment variables > config file > defaults`.
+
+Los adapters y servicios pueden **consumir configuración**, pero no convertirse en la fuente de definición de la misma.
+
 ---
 
 ## Criterios de aceptación

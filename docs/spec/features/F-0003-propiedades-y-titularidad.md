@@ -118,6 +118,10 @@ Los listados deben usar paginación con `page=1` y `page_size=20` por defecto.
 
 `max_page_size=100`, y tanto `page_size` como `max_page_size` deben ser configurables de forma transversal para todas las listas.
 
+Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
+
+No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración.
+
 ---
 
 ## Reglas de negocio
