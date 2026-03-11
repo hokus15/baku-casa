@@ -41,6 +41,17 @@ El sistema debe permitir:
 - Tras cambio de contraseña, las sesiones/tokens existentes deben quedar revocados.
 - El TTL de los tokens debe ser configurable.
 
+### Alineacion de listados con EN-0202
+
+Esta feature no introduce listados funcionales de dominio como capacidad principal.
+
+Si dentro de su alcance se expone cualquier endpoint de coleccion (por ejemplo, intentos de acceso o sesiones), debe cumplir obligatoriamente la disciplina transversal de paginacion:
+
+- paginacion obligatoria en toda coleccion
+- valores por defecto y limites maximos definidos de forma transversal
+- parametros de paginacion resueltos exclusivamente mediante el configuration system (EN-0202) con precedencia global: `environment variables > config file > defaults`
+- prohibido definir defaults o maximos hardcoded fuera de la configuracion central
+
 ---
 
 ## Auditoría mínima
@@ -80,6 +91,7 @@ El usuario operador debe mantener los siguientes campos de auditoría:
 - ADR-0009
 - ADR-0011
 - ADR-0012
+- ADR-0013
 
 ---
 

@@ -76,6 +76,14 @@ El sistema debe permitir:
 - Eliminar propietario mediante **soft delete** (estableciendo `deleted_at`)
 - Consultar detalle y listado con `include_deleted` opcional (default `false`)
 
+Los listados y busquedas de propietarios deben usar paginacion obligatoria.
+
+Los valores por defecto y limites maximos de paginacion deben ser configurables de forma transversal y resolverse exclusivamente mediante el configuration system definido en EN-0202, con precedencia global:
+
+`environment variables > config file > defaults`.
+
+No deben definirse valores hardcoded de paginacion fuera de la fuente central de configuracion.
+
 ---
 
 ## Reglas de negocio
@@ -118,6 +126,7 @@ El sistema debe permitir:
 - ADR-0009
 - ADR-0011
 - ADR-0012
+- ADR-0013
 
 ---
 

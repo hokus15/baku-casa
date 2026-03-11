@@ -68,6 +68,14 @@ No se gestionan porcentajes de participación ni histórico de cambios dentro de
 
 ---
 
+Los listados deben usar **paginacion obligatoria**.
+
+Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
+
+No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
+
+`environment variables > config file > defaults`
+
 ## Alcance
 
 - Gestión completa de contratos.

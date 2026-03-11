@@ -50,8 +50,8 @@ from baku.backend.domain.properties.repositories import (
     PropertyRepository,
     PropertyUnitOfWorkPort,
 )
-from baku.backend.infrastructure.config.runtime_settings import (
-    RuntimeConfigurationProvider,
+from baku.backend.interfaces.http.api.v1.pagination import (
+    get_pagination_defaults,
 )
 from baku.backend.interfaces.http.api.v1.properties.schemas import (
     CreatePropertyRequest,
@@ -77,16 +77,6 @@ router = APIRouter(prefix="/api/v1/properties", tags=["properties"])
 owners_cross_router = APIRouter(prefix="/api/v1/owners", tags=["owners"])
 CURRENT_CLAIMS_DEP = Depends(get_current_claims)
 logger = logging.getLogger(__name__)
-
-
-def _get_pagination_defaults() -> tuple[int, int]:
-    """Return (default_page_size, max_page_size) from centralised config (ADR-0013)."""
-    profile = RuntimeConfigurationProvider().get_profile()
-    default_size = int(
-        profile.values.get("pagination.default_page_size", "20")
-    )
-    max_size = int(profile.values.get("pagination.max_page_size", "100"))
-    return default_size, max_size
 
 
 def _result_to_response(result: object) -> PropertyResponse:
@@ -184,11 +174,13 @@ def get_list_properties(
         OwnershipRepository, Depends(get_ownership_repo)
     ],
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1),
+    page_size: int | None = Query(default=None, ge=1),
     include_deleted: bool = Query(default=False),
 ) -> PropertyListResponse:
-    _, max_size = _get_pagination_defaults()
-    capped = min(page_size, max_size)
+    default_size, max_size = get_pagination_defaults()
+    capped = min(
+        page_size if page_size is not None else default_size, max_size
+    )
     result = list_properties(
         property_repo=property_repo,
         ownership_repo=ownership_repo,
@@ -269,10 +261,12 @@ def get_owner_properties(
         OwnershipRepository, Depends(get_ownership_repo)
     ],
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1),
+    page_size: int | None = Query(default=None, ge=1),
 ) -> PropertyListResponse:
-    _, max_size = _get_pagination_defaults()
-    capped = min(page_size, max_size)
+    default_size, max_size = get_pagination_defaults()
+    capped = min(
+        page_size if page_size is not None else default_size, max_size
+    )
     result = list_owner_properties(
         owner_id=owner_id,
         ownership_repo=ownership_repo,

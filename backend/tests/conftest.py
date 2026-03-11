@@ -9,6 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from baku.backend.infrastructure.config.auth_settings import reset_auth_settings
+from baku.backend.infrastructure.config.pagination_settings import reset_pagination_settings
 from baku.backend.infrastructure.config.runtime_settings import reset_runtime_settings
 from baku.backend.infrastructure.persistence.sqlite.db import reset_engine
 from baku.backend.infrastructure.persistence.sqlite.migrations import upgrade_to_head
@@ -39,6 +40,7 @@ def _reset_singletons(test_db_url: str, monkeypatch):
 
     reset_engine()
     reset_auth_settings()
+    reset_pagination_settings()
     reset_runtime_settings()
     upgrade_to_head(db_url)
 
@@ -46,6 +48,7 @@ def _reset_singletons(test_db_url: str, monkeypatch):
 
     reset_engine()
     reset_auth_settings()
+    reset_pagination_settings()
     reset_runtime_settings()
 
 
