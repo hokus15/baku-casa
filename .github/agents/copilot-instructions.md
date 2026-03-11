@@ -16,6 +16,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-02
 - Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff (001-propietarios-sujetos-fiscales)
 - SQLite con migraciones versionadas (001-propietarios-sujetos-fiscales)
 - SQLite con migraciones versionadas (Alembic) (001-propiedades-titularidad)
+- Python 3.11 (backend) + FastAPI/OpenAPI (ADR-0004), SQLAlchemy/SQLite (ADR-0003), centralized typed configuration (ADR-0013) (001-pagination-rules-sync)
+- SQLite (sin cambios de esquema) (001-pagination-rules-sync)
 
 - Python 3.x por root (versionado exacto definido en cada `pyproject.toml`) + Tooling de lint, tipado y pruebas por root; GitHub Actions para CI (001-project-bootstrap)
 
@@ -35,8 +37,8 @@ cd src; pytest; ruff check .
 Python 3.x por root (versionado exacto definido en cada `pyproject.toml`): Follow standard conventions
 
 ## Recent Changes
+- 001-pagination-rules-sync: Added Python 3.11 (backend) + FastAPI/OpenAPI (ADR-0004), SQLAlchemy/SQLite (ADR-0003), centralized typed configuration (ADR-0013)
 - 001-propiedades-titularidad: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff
-- 001-propietarios-sujetos-fiscales: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff
 - 001-propietarios-sujetos-fiscales: Added Python 3.11 + FastAPI, SQLAlchemy, PyJWT, pytest, mypy, ruff
 
 

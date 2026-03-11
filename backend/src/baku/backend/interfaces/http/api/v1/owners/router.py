@@ -8,7 +8,8 @@ Routes (versioned prefix /api/v1/owners, ADR-0004):
   DELETE /{owner_id}    — soft delete owner (US5)
 
 Authentication is mandatory on all endpoints (ADR-0005).
-No PII in structured logs (research.md §5, ADR-0009).
+No PII in structured logs (ADR-0009).
+Pagination defaults from centralised config (ADR-0013).
 """
 
 from __future__ import annotations
@@ -23,16 +24,30 @@ from baku.backend.application.owners.create_owner import create_owner
 from baku.backend.application.owners.get_owner_by_id import get_owner_by_id
 from baku.backend.application.owners.list_owners import list_owners
 from baku.backend.application.owners.soft_delete_owner import soft_delete_owner
-from baku.backend.application.owners.update_owner import OwnerUpdate, update_owner
-from baku.backend.domain.owners.repositories import OwnerRepository, OwnerUnitOfWorkPort
+from baku.backend.application.owners.update_owner import (
+    OwnerUpdate,
+    update_owner,
+)
+from baku.backend.domain.owners.repositories import (
+    OwnerRepository,
+    OwnerUnitOfWorkPort,
+)
 from baku.backend.interfaces.http.api.v1.owners.schemas import (
     OwnerCreateRequest,
     OwnerListResponse,
     OwnerResponse,
     OwnerUpdateRequest,
 )
-from baku.backend.interfaces.http.dependencies.owner_deps import get_owner_repo, get_owner_unit_of_work
-from baku.backend.interfaces.http.dependencies.require_auth import get_current_claims
+from baku.backend.interfaces.http.api.v1.pagination import (
+    get_pagination_defaults,
+)
+from baku.backend.interfaces.http.dependencies.owner_deps import (
+    get_owner_repo,
+    get_owner_unit_of_work,
+)
+from baku.backend.interfaces.http.dependencies.require_auth import (
+    get_current_claims,
+)
 
 router = APIRouter(prefix="/api/v1/owners", tags=["owners"])
 CURRENT_CLAIMS_DEP = Depends(get_current_claims)
@@ -43,7 +58,12 @@ def _owner_to_response(owner: object) -> OwnerResponse:
     return OwnerResponse.model_validate(owner)
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=OwnerResponse, response_model_exclude_none=True)
+@router.post(
+    "",
+    status_code=status.HTTP_201_CREATED,
+    response_model=OwnerResponse,
+    response_model_exclude_none=True,
+)
 def post_create_owner(
     body: OwnerCreateRequest,
     claims: Annotated[TokenClaims, CURRENT_CLAIMS_DEP],
@@ -77,37 +97,61 @@ def post_create_owner(
     )
     logger.info(
         "http_owners_create_completed",
-        extra={"method": "POST", "path": "/api/v1/owners", "status_code": 201, "owner_id": owner.owner_id},
+        extra={
+            "method": "POST",
+            "path": "/api/v1/owners",
+            "status_code": 201,
+            "owner_id": owner.owner_id,
+        },
     )
     return _owner_to_response(owner)
 
 
-@router.get("", status_code=status.HTTP_200_OK, response_model=OwnerListResponse, response_model_exclude_none=True)
+@router.get(
+    "",
+    status_code=status.HTTP_200_OK,
+    response_model=OwnerListResponse,
+    response_model_exclude_none=True,
+)
 def get_list_owners(
     claims: Annotated[TokenClaims, CURRENT_CLAIMS_DEP],
     owner_repo: Annotated[OwnerRepository, Depends(get_owner_repo)],
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1),
+    page_size: int | None = Query(default=None, ge=1),
     tax_id: str | None = Query(default=None),
     legal_name: str | None = Query(default=None),
     include_deleted: bool = Query(default=False),
 ) -> OwnerListResponse:
     """List and search owners with pagination (US3). Requires authentication."""
+    default_size, max_size = get_pagination_defaults()
+    capped = min(
+        page_size if page_size is not None else default_size, max_size
+    )
     logger.info(
         "http_owners_list_started",
-        extra={"method": "GET", "path": "/api/v1/owners", "page": page, "page_size": page_size},
+        extra={
+            "method": "GET",
+            "path": "/api/v1/owners",
+            "page": page,
+            "page_size": capped,
+        },
     )
     result = list_owners(
         owner_repo=owner_repo,
         page=page,
-        page_size=page_size,
+        page_size=capped,
         tax_id=tax_id,
         legal_name=legal_name,
         include_deleted=include_deleted,
     )
     logger.info(
         "http_owners_list_completed",
-        extra={"method": "GET", "path": "/api/v1/owners", "status_code": 200, "total": result.total},
+        extra={
+            "method": "GET",
+            "path": "/api/v1/owners",
+            "status_code": 200,
+            "total": result.total,
+        },
     )
     return OwnerListResponse(
         items=[_owner_to_response(o) for o in result.items],
@@ -118,7 +162,10 @@ def get_list_owners(
 
 
 @router.get(
-    "/{owner_id}", status_code=status.HTTP_200_OK, response_model=OwnerResponse, response_model_exclude_none=True
+    "/{owner_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=OwnerResponse,
+    response_model_exclude_none=True,
 )
 def get_owner_detail(
     owner_id: str,
@@ -129,18 +176,34 @@ def get_owner_detail(
     """Get owner detail by owner_id (US2). Requires authentication."""
     logger.info(
         "http_owners_detail_started",
-        extra={"method": "GET", "path": "/api/v1/owners/{owner_id}", "owner_id": owner_id},
+        extra={
+            "method": "GET",
+            "path": "/api/v1/owners/{owner_id}",
+            "owner_id": owner_id,
+        },
     )
-    owner = get_owner_by_id(owner_id=owner_id, owner_repo=owner_repo, include_deleted=include_deleted)
+    owner = get_owner_by_id(
+        owner_id=owner_id,
+        owner_repo=owner_repo,
+        include_deleted=include_deleted,
+    )
     logger.info(
         "http_owners_detail_completed",
-        extra={"method": "GET", "path": "/api/v1/owners/{owner_id}", "status_code": 200, "owner_id": owner_id},
+        extra={
+            "method": "GET",
+            "path": "/api/v1/owners/{owner_id}",
+            "status_code": 200,
+            "owner_id": owner_id,
+        },
     )
     return _owner_to_response(owner)
 
 
 @router.patch(
-    "/{owner_id}", status_code=status.HTTP_200_OK, response_model=OwnerResponse, response_model_exclude_none=True
+    "/{owner_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=OwnerResponse,
+    response_model_exclude_none=True,
 )
 def patch_update_owner(
     owner_id: str,
@@ -152,7 +215,11 @@ def patch_update_owner(
     """Update an active owner (US4). Requires authentication."""
     logger.info(
         "http_owners_update_started",
-        extra={"method": "PATCH", "path": "/api/v1/owners/{owner_id}", "owner_id": owner_id},
+        extra={
+            "method": "PATCH",
+            "path": "/api/v1/owners/{owner_id}",
+            "owner_id": owner_id,
+        },
     )
     patch = OwnerUpdate.from_provided(
         body.model_fields_set,
@@ -181,7 +248,12 @@ def patch_update_owner(
     )
     logger.info(
         "http_owners_update_completed",
-        extra={"method": "PATCH", "path": "/api/v1/owners/{owner_id}", "status_code": 200, "owner_id": owner_id},
+        extra={
+            "method": "PATCH",
+            "path": "/api/v1/owners/{owner_id}",
+            "status_code": 200,
+            "owner_id": owner_id,
+        },
     )
     return _owner_to_response(owner)
 
@@ -196,11 +268,25 @@ def delete_soft_delete_owner(
     """Soft delete an owner (US5). Requires authentication."""
     logger.info(
         "http_owners_delete_started",
-        extra={"method": "DELETE", "path": "/api/v1/owners/{owner_id}", "owner_id": owner_id},
+        extra={
+            "method": "DELETE",
+            "path": "/api/v1/owners/{owner_id}",
+            "owner_id": owner_id,
+        },
     )
-    soft_delete_owner(owner_id=owner_id, deleted_by=claims.sub, owner_repo=owner_repo, uow=uow)
+    soft_delete_owner(
+        owner_id=owner_id,
+        deleted_by=claims.sub,
+        owner_repo=owner_repo,
+        uow=uow,
+    )
     logger.info(
         "http_owners_delete_completed",
-        extra={"method": "DELETE", "path": "/api/v1/owners/{owner_id}", "status_code": 204, "owner_id": owner_id},
+        extra={
+            "method": "DELETE",
+            "path": "/api/v1/owners/{owner_id}",
+            "status_code": 204,
+            "owner_id": owner_id,
+        },
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

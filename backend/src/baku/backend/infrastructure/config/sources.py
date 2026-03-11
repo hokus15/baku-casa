@@ -34,6 +34,8 @@ _ENV_VAR_TO_KEY: dict[str, str] = {
     "AUTH_TOKEN_TTL_SECONDS": "auth.token_ttl_seconds",
     "AUTH_MAX_FAILED_ATTEMPTS": "auth.max_failed_attempts",
     "AUTH_LOCKOUT_MINUTES": "auth.lockout_minutes",
+    "PAGINATION_DEFAULT_PAGE_SIZE": "pagination.default_page_size",
+    "PAGINATION_MAX_PAGE_SIZE": "pagination.max_page_size",
 }
 
 _TEST_DB_ENV_VAR = "TEST_DATABASE_URL"
@@ -68,7 +70,10 @@ def load_env_source() -> dict[str, str]:
         result["persistence.database_url"] = test_db_url
 
     for env_var, key in _ENV_VAR_TO_KEY.items():
-        if key == "persistence.database_url" and "persistence.database_url" in result:
+        if (
+            key == "persistence.database_url"
+            and "persistence.database_url" in result
+        ):
             continue
         value = os.environ.get(env_var)
         if value is not None:
@@ -90,7 +95,9 @@ def load_file_source(env_file: Path | None = None) -> dict[str, str]:
     if env_file is None:
         # Derive from module location: src/baku/backend/infrastructure/config/
         # → six levels up → backend root
-        env_file = Path(__file__).parent.parent.parent.parent.parent.parent / ".env"
+        env_file = (
+            Path(__file__).parent.parent.parent.parent.parent.parent / ".env"
+        )
 
     if not env_file.exists():
         return {}
@@ -104,7 +111,10 @@ def load_file_source(env_file: Path | None = None) -> dict[str, str]:
             result["persistence.database_url"] = test_db_url
 
     for env_var, key in _ENV_VAR_TO_KEY.items():
-        if key == "persistence.database_url" and "persistence.database_url" in result:
+        if (
+            key == "persistence.database_url"
+            and "persistence.database_url" in result
+        ):
             continue
         # Skip if already present in the process environment (env has higher precedence)
         if env_var in os.environ:
