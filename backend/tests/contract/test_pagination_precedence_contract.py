@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from baku.backend.infrastructure.config.runtime_settings import (
-    reset_runtime_settings,
+from baku.backend.infrastructure.config.pagination_settings import (
+    reset_pagination_settings,
 )
 
 _OWNER_PAYLOAD = {
@@ -51,7 +51,7 @@ def test_owners_max_page_size_env_overrides_default(
 ) -> None:
     """env var PAGINATION_MAX_PAGE_SIZE caps page_size even when default is higher."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "3")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(5):
         _create_owner(client, auth_token, f"P0010{i:04d}")
@@ -74,11 +74,11 @@ def test_properties_max_page_size_env_overrides_default(
 ) -> None:
     """env var PAGINATION_MAX_PAGE_SIZE caps properties list."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "2")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "P0020001")
     for i in range(4):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"PropP {i}",
@@ -89,6 +89,7 @@ def test_properties_max_page_size_env_overrides_default(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         "/api/v1/properties",
@@ -107,11 +108,11 @@ def test_owner_properties_max_page_size_env_overrides_default(
 ) -> None:
     """env var PAGINATION_MAX_PAGE_SIZE caps cross-query /owners/{id}/properties."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "2")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "P0030001")
     for i in range(4):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"OP {i}",
@@ -122,6 +123,7 @@ def test_owner_properties_max_page_size_env_overrides_default(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         f"/api/v1/owners/{owner_id}/properties",
@@ -143,7 +145,7 @@ def test_pagination_contract_response_page_size_bounded_by_env(
 ) -> None:
     """response.page_size must not exceed the env-configured maximum."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "5")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     resp = client.get(
         "/api/v1/owners",

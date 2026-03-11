@@ -16,8 +16,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from baku.backend.infrastructure.config.runtime_settings import (
-    reset_runtime_settings,
+from baku.backend.infrastructure.config.pagination_settings import (
+    reset_pagination_settings,
 )
 
 _OWNER_PAYLOAD = {
@@ -60,7 +60,7 @@ def test_owners_list_default_page_size_comes_from_config_not_hardcode(
     """
     monkeypatch.setenv("PAGINATION_DEFAULT_PAGE_SIZE", "5")
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "50")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(8):
         _create_owner(client, auth_token, f"NH01{i:05d}")
@@ -85,7 +85,7 @@ def test_owners_list_default_page_size_uses_configured_value_not_implicit_20(
     """Set default to 3 — unambiguously not 20 — to rule out accidental pass."""
     monkeypatch.setenv("PAGINATION_DEFAULT_PAGE_SIZE", "3")
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "50")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(5):
         _create_owner(client, auth_token, f"NH02{i:05d}")
@@ -112,11 +112,11 @@ def test_properties_list_default_page_size_comes_from_config_not_hardcode(
     must return page_size=4."""
     monkeypatch.setenv("PAGINATION_DEFAULT_PAGE_SIZE", "4")
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "50")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "NH03001")
     for i in range(6):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"NHProp {i}",
@@ -127,6 +127,7 @@ def test_properties_list_default_page_size_comes_from_config_not_hardcode(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         "/api/v1/properties",
@@ -150,11 +151,11 @@ def test_owner_properties_cross_query_default_page_size_comes_from_config(
     """GET /owners/{id}/properties without page_size must use configured default."""
     monkeypatch.setenv("PAGINATION_DEFAULT_PAGE_SIZE", "2")
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "50")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "NH04001")
     for i in range(4):
-        client.post(
+        resp_create = client.post(
             "/api/v1/properties",
             json={
                 "name": f"NHOwnerProp {i}",
@@ -165,6 +166,7 @@ def test_owner_properties_cross_query_default_page_size_comes_from_config(
             },
             headers=_auth_header(auth_token),
         )
+        assert resp_create.status_code == 201, resp_create.text
 
     resp = client.get(
         f"/api/v1/owners/{owner_id}/properties",

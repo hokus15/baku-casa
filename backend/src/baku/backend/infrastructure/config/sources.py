@@ -50,6 +50,8 @@ _DEFAULTS: dict[str, str] = {
     "auth.token_ttl_seconds": "3600",
     "auth.max_failed_attempts": "5",
     "auth.lockout_minutes": "15",
+    "pagination.default_page_size": "20",
+    "pagination.max_page_size": "100",
 }
 
 

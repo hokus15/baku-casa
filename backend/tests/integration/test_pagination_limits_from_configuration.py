@@ -13,8 +13,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from baku.backend.infrastructure.config.runtime_settings import (
-    reset_runtime_settings,
+from baku.backend.infrastructure.config.pagination_settings import (
+    reset_pagination_settings,
 )
 
 _OWNER_PAYLOAD = {
@@ -52,7 +52,7 @@ def test_owners_list_max_page_size_from_config_caps_response(
 ) -> None:
     """PAGINATION_MAX_PAGE_SIZE env var defines the ceiling for owners list."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "4")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(10):
         _create_owner(client, auth_token, f"CL01{i:05d}")
@@ -75,7 +75,7 @@ def test_owners_list_max_page_size_from_config_lower_limit(
 ) -> None:
     """A very low PAGINATION_MAX_PAGE_SIZE (1) is respected."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "1")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(3):
         _create_owner(client, auth_token, f"CL02{i:05d}")
@@ -95,7 +95,7 @@ def test_owners_list_max_page_size_from_config_higher_limit(
 ) -> None:
     """PAGINATION_MAX_PAGE_SIZE can be raised above built-in 100 if needed."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "200")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     for i in range(5):
         _create_owner(client, auth_token, f"CL03{i:05d}")
@@ -121,7 +121,7 @@ def test_properties_list_max_page_size_from_config_caps_response(
 ) -> None:
     """PAGINATION_MAX_PAGE_SIZE caps properties list."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "3")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "CL04001")
     for i in range(6):
@@ -157,7 +157,7 @@ def test_owner_properties_list_max_page_size_from_config(
 ) -> None:
     """PAGINATION_MAX_PAGE_SIZE caps /owners/{id}/properties cross-query."""
     monkeypatch.setenv("PAGINATION_MAX_PAGE_SIZE", "2")
-    reset_runtime_settings()
+    reset_pagination_settings()
 
     owner_id = _create_owner(client, auth_token, "CL05001")
     for i in range(5):
