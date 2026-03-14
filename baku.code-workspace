@@ -13,6 +13,10 @@
             "path": "./bot"
         },
         {
+            // "name": "Baku Tools",
+            "path": "./tools"
+        },
+        {
             // "name": "Docs",
             "path": "./docs"
         },
