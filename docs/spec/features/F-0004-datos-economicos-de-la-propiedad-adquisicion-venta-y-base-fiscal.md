@@ -28,7 +28,22 @@ Permitir registrar en cada propiedad **0..N apuntes económicos** asociados a su
 
 - `property_id`
 - `movement_type`: enum { ACQUISITION, TRANSFER }
-- `category`: enum (lista cerrada global)
+- `category`: enum (lista cerrada):
+      Adquisición
+      Notaría
+      Registro
+      ITP
+      IVA
+      Reformas
+      Comisiones
+      Arquitecto
+      Otros
+      Otros impuestos
+      Venta
+      Plusvalía
+      No computable
+      Tasación
+      Subrogación préstamo
 - `date`: date
 - `amount_real`: decimal positivo
 - `amount_fiscal`: decimal positivo
@@ -129,8 +144,6 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
     - Precio principal.
     - Gastos deducibles.
     - Otros ajustes.
-
----
 
 ---
 

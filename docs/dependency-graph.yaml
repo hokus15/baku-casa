@@ -1,3 +1,17 @@
+# Source of truth for roadmap structure.
+# Defines the DAG of Features and Enablers.
+# Narrative descriptions live in docs/roadmap.md.
+
+# Scope taxonomy:
+#
+# cross_cutting
+#   Enabler that affects multiple architectural areas of the system.
+#   Typically infrastructure, architecture or platform capabilities.
+#
+# module
+#   Enabler that affects a specific subsystem or capability
+#   without altering the global architecture.
+
 version: 1
 
 rules:
@@ -144,18 +158,6 @@ items:
       - backend
       - application_services
       - service_modularization
-
-  - id: EN-0207
-    type: enabler
-    status: planned
-    phase: MVP1
-    depends_on:
-      - F-0009
-      - EN-0300
-    scope: cross_cutting
-    affects_future_features: true
-    applies_to:
-      - backend
 
   - id: EN-0302
     type: enabler

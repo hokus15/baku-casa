@@ -7,7 +7,21 @@ Las capacidades técnicas o estructurales se describen como **Enablers (EN-xxxx)
 
 Los **Enablers** no introducen funcionalidad visible para el usuario final, pero habilitan el desarrollo seguro y mantenible de las features.
 
-## Regla de baseline técnico acumulado
+---
+
+# Interpretación del roadmap
+
+Este documento describe la **evolución funcional del sistema**.
+
+El estado estructural del roadmap y las dependencias entre elementos se definen en:
+
+```
+docs/dependency-graph.yaml
+```
+
+---
+
+# Regla de baseline técnico acumulado
 
 Las Features deben asumir como parte del sistema todos los Enablers previos que les apliquen según `docs/dependency-graph.yaml`.
 
@@ -116,9 +130,9 @@ Reorganización del composition root HTTP para separar responsabilidades de boot
 
 Incluye:
 
-- `main.py` reducido a thin entrypoint (sin responsibilities de bootstrap)
+- `main.py` reducido a thin entrypoint
 - composition root único (`dependency_wiring.py`)
-- responsabilidades separadas en módulos dedicados (`lifespan.py`, `app_factory.py`, etc.)
+- responsabilidades separadas en módulos dedicados (`lifespan.py`, `app_factory.py`)
 - fail-fast preservado (ADR-0013)
 - 37 tests de integración de validación de estructura y comportamiento
 
@@ -136,8 +150,6 @@ Resultado MVP0:
 ---
 
 # MVP 1 — Master Data y Contratos (Sin Registro Contable)
-
-Las Features de MVP1 deben asumir como baseline todos los Enablers completados en MVP0 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -203,23 +215,11 @@ Reorganización de los servicios de la capa Application en módulos coherentes p
 
 ---
 
-## EN-0207 — Pagination and List Query Conventions
-
-Convenciones consistentes para endpoints que devuelven colecciones.
-
-Incluye:
-
-- parámetros de paginación
-- ordenación
-- estructura uniforme de respuesta
-
----
-
 ## EN-0302 — Persistence Schema Rebaseline
 
 Consolidación del esquema de persistencia tras completar el modelo de dominio de MVP1.
 
-Permite reemplazar el historial inicial de migraciones por un **baseline limpio del esquema de base de datos**, antes de introducir el núcleo financiero del sistema.
+Permite reemplazar el historial inicial de migraciones por un **baseline limpio del esquema de base de datos** antes de introducir el núcleo financiero del sistema.
 
 Incluye:
 
@@ -242,8 +242,6 @@ Resultado MVP1:
 ---
 
 # MVP 2 — Núcleo Financiero (Ledger)
-
-Las Features de MVP2 deben asumir como baseline todos los Enablers completados en MVP0 y MVP1 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -298,8 +296,6 @@ Resultado MVP2:
 
 # MVP 3 — Documentación Operativa
 
-Las Features de MVP3 deben asumir como baseline todos los Enablers completados en MVP0, MVP1 y MVP2 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
-
 Objetivo:
 
 Formalizar documentalmente las operaciones económicas registradas en el sistema.
@@ -327,8 +323,6 @@ Resultado MVP3:
 ---
 
 # MVP 4 — Automatización Supervisada
-
-Las Features de MVP4 deben asumir como baseline todos los Enablers completados en MVP0, MVP1, MVP2 y MVP3 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
 
 Objetivo:
 
@@ -359,8 +353,6 @@ Resultado MVP4:
 
 # MVP 5 — Fiscalidad y Reporting
 
-Las Features de MVP5 deben asumir como baseline todos los Enablers completados en MVP0, MVP1, MVP2, MVP3 y MVP4 que les apliquen según `docs/dependency-graph.yaml`, especialmente aquellos marcados como `affects_future_features: true`.
-
 Objetivo:
 
 Generar información consolidada para cumplimiento de obligaciones fiscales.
@@ -377,4 +369,4 @@ Resultado MVP5:
 
 - reporting estructurado
 - base para generación de modelos fiscales
-- explotación analítica de datos financieros
+- explotación analítica de datos financiero

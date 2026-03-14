@@ -2,64 +2,6 @@
 
 Root independiente del backend para bootstrap EN-0100.
 
-## Feature F-0002: Propietarios (Sujetos Fiscales)
-
-**Estado**: ✅ Implementado
-
-CRUD de propietarios con arquitectura hexagonal:
-
-- Crear propietario (`POST /api/v1/owners`) — 201 Created
-- Listar propietarios con paginación y filtros (`GET /api/v1/owners`) — 200 OK
-  - Query params: `page` (1-based), `page_size` (1–100), `legal_name` (parcial, case-insensitive), `tax_id` (exact normalized), `include_deleted` (default: false)
-- Obtener propietario por ID (`GET /api/v1/owners/{owner_id}`) — 200 OK
-  - Query param: `include_deleted=true` para incluir eliminados
-- Actualizar propietario (`PATCH /api/v1/owners/{owner_id}`) — 200 OK (solo campos enviados)
-- Eliminar propietario (soft-delete) (`DELETE /api/v1/owners/{owner_id}`) — 204 No Content
-  - Segunda llamada sobre propietario ya eliminado devuelve 404 (OWNER_NOT_FOUND), según contrato `owners-api-v1.yaml`
-
-Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
-
-El `tax_id` se normaliza de forma determinista: trim → mayúsculas → sin espacios → sin guiones.
-
-**Evidencia de calidad (F-0002)**:
-
-```
-ruff check src/ tests/  →  All checks passed!
-mypy src/               →  Success: no issues found in 93 source files
-pytest -q               →  tests passed
-```
-
-## Feature F-0003: Propiedades y Titularidad
-
-**Estado**: ✅ Implementado
-
-Registro de inmuebles y vinculación a propietarios (sujetos fiscales) con arquitectura hexagonal:
-
-- Crear propiedad con titularidad inicial (`POST /api/v1/properties`) — 201 Created
-- Listar propiedades con paginación (`GET /api/v1/properties`) — 200 OK
-  - Query params: `page` (1-based), `page_size` (1–100)
-- Obtener detalle de propiedad (`GET /api/v1/properties/{property_id}`) — 200 OK
-- Actualizar propiedad (`PATCH /api/v1/properties/{property_id}`) — 200 OK (solo campos enviados)
-- Reemplazar titularidad completa (`PUT /api/v1/properties/{property_id}/ownership`) — 200 OK
-- Eliminar propiedad (soft-delete) (`DELETE /api/v1/properties/{property_id}`) — 204 No Content
-  - La eliminación aplica soft-delete en cascada sobre las titularidades activas
-- Consultar propietarios de una propiedad (`GET /api/v1/properties/{property_id}/owners`) — 200 OK
-- Consultar propiedades de un propietario (`GET /api/v1/owners/{owner_id}/properties`) — 200 OK
-
-Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
-
-Los campos derivados catastrales (`cadastral_construction_value`, `construction_ratio`) se calculan automáticamente y **no son editables directamente**.
-
-La suma de `ownership_percentage` de los propietarios activos de una propiedad no puede superar 100.
-
-**Evidencia de calidad (F-0003)**:
-
-```
-ruff check src/ tests/  →  All checks passed!
-mypy src/               →  Success: no issues found in 22 source files
-pytest -q               →  245 passed
-```
-
 ## Enabler E-0100: Project Bootstrap
 
 Establecer la base mínima del repositorio para habilitar el desarrollo reproducible mediante Spec Driven Development (SDD), antes de implementar cualquier funcionalidad de dominio.
@@ -79,89 +21,6 @@ Implementación del sistema de autenticación con arquitectura hexagonal (ADR-00
 - Rotación de contraseña con revocación global por `credential_version` (`PUT /api/v1/auth/password`)
 - Throttle configurable por intentos fallidos
 - Middleware de `X-Correlation-ID` en todos los requests
-
-## Enabler EN-0300: HTTP Bootstrap Modularization
-
-**Estado**: ✅ Implementado (2026-03-07)
-
-Reorganización estructural del bootstrap HTTP (`interfaces/http/bootstrap/`). El `main.py`
-es ahora un thin entrypoint; todas las responsabilidades de arranque están separadas en
-componentes con responsabilidad única:
-
-| Responsabilidad | Módulo |
-|---|---|
-| App Creation | `interfaces/http/bootstrap/app_factory.py` |
-| Lifespan Bootstrap | `interfaces/http/bootstrap/lifespan.py` |
-| Dependency Composition Wiring | `interfaces/http/bootstrap/dependency_wiring.py` |
-| Middleware Registration | `interfaces/http/bootstrap/middleware_registry.py` |
-| Error Handlers Registration | `interfaces/http/bootstrap/error_handlers_registry.py` |
-| Router Registration | `interfaces/http/bootstrap/router_registry.py` |
-
-El composition root único (`dependency_wiring.py`) es el único módulo del paquete
-`interfaces/` con permiso de importar desde `infrastructure/` (ADR-0002).
-
-El comportamiento fail-fast ante configuración crítica ausente se mantiene intacto (ADR-0013).
-
-**Cobertura de tests**: 37 tests de integración en `tests/integration/bootstrap/` validan:
-- Límites del entrypoint (`test_entrypoint_boundaries.py`)
-- Separación de responsabilidades del inventario cerrado (`test_bootstrap_responsibility_separation.py`)
-- Composition root único y equivalencia de overrides (`test_single_composition_root.py`, `test_dependency_wiring_equivalence.py`)
-- Fail-fast y comportamiento del lifespan (`test_fail_fast_bootstrap_errors.py`)
-- Superficie HTTP invariante (`test_http_surface_unchanged.py`)
-- Trazabilidad de errores estructurados (`test_bootstrap_error_traceability.py`)
-
-## Gates de calidad locales
-
-Ejecutar desde el directorio `backend/`:
-
-```bash
-# Lint (ruff)
-python -m ruff check src/ tests/
-
-# Type check (mypy — configurado en pyproject.toml)
-python -m mypy src/
-
-# Tests
-pytest tests/
-
-# Todo junto
-python -m ruff check src/ tests/ && python -m mypy src/ && pytest tests/
-```
-
-### Instalación del entorno de desarrollo
-
-```bash
-pip install -e ".[dev]"
-```
-
-## Migraciones (Alembic)
-
-La aplicación no crea/actualiza esquema en runtime. El esquema se gestiona
-exclusivamente por migraciones versionadas.
-
-Ejecutar desde `backend/`:
-
-```bash
-# Aplicar todas las migraciones
-python -m alembic -c alembic.ini upgrade head
-
-# Ver historial
-python -m alembic -c alembic.ini history
-
-# Ver revisión actual
-python -m alembic -c alembic.ini current
-```
-
-### Dependencias de producción
-
-| Paquete | Propósito |
-|---|---|
-| `fastapi` | HTTP adapter (ADR-0004) |
-| `uvicorn[standard]` | ASGI server |
-| `PyJWT` | Tokens JWT stateless (ADR-0005) |
-| `bcrypt` | Hash de contraseñas (sin passlib) |
-| `SQLAlchemy` | ORM + SQLite (ADR-0003) |
-| `python-dotenv` | Carga de fichero `.env` para desarrollo local |
 
 ## Enabler EN-0202: Configuration System
 
@@ -233,3 +92,144 @@ Ejecutar únicamente la suite de persistencia:
 ```bash
 pytest tests/integration/persistence -m persistence_integration
 ```
+
+## Enabler EN-0300: HTTP Bootstrap Modularization
+
+**Estado**: ✅ Implementado
+
+Reorganización estructural del bootstrap HTTP (`interfaces/http/bootstrap/`). El `main.py`
+es ahora un thin entrypoint; todas las responsabilidades de arranque están separadas en
+componentes con responsabilidad única:
+
+| Responsabilidad | Módulo |
+|---|---|
+| App Creation | `interfaces/http/bootstrap/app_factory.py` |
+| Lifespan Bootstrap | `interfaces/http/bootstrap/lifespan.py` |
+| Dependency Composition Wiring | `interfaces/http/bootstrap/dependency_wiring.py` |
+| Middleware Registration | `interfaces/http/bootstrap/middleware_registry.py` |
+| Error Handlers Registration | `interfaces/http/bootstrap/error_handlers_registry.py` |
+| Router Registration | `interfaces/http/bootstrap/router_registry.py` |
+
+El composition root único (`dependency_wiring.py`) es el único módulo del paquete
+`interfaces/` con permiso de importar desde `infrastructure/` (ADR-0002).
+
+El comportamiento fail-fast ante configuración crítica ausente se mantiene intacto (ADR-0013).
+
+**Cobertura de tests**: 37 tests de integración en `tests/integration/bootstrap/` validan:
+- Límites del entrypoint (`test_entrypoint_boundaries.py`)
+- Separación de responsabilidades del inventario cerrado (`test_bootstrap_responsibility_separation.py`)
+- Composition root único y equivalencia de overrides (`test_single_composition_root.py`, `test_dependency_wiring_equivalence.py`)
+- Fail-fast y comportamiento del lifespan (`test_fail_fast_bootstrap_errors.py`)
+- Superficie HTTP invariante (`test_http_surface_unchanged.py`)
+- Trazabilidad de errores estructurados (`test_bootstrap_error_traceability.py`)
+
+## Feature F-0002: Propietarios (Sujetos Fiscales)
+
+**Estado**: ✅ Implementado
+
+CRUD de propietarios con arquitectura hexagonal:
+
+- Crear propietario (`POST /api/v1/owners`) — 201 Created
+- Listar propietarios con paginación y filtros (`GET /api/v1/owners`) — 200 OK
+  - Query params: `page` (1-based), `page_size` (1–100), `legal_name` (parcial, case-insensitive), `tax_id` (exact normalized), `include_deleted` (default: false)
+- Obtener propietario por ID (`GET /api/v1/owners/{owner_id}`) — 200 OK
+  - Query param: `include_deleted=true` para incluir eliminados
+- Actualizar propietario (`PATCH /api/v1/owners/{owner_id}`) — 200 OK (solo campos enviados)
+- Eliminar propietario (soft-delete) (`DELETE /api/v1/owners/{owner_id}`) — 204 No Content
+  - Segunda llamada sobre propietario ya eliminado devuelve 404 (OWNER_NOT_FOUND), según contrato `owners-api-v1.yaml`
+
+Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
+
+El `tax_id` se normaliza de forma determinista: trim → mayúsculas → sin espacios → sin guiones.
+
+**Evidencia de calidad (F-0002)**:
+
+```
+ruff check src/ tests/  →  All checks passed!
+mypy src/               →  Success: no issues found in 93 source files
+pytest -q               →  tests passed
+```
+
+## Feature F-0003: Propiedades y Titularidad
+
+**Estado**: ✅ Implementado
+
+Registro de inmuebles y vinculación a propietarios (sujetos fiscales) con arquitectura hexagonal:
+
+- Crear propiedad con titularidad inicial (`POST /api/v1/properties`) — 201 Created
+- Listar propiedades con paginación (`GET /api/v1/properties`) — 200 OK
+  - Query params: `page` (1-based), `page_size` (1–100)
+- Obtener detalle de propiedad (`GET /api/v1/properties/{property_id}`) — 200 OK
+- Actualizar propiedad (`PATCH /api/v1/properties/{property_id}`) — 200 OK (solo campos enviados)
+- Reemplazar titularidad completa (`PUT /api/v1/properties/{property_id}/ownership`) — 200 OK
+- Eliminar propiedad (soft-delete) (`DELETE /api/v1/properties/{property_id}`) — 204 No Content
+  - La eliminación aplica soft-delete en cascada sobre las titularidades activas
+- Consultar propietarios de una propiedad (`GET /api/v1/properties/{property_id}/owners`) — 200 OK
+- Consultar propiedades de un propietario (`GET /api/v1/owners/{owner_id}/properties`) — 200 OK
+
+Todos los endpoints requieren autenticación JWT (`Authorization: Bearer <token>`).
+
+Los campos derivados catastrales (`cadastral_construction_value`, `construction_ratio`) se calculan automáticamente y **no son editables directamente**.
+
+La suma de `ownership_percentage` de los propietarios activos de una propiedad no puede superar 100.
+
+**Evidencia de calidad (F-0003)**:
+
+```
+ruff check src/ tests/  →  All checks passed!
+mypy src/               →  Success: no issues found in 22 source files
+pytest -q               →  245 passed
+```
+
+## Gates de calidad locales
+
+Ejecutar desde el directorio `backend/`:
+
+```bash
+# Lint (ruff)
+python -m ruff check src/ tests/
+
+# Type check (mypy — configurado en pyproject.toml)
+python -m mypy src/
+
+# Tests
+pytest tests/
+
+# Todo junto
+python -m ruff check src/ tests/ && python -m mypy src/ && pytest tests/
+```
+
+### Instalación del entorno de desarrollo
+
+```bash
+pip install -e ".[dev]"
+```
+
+## Migraciones (Alembic)
+
+La aplicación no crea/actualiza esquema en runtime. El esquema se gestiona
+exclusivamente por migraciones versionadas.
+
+Ejecutar desde `backend/`:
+
+```bash
+# Aplicar todas las migraciones
+python -m alembic -c alembic.ini upgrade head
+
+# Ver historial
+python -m alembic -c alembic.ini history
+
+# Ver revisión actual
+python -m alembic -c alembic.ini current
+```
+
+### Dependencias de producción
+
+| Paquete | Propósito |
+|---|---|
+| `fastapi` | HTTP adapter (ADR-0004) |
+| `uvicorn[standard]` | ASGI server |
+| `PyJWT` | Tokens JWT stateless (ADR-0005) |
+| `bcrypt` | Hash de contraseñas (sin passlib) |
+| `SQLAlchemy` | ORM + SQLite (ADR-0003) |
+| `python-dotenv` | Carga de fichero `.env` para desarrollo local |

@@ -1,67 +1,109 @@
-# Contexto del Sistema
+# Contexto del sistema — Baku.Casa
 
-## 1. Dominio
+## Propósito del sistema
 
-Baku.Casa es una aplicación para la gestión de alquileres de inmuebles en España dirigida a propietarios particulares.
+Baku.Casa es una aplicación self-hosted para la gestión de alquileres de inmuebles en España.
 
-El sistema está orientado a la administración de contratos de arrendamiento, control financiero asociado y cumplimiento de obligaciones fiscales derivadas del alquiler.
+El sistema está pensado para propietarios particulares que desean automatizar la administración de sus propiedades y mantener un control claro sobre contratos, cobros y obligaciones fiscales asociadas al alquiler.
 
----
-
-## 2. Marco Legal y Territorial
-
-- Ámbito geográfico: España.
-- Moneda: Euro (EUR).
-- Calendario: Gregoriano.
-- Normativa fiscal relevante: IRPF, IVA (Modelo 303).
-- Los porcentajes y reglas fiscales deben alinearse con normativa española vigente.
-
-El sistema no contempla inicialmente soporte multi-país.
+El objetivo del sistema es centralizar en una única herramienta la información y operaciones necesarias para la gestión de alquileres.
 
 ---
 
-## 3. Modelo Operativo
+## Usuarios objetivo
 
-- Sistema self-hosted.
-- Uso en red local (LAN).
-- No orientado a SaaS público.
-- Inicialmente modelo de usuario único.
-- Interacción principal vía API HTTP y bot de mensajería.
+El sistema está diseñado principalmente para:
 
----
+- propietarios particulares de inmuebles
+- usuarios que gestionan directamente sus propias propiedades
 
-## 4. Restricciones Externas
+El sistema no está orientado a:
 
-- Debe poder ejecutarse en hardware limitado (ej. Raspberry Pi).
-- Recursos computacionales limitados.
-- No se requiere alta concurrencia masiva.
-- No se requiere alta disponibilidad distribuida.
+- uso multi-tenant
+- plataformas SaaS
+- gestión de propiedades para múltiples clientes
 
 ---
 
-## 5. Supuestos de Uso
+## Restricciones operativas
 
-- Número reducido de propiedades.
-- Volumen moderado de transacciones mensuales.
-- Uso doméstico o pequeña escala.
-- Los usuarios no son técnicos avanzados en contabilidad.
+El sistema opera bajo las siguientes restricciones de contexto:
 
----
+- despliegue **self-hosted**
+- ejecución en **red local (LAN)**
+- **infraestructura ligera** (por ejemplo Raspberry Pi o VPS pequeño)
+- **sin dependencia obligatoria de servicios externos**
+- **uso mono-usuario** en el alcance inicial
 
-## 6. No Objetivos
-
-El sistema no pretende:
-
-- Ser un ERP generalista.
-- Gestionar múltiples empresas independientes.
-- Ofrecer multi-tenancy SaaS.
-- Sustituir asesoría fiscal profesional.
-- Implementar un sistema contable completo de doble partida.
+Estas restricciones forman parte del contexto del sistema y condicionan su diseño.
 
 ---
 
-## 7. Relación con la Arquitectura
+## Alcance funcional del sistema
 
-Este documento define el entorno y restricciones externas.
+Baku.Casa cubre progresivamente las siguientes áreas funcionales:
 
-Las decisiones técnicas derivadas de estas restricciones se formalizan exclusivamente en los ADR.
+- gestión de propiedades
+- gestión de titularidad de propiedades
+- gestión de contratos de arrendamiento
+- gestión económica de alquileres
+- registro de devengos y pagos
+- gestión de deudas y créditos
+- generación de documentos asociados al alquiler
+- soporte para reporting fiscal
+
+El sistema no sustituye asesoramiento fiscal profesional.
+
+---
+
+## Automatización del sistema
+
+El sistema puede generar eventos internos de forma automática para facilitar la gestión administrativa de los alquileres.
+
+También permite integración con otros sistemas mediante mecanismos de automatización como:
+
+- webhooks
+- MQTT
+
+---
+
+## Enfoque del sistema
+
+Baku.Casa está diseñado para ser:
+
+- **determinista** en sus cálculos financieros
+- **auditable**
+- **reproducible**
+- **controlado mediante especificaciones formales**
+
+El desarrollo del sistema sigue un enfoque de **Specification Driven Development (SDD)**.
+
+---
+
+## Evolución del sistema
+
+Las capacidades del sistema se introducen progresivamente mediante:
+
+- **Features**, que introducen capacidades funcionales
+- **Enablers**, que introducen capacidades técnicas o estructurales
+
+La planificación del sistema se define en:
+
+```
+docs/roadmap.md
+docs/dependency-graph.yaml
+```
+
+---
+
+## Relación con otros documentos
+
+Este documento describe únicamente el **contexto del sistema**.
+
+Otros aspectos del sistema se definen en:
+
+- `docs/constitution.md` — reglas invariantes del sistema
+- `docs/roadmap.md` — planificación funcional
+- `docs/dependency-graph.yaml` — dependencias entre Features y Enablers
+- `docs/spec/` — especificaciones funcionales
+- `docs/adr/` — decisiones arquitectónicas
