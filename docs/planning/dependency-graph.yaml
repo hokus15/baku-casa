@@ -1,21 +1,23 @@
 # Source of truth for roadmap structure.
 # Defines the DAG of Features and Enablers.
-# Narrative descriptions live in docs/roadmap.md.
+# Narrative descriptions live in docs/planning/roadmap.md.
 
 # Scope taxonomy:
 #
 # cross_cutting
-#   Enabler that affects multiple architectural areas of the system.
-#   Typically infrastructure, architecture or platform capabilities.
+#   Enabler or Feature that affects multiple architectural areas of the system.
+#   Typically infrastructure, architecture, platform capabilities,
+#   or foundational functional capabilities with broad impact.
 #
 # module
-#   Enabler that affects a specific subsystem or capability
+#   Enabler or Feature that affects a specific subsystem or capability
 #   without altering the global architecture.
 
 version: 1
 
 rules:
   propagate_enablers_to_future_features: true
+  execution_order_source: dependency_graph
 
 items:
   - id: EN-0100

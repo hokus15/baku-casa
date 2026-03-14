@@ -1,0 +1,328 @@
+version: 1
+
+items:
+  EN-0100:
+    adrs:
+      - adr_id: ADR-0001
+        adr_title: Monorepo Multi-root
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0007
+        adr_title: Delivery - Docker Compose Self-hosted
+      - adr_id: ADR-0008
+        adr_title: CI and Governance Model
+
+  F-0001:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0005
+        adr_title: Authentication - JWT Stateless
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+      - adr_id: ADR-0013
+        adr_title: Configuration System
+
+  EN-0202:
+    adrs:
+      - adr_id: ADR-0001
+        adr_title: Monorepo Multi-root
+      - adr_id: ADR-0007
+        adr_title: Delivery - Docker Compose Self-hosted
+      - adr_id: ADR-0013
+        adr_title: Configuration System
+
+  EN-0200:
+    adrs:
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+      - adr_id: ADR-0013
+        adr_title: Configuration System
+
+  EN-0201:
+    adrs:
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0008
+        adr_title: CI and Governance Model
+
+  EN-0300:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0013
+        adr_title: Configuration System
+
+  F-0002:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0003:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0004:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0005:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0006:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0007:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0008:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0009:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  EN-0301:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0008
+        adr_title: CI and Governance Model
+
+  EN-0302:
+    adrs:
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0008
+        adr_title: CI and Governance Model
+
+  F-0010:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+      - adr_id: ADR-0014
+        adr_title: Idempotent Operations and Duplicate Protection
+
+  EN-0209:
+    adrs:
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0014
+        adr_title: Idempotent Operations and Duplicate Protection
+
+  F-0011:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+      - adr_id: ADR-0014
+        adr_title: Idempotent Operations and Duplicate Protection
+
+  EN-0208:
+    adrs:
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0010
+        adr_title: Event Publication and Delivery
+
+  F-0012:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+      - adr_id: ADR-0014
+        adr_title: Idempotent Operations and Duplicate Protection
+
+  F-0013:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+
+  F-0014:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0010
+        adr_title: Event Publication and Delivery
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy
+      - adr_id: ADR-0014
+        adr_title: Idempotent Operations and Duplicate Protection
+
+  F-0015:
+    adrs:
+      - adr_id: ADR-0002
+        adr_title: Hexagonal Architecture
+      - adr_id: ADR-0003
+        adr_title: Persistence - SQLite + SQLAlchemy
+      - adr_id: ADR-0004
+        adr_title: API - FastAPI + OpenAPI
+      - adr_id: ADR-0006
+        adr_title: Contract Versioning and Integration
+      - adr_id: ADR-0009
+        adr_title: Error Model and Observability
+      - adr_id: ADR-0011
+        adr_title: Monetary and Percentage Representation
+      - adr_id: ADR-0012
+        adr_title: Time Handling and Timezone Policy

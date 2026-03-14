@@ -1,0 +1,272 @@
+version: 1
+
+slices:
+
+  platform_foundation:
+    constitution_sections:
+      - system_architecture
+      - model_separation
+      - spec_vs_implementation
+      - engineering_principles
+      - system_governance
+    context_sections:
+      - deployment_model
+      - infrastructure_constraints
+      - system_evolution
+
+  authentication_api:
+    constitution_sections:
+      - system_architecture
+      - model_separation
+      - time_policy
+      - api_contracts
+      - api_versioning
+      - observability
+      - engineering_principles
+    context_sections:
+      - system_purpose
+      - user_model
+      - access_model
+
+  configuration_runtime:
+    constitution_sections:
+      - sources_of_truth
+      - single_source_of_truth
+      - spec_vs_implementation
+      - observability
+      - infrastructure
+      - engineering_principles
+    context_sections:
+      - deployment_model
+      - infrastructure_constraints
+      - persistence_context
+
+  logging_observability:
+    constitution_sections:
+      - time_policy
+      - observability
+      - infrastructure
+      - engineering_principles
+    context_sections:
+      - deployment_model
+      - infrastructure_constraints
+      - operational_observability
+
+  testing_persistence_baseline:
+    constitution_sections:
+      - system_architecture
+      - model_separation
+      - database_indexes
+      - engineering_principles
+    context_sections:
+      - infrastructure_constraints
+      - persistence_context
+      - system_evolution
+
+  master_data:
+    constitution_sections:
+      - system_architecture
+      - model_separation
+      - audit_fields
+      - soft_delete
+      - api_contracts
+      - api_versioning
+      - pagination
+      - database_indexes
+    context_sections:
+      - system_purpose
+      - functional_scope
+      - user_model
+      - geographic_scope
+      - persistence_context
+
+  contracts_domain:
+    constitution_sections:
+      - system_architecture
+      - model_separation
+      - time_policy
+      - audit_fields
+      - soft_delete
+      - api_contracts
+      - api_versioning
+      - pagination
+      - database_indexes
+    context_sections:
+      - system_purpose
+      - functional_scope
+      - user_model
+      - geographic_scope
+      - persistence_context
+
+  monetary_domain:
+    constitution_sections:
+      - economic_model
+      - accounting_invariants
+      - monetary_policy
+      - percentage_representation
+      - time_policy
+      - concurrency
+      - audit_fields
+      - soft_delete
+      - api_contracts
+      - api_versioning
+      - pagination
+      - database_indexes
+    context_sections:
+      - system_purpose
+      - functional_scope
+      - geographic_scope
+      - persistence_context
+
+  idempotent_financial_operations:
+    constitution_sections:
+      - economic_model
+      - accounting_invariants
+      - monetary_policy
+      - time_policy
+      - idempotency
+      - concurrency
+      - observability
+    context_sections:
+      - functional_scope
+      - infrastructure_constraints
+      - persistence_context
+      - operational_observability
+
+  tasks_and_automation:
+    constitution_sections:
+      - time_policy
+      - api_contracts
+      - api_versioning
+      - observability
+      - engineering_principles
+    context_sections:
+      - functional_scope
+      - access_model
+      - operational_observability
+      - system_evolution
+
+  fiscal_reporting:
+    constitution_sections:
+      - accounting_invariants
+      - monetary_policy
+      - percentage_representation
+      - time_policy
+      - api_contracts
+      - api_versioning
+      - pagination
+    context_sections:
+      - system_purpose
+      - functional_scope
+      - geographic_scope
+
+
+assignments:
+
+  EN-0100:
+    slices:
+      - platform_foundation
+
+  F-0001:
+    slices:
+      - authentication_api
+
+  EN-0202:
+    slices:
+      - configuration_runtime
+
+  EN-0200:
+    slices:
+      - logging_observability
+
+  EN-0201:
+    slices:
+      - testing_persistence_baseline
+
+  EN-0300:
+    slices:
+      - platform_foundation
+      - authentication_api
+
+  F-0002:
+    slices:
+      - master_data
+
+  F-0003:
+    slices:
+      - master_data
+
+  F-0004:
+    slices:
+      - master_data
+      - monetary_domain
+
+  F-0005:
+    slices:
+      - master_data
+      - monetary_domain
+
+  F-0006:
+    slices:
+      - contracts_domain
+
+  F-0007:
+    slices:
+      - contracts_domain
+      - monetary_domain
+
+  F-0008:
+    slices:
+      - contracts_domain
+      - monetary_domain
+
+  F-0009:
+    slices:
+      - contracts_domain
+      - monetary_domain
+
+  EN-0301:
+    slices:
+      - platform_foundation
+
+  EN-0302:
+    slices:
+      - testing_persistence_baseline
+      - master_data
+
+  F-0010:
+    slices:
+      - monetary_domain
+      - idempotent_financial_operations
+
+  EN-0209:
+    slices:
+      - idempotent_financial_operations
+
+  F-0011:
+    slices:
+      - monetary_domain
+      - idempotent_financial_operations
+
+  EN-0208:
+    slices:
+      - logging_observability
+      - tasks_and_automation
+
+  F-0012:
+    slices:
+      - monetary_domain
+
+  F-0013:
+    slices:
+      - tasks_and_automation
+
+  F-0014:
+    slices:
+      - tasks_and_automation
+      - monetary_domain
+
+  F-0015:
+    slices:
+      - fiscal_reporting
+      - monetary_domain

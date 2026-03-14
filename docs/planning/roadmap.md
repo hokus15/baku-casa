@@ -16,14 +16,14 @@ Este documento describe la **evolución funcional del sistema**.
 El estado estructural del roadmap y las dependencias entre elementos se definen en:
 
 ```
-docs/dependency-graph.yaml
+docs/planning/dependency-graph.yaml
 ```
 
 ---
 
 # Regla de baseline técnico acumulado
 
-Las Features deben asumir como parte del sistema todos los Enablers previos que les apliquen según `docs/dependency-graph.yaml`.
+Las Features deben asumir como parte del sistema todos los Enablers previos que les apliquen según `docs/planning/dependency-graph.yaml`.
 
 En particular, cualquier Enabler marcado con `affects_future_features: true` debe considerarse integrado en toda Feature futura aplicable, aunque no se repita explícitamente en su descripción funcional.
 
@@ -369,4 +369,4 @@ Resultado MVP5:
 
 - reporting estructurado
 - base para generación de modelos fiscales
-- explotación analítica de datos financiero
+- explotación analítica de datos financieros

@@ -3,11 +3,13 @@
 SDD documentation linter for Baku.Casa.
 
 Validates consistency between:
-- docs/dependency-graph.yaml
-- docs/roadmap.md
-- docs/spec/features/
-- docs/spec/enablers/
-- docs/adr/
+- docs/system/
+- docs/planning/dependency-graph.yaml
+- docs/planning/roadmap.md
+- docs/decisions/ADR-INDEX.md
+- docs/decisions/adr/
+- docs/specs/features/
+- docs/specs/enablers/
 
 Usage:
     python tools/lint_sdd.py
@@ -116,18 +118,25 @@ def main() -> int:
     args = parse_args()
     docs_root = Path(args.docs_root)
 
+    planning_dir = docs_root / "planning"
+    specs_dir = docs_root / "specs"
+    decisions_dir = docs_root / "decisions"
+    adr_dir = decisions_dir / "adr"
+    system_dir = docs_root / "system"
+
     messages: list[LintMessage] = []
 
     try:
-        graph = load_dependency_graph(docs_root / "dependency-graph.yaml")
-        roadmap = load_roadmap(docs_root / "roadmap.md")
-        specs = load_specs(docs_root / "spec")
-        adrs = load_adrs(docs_root / "adr")
+        graph = load_dependency_graph(planning_dir / "dependency-graph.yaml")
+        roadmap = load_roadmap(planning_dir / "roadmap.md")
+        specs = load_specs(specs_dir)
+        adrs = load_adrs(adr_dir)
     except LintError as exc:
         print("SDD lint failed.\n")
         print(f"[ERROR] LOAD-000 {exc}")
         return 1
 
+    messages.extend(validate_required_structure(docs_root))
     messages.extend(validate_graph_schema(graph))
     messages.extend(validate_graph_ids(graph))
     messages.extend(validate_graph_dependencies(graph))
@@ -139,17 +148,150 @@ def main() -> int:
 
     messages.extend(validate_specs(specs))
     messages.extend(validate_specs_vs_graph(specs, graph, strict=args.strict))
-    messages.extend(validate_index_files(docs_root / "spec", specs))
-
-    messages.extend(validate_index_order(docs_root / "spec"))
-    messages.extend(validate_index_link_format(docs_root / "spec"))
+    messages.extend(validate_index_files(specs_dir, specs))
+    messages.extend(validate_index_order(specs_dir))
+    messages.extend(validate_index_link_format(specs_dir))
 
     messages.extend(validate_adrs(adrs, strict=args.strict))
+    messages.extend(validate_adr_index(decisions_dir, adrs))
+    messages.extend(validate_system_files(system_dir))
 
     return print_report(messages)
 
 
-def validate_index_files(spec_root: Path, specs: ParsedSpecs) -> list[LintMessage]:
+def validate_required_structure(docs_root: Path) -> list[LintMessage]:
+    messages: list[LintMessage] = []
+
+    required_dirs = [
+        docs_root / "system",
+        docs_root / "planning",
+        docs_root / "decisions",
+        docs_root / "decisions" / "adr",
+        docs_root / "specs",
+        docs_root / "specs" / "features",
+        docs_root / "specs" / "enablers",
+    ]
+
+    for path in required_dirs:
+        if not path.exists():
+            messages.append(error("STRUCT-001", f"Missing required directory: {path}"))
+        elif not path.is_dir():
+            messages.append(
+                error(
+                    "STRUCT-002", f"Expected directory but found non-directory: {path}"
+                )
+            )
+
+    required_files = [
+        docs_root / "planning" / "dependency-graph.yaml",
+        docs_root / "planning" / "roadmap.md",
+        docs_root / "decisions" / "ADR-INDEX.md",
+        docs_root / "system" / "constitution.md",
+        docs_root / "system" / "context.md",
+        docs_root / "system" / "glossary.md",
+        docs_root / "system" / "conventions.md",
+    ]
+
+    for path in required_files:
+        if not path.exists():
+            messages.append(error("STRUCT-003", f"Missing required file: {path}"))
+        elif not path.is_file():
+            messages.append(
+                error("STRUCT-004", f"Expected file but found non-file: {path}")
+            )
+
+    return messages
+
+
+def validate_system_files(system_dir: Path) -> list[LintMessage]:
+    messages: list[LintMessage] = []
+
+    required_files = [
+        system_dir / "constitution.md",
+        system_dir / "context.md",
+        system_dir / "glossary.md",
+        system_dir / "conventions.md",
+    ]
+
+    for path in required_files:
+        if not path.exists():
+            continue
+
+        try:
+            content = path.read_text(encoding="utf-8")
+        except Exception as exc:
+            messages.append(error("SYS-001", f"Failed reading {path}: {exc}"))
+            continue
+
+        if not content.strip():
+            messages.append(error("SYS-002", f"System file is empty: {path}"))
+
+    return messages
+
+
+def validate_adr_index(decisions_dir: Path, adrs: ParsedAdrs) -> list[LintMessage]:
+    messages: list[LintMessage] = []
+
+    index_file = decisions_dir / "ADR-INDEX.md"
+    if not index_file.exists():
+        return messages
+
+    try:
+        content = index_file.read_text(encoding="utf-8")
+    except Exception as exc:
+        return [error("ADR-003", f"Failed reading {index_file}: {exc}")]
+
+    if not content.strip():
+        messages.append(error("ADR-004", f"ADR index file is empty: {index_file}"))
+        return messages
+
+    links = set(INDEX_LINK_RE.findall(content))
+    adr_files = {f"adr/{path.name}" for path in adrs.ids.values()}
+
+    for missing in sorted(adr_files - links):
+        messages.append(
+            error(
+                "ADR-005",
+                f"{index_file} missing entry for ADR file {missing}",
+            )
+        )
+
+    for orphan in sorted(links - adr_files):
+        messages.append(
+            error(
+                "ADR-006",
+                f"{index_file} references non-existent ADR file {orphan}",
+            )
+        )
+
+    for link in sorted(links):
+        if not link.startswith("adr/"):
+            messages.append(
+                error(
+                    "ADR-007",
+                    f"{index_file} must use relative links under adr/: {link}",
+                )
+            )
+
+    ordered_ids: list[str] = []
+    for link in INDEX_LINK_RE.findall(content):
+        name = Path(link).name
+        match = ADR_FILE_RE.match(name)
+        if match:
+            ordered_ids.append(match.group(1))
+
+    if ordered_ids != sorted(ordered_ids):
+        messages.append(
+            error(
+                "ADR-008",
+                f"{index_file} entries must be sorted by ADR ID",
+            )
+        )
+
+    return messages
+
+
+def validate_index_files(specs_root: Path, specs: ParsedSpecs) -> list[LintMessage]:
     messages: list[LintMessage] = []
 
     checks = [
@@ -158,15 +300,14 @@ def validate_index_files(spec_root: Path, specs: ParsedSpecs) -> list[LintMessag
     ]
 
     for folder_name, spec_map in checks:
-        folder = spec_root / folder_name
+        folder = specs_root / folder_name
         index_file = folder / "INDEX.md"
 
         if not index_file.exists():
             messages.append(
                 error(
                     "INDEX-001",
-                    f"Missing {index_file}. Each spec folder must contain "
-                    "an INDEX.md",
+                    f"Missing {index_file}. Each spec folder must contain an INDEX.md",
                 )
             )
             continue
@@ -183,10 +324,8 @@ def validate_index_files(spec_root: Path, specs: ParsedSpecs) -> list[LintMessag
             continue
 
         links = set(INDEX_LINK_RE.findall(content))
-
         spec_files = {path.name for path in spec_map.values()}
 
-        # specs missing in index
         for missing in sorted(spec_files - links):
             messages.append(
                 error(
@@ -195,7 +334,6 @@ def validate_index_files(spec_root: Path, specs: ParsedSpecs) -> list[LintMessag
                 )
             )
 
-        # index entries without file
         for orphan in sorted(links - spec_files):
             messages.append(
                 error(
@@ -244,7 +382,7 @@ def load_dependency_graph(path: Path) -> dict[str, GraphItem]:
             isinstance(v, str) for v in depends_on
         ):
             raise LintError(
-                f"{path}: item {item_id} field 'depends_on' " "must be a list[str]"
+                f"{path}: item {item_id} field 'depends_on' must be a list[str]"
             )
 
         applies_to = entry.get("applies_to")
@@ -253,7 +391,7 @@ def load_dependency_graph(path: Path) -> dict[str, GraphItem]:
                 isinstance(v, str) for v in applies_to
             ):
                 raise LintError(
-                    f"{path}: item {item_id} field 'applies_to' " "must be a list[str]"
+                    f"{path}: item {item_id} field 'applies_to' must be a list[str]"
                 )
 
         items[item_id] = GraphItem(
@@ -296,8 +434,7 @@ def load_roadmap(path: Path) -> ParsedRoadmap:
             item_id = item_match.group(1)
             if current_phase is None:
                 raise LintError(
-                    f"{path}:{line_no} item {item_id} appears before any "
-                    "MVP section header"
+                    f"{path}:{line_no} item {item_id} appears before any MVP section header"
                 )
             if item_id in entries:
                 duplicate_ids.append((item_id, line_no))
@@ -311,9 +448,9 @@ def load_roadmap(path: Path) -> ParsedRoadmap:
     return ParsedRoadmap(entries=entries, duplicate_ids=duplicate_ids)
 
 
-def load_specs(spec_root: Path) -> ParsedSpecs:
-    features_dir = spec_root / "features"
-    enablers_dir = spec_root / "enablers"
+def load_specs(specs_root: Path) -> ParsedSpecs:
+    features_dir = specs_root / "features"
+    enablers_dir = specs_root / "enablers"
 
     feature_specs: dict[str, Path] = {}
     enabler_specs: dict[str, Path] = {}
@@ -371,6 +508,7 @@ def load_adrs(adr_root: Path) -> ParsedAdrs:
             if not match:
                 invalid_files.append(path)
                 continue
+
             adr_id = match.group(1)
             if adr_id in ids:
                 duplicate_ids.append((adr_id, ids[adr_id], path))
@@ -380,11 +518,11 @@ def load_adrs(adr_root: Path) -> ParsedAdrs:
     return ParsedAdrs(ids=ids, invalid_files=invalid_files, duplicate_ids=duplicate_ids)
 
 
-def validate_index_order(spec_root: Path) -> list[LintMessage]:
+def validate_index_order(specs_root: Path) -> list[LintMessage]:
     messages: list[LintMessage] = []
 
     for folder_name in ("features", "enablers"):
-        index_file = spec_root / folder_name / "INDEX.md"
+        index_file = specs_root / folder_name / "INDEX.md"
         if not index_file.exists():
             continue
 
@@ -409,11 +547,11 @@ def validate_index_order(spec_root: Path) -> list[LintMessage]:
     return messages
 
 
-def validate_index_link_format(spec_root: Path) -> list[LintMessage]:
+def validate_index_link_format(specs_root: Path) -> list[LintMessage]:
     messages: list[LintMessage] = []
 
     for folder_name in ("features", "enablers"):
-        index_file = spec_root / folder_name / "INDEX.md"
+        index_file = specs_root / folder_name / "INDEX.md"
         if not index_file.exists():
             continue
 
@@ -426,8 +564,7 @@ def validate_index_link_format(spec_root: Path) -> list[LintMessage]:
                 messages.append(
                     error(
                         "INDEX-006",
-                        f"{index_file} must use relative file links "
-                        f"without subdirectories: {link}",
+                        f"{index_file} must use relative file links without subdirectories: {link}",
                     )
                 )
 
@@ -445,10 +582,7 @@ def validate_graph_schema(graph: dict[str, GraphItem]) -> list[LintMessage]:
 
         if item.status not in VALID_STATUSES:
             messages.append(
-                error(
-                    "DAG-002",
-                    f"Item {item.id} has invalid status: {item.status!r}",
-                )
+                error("DAG-002", f"Item {item.id} has invalid status: {item.status!r}")
             )
 
         if item.phase not in VALID_PHASES:
@@ -476,8 +610,7 @@ def validate_graph_schema(graph: dict[str, GraphItem]) -> list[LintMessage]:
                 messages.append(
                     error(
                         "DAG-006",
-                        f"Enabler {item.id} must define boolean field "
-                        "'affects_future_features'",
+                        f"Enabler {item.id} must define boolean field 'affects_future_features'",
                     )
                 )
 
@@ -485,7 +618,7 @@ def validate_graph_schema(graph: dict[str, GraphItem]) -> list[LintMessage]:
                 messages.append(
                     error(
                         "DAG-007",
-                        f"Enabler {item.id} is missing required field " "'applies_to'",
+                        f"Enabler {item.id} is missing required field 'applies_to'",
                     )
                 )
             elif len(item.applies_to) == 0:
@@ -501,8 +634,7 @@ def validate_graph_schema(graph: dict[str, GraphItem]) -> list[LintMessage]:
                 messages.append(
                     warn(
                         "DAG-010",
-                        f"Feature {item.id} should not define "
-                        "'affects_future_features'",
+                        f"Feature {item.id} should not define 'affects_future_features'",
                     )
                 )
             if item.applies_to is not None:
@@ -538,16 +670,14 @@ def validate_graph_ids(graph: dict[str, GraphItem]) -> list[LintMessage]:
             messages.append(
                 error(
                     "DAG-014",
-                    f"Item {item.id} prefix implies feature but type is "
-                    f"{item.type}",
+                    f"Item {item.id} prefix implies feature but type is {item.type}",
                 )
             )
         if item.id.startswith("EN-") and item.type != "enabler":
             messages.append(
                 error(
                     "DAG-015",
-                    f"Item {item.id} prefix implies enabler but type is "
-                    f"{item.type}",
+                    f"Item {item.id} prefix implies enabler but type is {item.type}",
                 )
             )
 
@@ -573,8 +703,7 @@ def validate_graph_dependencies(graph: dict[str, GraphItem]) -> list[LintMessage
                 messages.append(
                     error(
                         "DAG-017",
-                        f"Item {item.id} in phase {item.phase} depends on "
-                        f"future-phase item {dep} in phase {dep_phase}",
+                        f"Item {item.id} in phase {item.phase} depends on future-phase item {dep} in phase {dep_phase}",
                     )
                 )
 
@@ -630,16 +759,14 @@ def validate_graph_states(graph: dict[str, GraphItem]) -> list[LintMessage]:
                 messages.append(
                     error(
                         "STATE-001",
-                        f"Item {item.id} is done but depends on {dep} "
-                        f"with status {dep_status}",
+                        f"Item {item.id} is done but depends on {dep} with status {dep_status}",
                     )
                 )
             if item.status == "in_progress" and dep_status == "planned":
                 messages.append(
                     error(
                         "STATE-002",
-                        f"Item {item.id} is in_progress but depends on "
-                        f"planned item {dep}",
+                        f"Item {item.id} is in_progress but depends on planned item {dep}",
                     )
                 )
 
@@ -648,8 +775,7 @@ def validate_graph_states(graph: dict[str, GraphItem]) -> list[LintMessage]:
                 messages.append(
                     warn(
                         "STATE-003",
-                        f"Enabler {item.id} propagates to future features "
-                        "but 'applies_to' is empty",
+                        f"Enabler {item.id} propagates to future features but 'applies_to' is empty",
                     )
                 )
 
@@ -681,8 +807,7 @@ def validate_roadmap_vs_graph(
         messages.append(
             error(
                 "ROADMAP-002",
-                f"Roadmap item {item_id} at line {entry.line_no} does not "
-                "exist in dependency graph",
+                f"Roadmap item {item_id} at line {entry.line_no} does not exist in dependency graph",
             )
         )
 
@@ -701,8 +826,7 @@ def validate_roadmap_vs_graph(
             messages.append(
                 error(
                     "ROADMAP-004",
-                    f"Item {item_id} has phase {roadmap_phase} in roadmap.md "
-                    f"but {graph_phase} in dependency graph",
+                    f"Item {item_id} has phase {roadmap_phase} in roadmap.md but {graph_phase} in dependency graph",
                 )
             )
 
@@ -716,8 +840,7 @@ def validate_specs(specs: ParsedSpecs) -> list[LintMessage]:
         messages.append(
             error(
                 "SPEC-001",
-                f"Invalid spec filename: {path}. Expected F-0001-name.md "
-                "or EN-0200-name.md",
+                f"Invalid spec filename: {path}. Expected F-0001-name.md or EN-0200-name.md",
             )
         )
 
@@ -750,17 +873,14 @@ def validate_specs_vs_graph(
             messages.append(
                 error(
                     "SPEC-003",
-                    f"Feature spec exists for unknown item {item_id}: "
-                    f"{specs.feature_specs[item_id]}",
+                    f"Feature spec exists for unknown item {item_id}: {specs.feature_specs[item_id]}",
                 )
             )
         elif graph_item.type != "feature":
             messages.append(
                 error(
                     "SPEC-004",
-                    f"Spec {specs.feature_specs[item_id]} is under "
-                    "features/ but graph type for "
-                    f"{item_id} is {graph_item.type}",
+                    f"Spec {specs.feature_specs[item_id]} is under features/ but graph type for {item_id} is {graph_item.type}",
                 )
             )
 
@@ -770,17 +890,14 @@ def validate_specs_vs_graph(
             messages.append(
                 error(
                     "SPEC-005",
-                    f"Enabler spec exists for unknown item {item_id}: "
-                    f"{specs.enabler_specs[item_id]}",
+                    f"Enabler spec exists for unknown item {item_id}: {specs.enabler_specs[item_id]}",
                 )
             )
         elif graph_item.type != "enabler":
             messages.append(
                 error(
                     "SPEC-006",
-                    f"Spec {specs.enabler_specs[item_id]} is under "
-                    "enablers/ but graph type for "
-                    f"{item_id} is {graph_item.type}",
+                    f"Spec {specs.enabler_specs[item_id]} is under enablers/ but graph type for {item_id} is {graph_item.type}",
                 )
             )
 
@@ -791,8 +908,7 @@ def validate_specs_vs_graph(
         if item.type == "feature":
             msg = (
                 f"Feature {item_id} exists in dependency graph with status "
-                f"{item.status} "
-                f"but has no spec file in docs/spec/features/"
+                f"{item.status} but has no spec file in docs/specs/features/"
             )
             if strict or item.status in {"done", "in_progress"}:
                 messages.append(error("SPEC-007", msg))
@@ -802,8 +918,7 @@ def validate_specs_vs_graph(
         elif item.type == "enabler":
             msg = (
                 f"Enabler {item_id} exists in dependency graph with status "
-                f"{item.status} "
-                f"but has no spec file in docs/spec/enablers/"
+                f"{item.status} but has no spec file in docs/specs/enablers/"
             )
             if strict or item.status in {"done", "in_progress"}:
                 messages.append(error("SPEC-008", msg))

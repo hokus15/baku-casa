@@ -1,0 +1,205 @@
+version: 1
+
+items:
+
+  EN-0100:
+    spec: docs/specs/enablers/EN-0100-project-bootstrap.md
+    adr_refs:
+      - ADR-0001
+      - ADR-0002
+      - ADR-0008
+    constitution_sections:
+      - architecture
+      - specification_implementation_separation
+      - engineering_principles
+    context_sections:
+      - system_purpose
+      - operational_constraints
+
+  F-0001:
+    spec: docs/specs/features/F-0001-acceso-y-autenticacion-operador.md
+    adr_refs:
+      - ADR-0004
+      - ADR-0005
+      - ADR-0006
+    constitution_sections:
+      - api_contracts
+      - authentication
+      - observability
+    context_sections:
+      - system_purpose
+
+  EN-0202:
+    spec: docs/specs/enablers/EN-0202-configuration-system.md
+    adr_refs:
+      - ADR-0013
+    constitution_sections:
+      - engineering_principles
+    context_sections:
+      - operational_constraints
+
+  EN-0200:
+    spec: docs/specs/enablers/EN-0200-logging-baseline.md
+    adr_refs:
+      - ADR-0009
+    constitution_sections:
+      - observability
+    context_sections:
+      - operational_constraints
+
+  EN-0201:
+    spec: docs/specs/enablers/EN-0201-testing-baseline.md
+    adr_refs:
+      - ADR-0008
+    constitution_sections:
+      - engineering_principles
+    context_sections:
+      - operational_constraints
+
+  EN-0300:
+    spec: docs/specs/enablers/EN-0300-http-composition-root.md
+    adr_refs:
+      - ADR-0002
+      - ADR-0013
+    constitution_sections:
+      - architecture
+    context_sections:
+      - operational_constraints
+
+  F-0002:
+    spec: docs/specs/features/F-0002-propietarios.md
+    adr_refs:
+      - ADR-0003
+    constitution_sections:
+      - persistence
+    context_sections:
+      - domain_scope
+
+  F-0003:
+    spec: docs/specs/features/F-0003-propiedades.md
+    adr_refs:
+      - ADR-0003
+    constitution_sections:
+      - persistence
+    context_sections:
+      - domain_scope
+
+  F-0004:
+    spec: docs/specs/features/F-0004-datos-economicos-propiedad.md
+    constitution_sections:
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  F-0005:
+    spec: docs/specs/features/F-0005-gastos-recurrentes.md
+    constitution_sections:
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  F-0006:
+    spec: docs/specs/features/F-0006-contratos.md
+    constitution_sections:
+      - api_contracts
+    context_sections:
+      - domain_scope
+
+  F-0007:
+    spec: docs/specs/features/F-0007-historico-rentas.md
+    constitution_sections:
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  F-0008:
+    spec: docs/specs/features/F-0008-clausulas-actualizacion.md
+    constitution_sections:
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  F-0009:
+    spec: docs/specs/features/F-0009-asignacion-gastos.md
+    constitution_sections:
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  EN-0301:
+    spec: docs/specs/enablers/EN-0301-application-service-modularization.md
+    adr_refs:
+      - ADR-0002
+    constitution_sections:
+      - architecture
+    context_sections:
+      - operational_constraints
+
+  EN-0302:
+    spec: docs/specs/enablers/EN-0302-persistence-schema-rebaseline.md
+    adr_refs:
+      - ADR-0003
+    constitution_sections:
+      - persistence
+    context_sections:
+      - operational_constraints
+
+  F-0010:
+    spec: docs/specs/features/F-0010-devengos.md
+    constitution_sections:
+      - economic_model
+      - accounting_invariants
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  EN-0209:
+    spec: docs/specs/enablers/EN-0209-idempotency-protection.md
+    constitution_sections:
+      - idempotency
+    context_sections:
+      - operational_constraints
+
+  F-0011:
+    spec: docs/specs/features/F-0011-pagos.md
+    constitution_sections:
+      - accounting_invariants
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  EN-0208:
+    spec: docs/specs/enablers/EN-0208-domain-event-logging.md
+    constitution_sections:
+      - observability
+    context_sections:
+      - operational_constraints
+
+  F-0012:
+    spec: docs/specs/features/F-0012-facturacion.md
+    constitution_sections:
+      - api_contracts
+      - monetary_policy
+    context_sections:
+      - domain_scope
+
+  F-0013:
+    spec: docs/specs/features/F-0013-tareas.md
+    constitution_sections:
+      - api_contracts
+    context_sections:
+      - domain_scope
+
+  F-0014:
+    spec: docs/specs/features/F-0014-automatizacion-tareas.md
+    constitution_sections:
+      - api_contracts
+    context_sections:
+      - domain_scope
+
+  F-0015:
+    spec: docs/specs/features/F-0015-reports-fiscales.md
+    constitution_sections:
+      - monetary_policy
+    context_sections:
+      - domain_scope
