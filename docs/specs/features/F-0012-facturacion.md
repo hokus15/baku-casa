@@ -1,5 +1,7 @@
 # F-0012: Facturación
 
+---
+
 ## Objetivo
 
 Emitir facturas a partir de devengos (`Accrual`) **facturables**, utilizando exclusivamente la información fiscal almacenada en los propios devengos.
@@ -8,6 +10,28 @@ La factura es una **representación documental y fiscal** de uno o varios deveng
 No constituye un nuevo hecho económico ni altera el saldo contable del sistema.
 
 Regla base: si un devengo tiene IVA (`vat_rate_percent > 0`), entonces **siempre es facturable**.
+
+---
+
+## Alcance
+
+- Facturación basada exclusivamente en `Accrual`.
+- Una línea de factura corresponde a un devengo facturable.
+- Totales calculados a partir de los porcentajes del devengo.
+- Soporte de retención (`withholding_rate_percent`) cuando aplique.
+- Soporte de rectificación mediante compensación.
+- Importes siempre persistidos como valores positivos.
+
+---
+
+## Fuera de alcance
+
+- Numeración legal avanzada multi-serie con reglas complejas.
+- Motivos legales obligatorios de rectificación.
+- Plantillas PDF/HTML finales y firma digital.
+- Integración con SII/VeriFactu u otros sistemas tributarios.
+- Cobro automático.
+- Recalculo automático de devengos al rectificar facturas.
 
 ---
 
@@ -27,7 +51,20 @@ Regla base: si un devengo tiene IVA (`vat_rate_percent > 0`), entonces **siempre
 
 ---
 
-## Entidades
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Factura
+- Devengo facturable
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Entidades
 
 ### Invoice
 
@@ -38,6 +75,10 @@ Regla base: si un devengo tiene IVA (`vat_rate_percent > 0`), entonces **siempre
 - `status`: enum { `DRAFT`, `ISSUED` }
 - `customer_snapshot`: object (datos fiscales del destinatario en el momento de emisión)
 - `supplier_snapshot`: object (datos fiscales del emisor en el momento de emisión)
+
+Esta entidad reutiliza la semántica económica común definida en:
+
+- docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 
 **Campos opcionales**
 
@@ -93,40 +134,11 @@ Todos los importes persistidos son siempre positivos o cero.
 - Consultar detalle de factura con sus líneas.
 - Emitir factura (asignar numeración/serie y congelar snapshots).
 - Generar factura rectificativa que compense total o parcialmente una factura emitida.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-Los listados deben usar **paginacion obligatoria**.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
-
-`environment variables > config file > defaults`
-
-## Alcance
-
-- Facturación basada exclusivamente en `Accrual`.
-- Una línea de factura corresponde a un devengo facturable.
-- Totales calculados a partir de los porcentajes del devengo.
-- Soporte de retención (`withholding_rate_percent`) cuando aplique.
-- Soporte de rectificación mediante compensación.
-- Importes siempre persistidos como valores positivos.
-
----
-
-## Fuera de alcance
-
-- Numeración legal avanzada multi-serie con reglas complejas.
-- Motivos legales obligatorios de rectificación.
-- Plantillas PDF/HTML finales y firma digital.
-- Integración con SII/VeriFactu u otros sistemas tributarios.
-- Cobro automático.
-- Recalculo automático de devengos al rectificar facturas.
-
----
-
-## Reglas de negocio
+## Reglas del dominio
 
 1. Solo pueden facturarse devengos con `vat_rate_percent > 0`.
 2. Un devengo facturable debe ser:
@@ -139,8 +151,8 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
 6. Una factura emitida no puede cancelarse ni modificarse.
 7. Para corregir una factura emitida debe crearse una nueva factura con:
    - `reversal_of_invoice_id` apuntando a la factura original.
-8. Los importes de una factura rectificativa deben ser positivos.
-9. El efecto económico de una factura rectificativa es negativo y se deriva mediante `effect_sign`.
+8. Los importes de una factura rectificativa deben seguir la disciplina común de importes persistidos no negativos definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+9. El efecto económico de una factura rectificativa es negativo y se deriva mediante `effect_sign`, según la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 10. No puede revertirse más importe del originalmente facturado.
 11. No puede crearse una rectificativa sobre una factura ya completamente revertida.
 12. La factura rectificativa debe tener el mismo `customer_snapshot` que la original.
@@ -161,42 +173,46 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
 
 ---
 
----
+## Casos borde
 
-## Dependencias y trazabilidad
+La feature debe contemplar los siguientes escenarios:
 
-### Depende de
-- (ninguna explícita)
-
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
+- Solo pueden facturarse devengos con `vat_rate_percent > 0`.
+- Un devengo facturable debe ser:
+- `type = INCOME`
 
 ---
 
-## ADR aplicables
+## Dependencias
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
+Esta feature puede depender de:
 
+- F-0010
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Shared specs aplicables
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- docs/specs/shared/SHARED-0004-financial-entity-semantics.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Crear factura en borrador a partir de devengos facturables.
+- Listar facturas (por rango de fechas, estado).
+- Consultar detalle de factura con sus líneas.
+
+---
+

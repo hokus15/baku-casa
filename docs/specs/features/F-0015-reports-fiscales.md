@@ -1,5 +1,7 @@
 # F-0015: Reports Fiscales
 
+---
+
 ## Objetivo
 
 Generar resúmenes fiscales por propietario y periodo utilizando los `Accrual` como fuente única de datos, tomando como referencia la **fecha de devengo (`accrual_date`)**.
@@ -13,6 +15,26 @@ El sistema debe quedar abierto para incorporar nuevos informes fiscales en el fu
 
 ---
 
+## Alcance
+
+Esta feature cubre:
+
+- Generar informe IRPF por propietario y año.
+- Generar modelo 303 por trimestre.
+- Exportar resultados en formato estructurado.
+
+---
+
+## Fuera de alcance
+
+- Presentación automática ante AEAT.
+- Gestión de fraccionamientos o pagos.
+- Gestión de otros modelos (111, 115, 390, etc.).
+- Validación avanzada de coherencia tributaria.
+- Ajustes por pagos reales (criterio de caja).
+
+---
+
 ## Definiciones
 
 - **Periodo fiscal**: intervalo temporal cerrado para el que se calcula un informe.
@@ -20,21 +42,34 @@ El sistema debe quedar abierto para incorporar nuevos informes fiscales en el fu
 - **Modelo 303**: declaración trimestral de IVA.
 - **Propietario**: titular de una propiedad con un ratio de participación.
 - **Ratio de propiedad**: porcentaje de titularidad aplicado proporcionalmente cuando proceda.
-- **Devengo fiscalmente relevante**: `Accrual` cuya `accrual_date` cae dentro del periodo fiscal, considerando compensaciones (`reversal_of_accrual_id`) mediante importes efectivos.
+- **Devengo fiscalmente relevante**: `Accrual` cuya `accrual_date` cae dentro del periodo fiscal, considerando compensaciones mediante importes efectivos conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 
 ---
 
-## Fuente de datos
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Periodo fiscal
+- IRPF
+- Modelo 303
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Fuente de datos
 
 - Los informes se construyen exclusivamente a partir de `Accrual`.
-- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado, agregados usando importes efectivos (`effective_*`) para reflejar compensaciones.
-- Los importes se agregan usando los importes efectivos (effective_*) para considerar compensaciones.
+- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado, agregados usando importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 
 No se utilizan pagos para cálculo fiscal.
 
 ---
 
-## IRPF
+### IRPF
 
 ### Alcance
 
@@ -66,14 +101,14 @@ No se utilizan pagos para cálculo fiscal.
    - gastos deducibles
    salvo que la categoría indique tratamiento no proporcional (extensible).
 3. No se incluyen devengos con `payer = TENANT` tipo gasto.
-4. No se incluyen devengos considerando compensaciones (`reversal_of_*`) mediante importes efectivos (`effective_*`)
-5. El resultado es un resumen estructurado exportable (JSON/PDF en futuras iteraciones).
-7. Si un devengo tiene reverso total, su contribución fiscal neta es 0.
-8. Los cálculos fiscales deben usar siempre importes efectivos (effective_*).
+4. Los devengos se agregan considerando compensaciones mediante importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+5. El resultado es un resumen estructurado exportable en formatos adecuados para consulta e intercambio.
+6. Si un devengo tiene reverso total, su contribución fiscal neta es 0.
+7. Los cálculos fiscales deben usar siempre importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 
 ---
 
-## Modelo 303 (IVA)
+### Modelo 303 (IVA)
 
 ### Alcance
 
@@ -101,37 +136,17 @@ No se utilizan pagos para cálculo fiscal.
   - `base_amount`
   - `vat_amount` (derivado)
 
-
 ### Reglas de negocio Modelo 303
 
 1. Solo puede generarse si existe un único propietario al 100%.
 2. El periodo debe corresponder a un trimestre natural iniciado en enero.
 3. Se consideran devengos con `accrual_date` dentro del trimestre.
-4. No se incluyen devengos considerando compensaciones (`reversal_of_*`) mediante importes efectivos (`effective_*`).
+4. Los devengos se agregan considerando compensaciones mediante importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 5. El sistema debe generar el fichero importable compatible con la AEAT.
 6. No se gestionan compensaciones intertrimestrales en esta versión.
 7. No se gestionan regímenes especiales de IVA (extensible).
 8. Si un devengo tiene reverso total, su contribución fiscal neta es 0.
-9. Los cálculos fiscales deben usar siempre importes efectivos (effective_*).
-
-
----
-
-## Notas de diseño (no normativas)
-
-> Nota: esta sección describe una posible aproximación. La arquitectura vinculante se define en los ADR.
-
-## Arquitectura extensible
-
-Para permitir nuevos informes fiscales:
-
-- Definir una interfaz lógica común `FiscalReportGenerator`.
-- Cada informe implementa:
-  - validación de elegibilidad
-  - selección de devengos
-  - reglas de agregación
-  - formato de salida
-- El sistema debe permitir registrar nuevos generadores sin modificar los existentes.
+9. Los cálculos fiscales deben usar siempre importes efectivos (effective_*) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 
 ---
 
@@ -144,52 +159,51 @@ Para permitir nuevos informes fiscales:
 
 ---
 
-## Fuera de alcance
+## Reglas del dominio
 
-- Presentación automática ante AEAT.
-- Gestión de fraccionamientos o pagos.
-- Gestión de otros modelos (111, 115, 390, etc.).
-- Validación avanzada de coherencia tributaria.
-- Ajustes por pagos reales (criterio de caja).
+- Los informes se construyen exclusivamente a partir de `Accrual`.
+- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado y los cálculos deben usar importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+- En IRPF, el informe se genera para un único propietario por solicitud y aplica el ratio de propiedad cuando corresponda.
+- En IRPF, solo son deducibles por defecto los `Accrual.type = EXPENSE` con `payer = OWNER`; los `EXPENSE` con `payer = TENANT` se consideran traslados y no son deducibles por defecto.
+- En Modelo 303, solo puede generarse el informe si existe un único propietario al 100% y el periodo corresponde a un trimestre natural.
+- En Modelo 303, el sistema debe generar un fichero importable compatible con la AEAT.
 
----
+## Casos borde
 
----
+La feature debe contemplar los siguientes escenarios:
 
-## Dependencias y trazabilidad
-
-### Depende de
-- (ninguna explícita)
-
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
+- Generar informe IRPF por propietario y año.
+- Generar modelo 303 por trimestre.
+- Exportar resultados en formato estructurado.
 
 ---
 
-## ADR aplicables
+## Dependencias
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
+Esta feature puede depender de:
 
+- F-0010
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Shared specs aplicables
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- docs/specs/shared/SHARED-0004-financial-entity-semantics.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Generar informe IRPF por propietario y año.
+- Generar modelo 303 por trimestre.
+- Exportar resultados en formato estructurado.

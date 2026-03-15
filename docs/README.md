@@ -16,7 +16,10 @@ Su objetivo es:
 - Cada tipo de información DEBE tener una única fuente de verdad.
 - La documentación DEBE estar organizada para que una herramienta SDD pueda cargar solo el contexto mínimo necesario.
 - Las reglas globales NO DEBEN repetirse dentro de specs individuales salvo referencia explícita.
+- La constitución DEBE permanecer agnóstica al stack concreto.
 - Las decisiones arquitectónicas relevantes DEBEN documentarse en ADRs.
+- Las decisiones tecnológicas concretas NO DEBEN definirse en `system/constitution.md`.
+- `system/conventions.md` NO DEBE competir con la constitución ni con los ADRs; solo define nomenclatura, estilo y forma de expresión.
 - El roadmap NO DEBE actuar como fuente de verdad de dependencias técnicas.
 - Las dependencias y propagación de baseline DEBEN resolverse desde el grafo y sus manifiestos asociados.
 
@@ -55,6 +58,7 @@ Su objetivo es:
       meta/
         enablers-taxonomy.md
         doc-governance.md
+        prompt/
 
 ---
 
@@ -64,10 +68,10 @@ Su objetivo es:
 
 Contiene reglas y contexto global del sistema.
 
-- **constitution.md**: normas obligatorias y principios invariantes.
+- **constitution.md**: normas obligatorias y principios invariantes, agnósticos al stack.
 - **context.md**: hechos del entorno y restricciones operativas.
 - **glossary.md**: definiciones compartidas.
-- **conventions.md**: convenciones transversales de diseño y desarrollo.
+- **conventions.md**: convenciones de nomenclatura, estilo, redacción y formato.
 
 ---
 
@@ -77,8 +81,9 @@ Contiene planificación y resolución de contexto.
 
 - **roadmap.md**: visión y secuencia funcional por MVP.
 - **dependency-graph.yaml**: fuente de verdad de dependencias y orden de ejecución.
-- **item-manifest.yaml**: contexto mínimo por item.
-- **adr-map.yaml**: mapeo item → ADRs relevantes.
+- **item-manifest.yaml**: contexto mínimo por item y referencias rápidas opcionales para resolverlo.
+- **adr-map.yaml**: fuente de verdad del mapeo item → ADRs relevantes.
+  Cada referencia incluye además un campo `reason` que explica por qué ese ADR debe cargarse para el item.
 - **context-slices.yaml**: mapeo item/categoría → secciones relevantes de contexto y constitución.
 
 ---
@@ -104,13 +109,13 @@ Contiene especificaciones unitarias de trabajo.
 
 ### sdd/
 
-Contiene prompts, templates y artefactos auxiliares del flujo SDD.
+Contiene templates operativos del flujo SDD.
 
 ---
 
 ### meta/
 
-Contiene documentación de gobierno documental y clasificación auxiliar.
+Contiene documentación de gobierno documental, clasificación auxiliar y prompts de apoyo.
 
 ---
 
@@ -127,9 +132,11 @@ Aquí viven las normas obligatorias del sistema:
 - reglas monetarias  
 - reglas temporales  
 - reglas de API  
-- testing  
-- errores  
+- observabilidad  
+- restricciones estructurales  
 - invariantes globales  
+
+Este documento **no debe fijar frameworks, librerías ni herramientas concretas**.
 
 ---
 
@@ -172,6 +179,60 @@ Aquí vive:
 
 ---
 
+## ADRs relevantes por item
+
+**Fuente de verdad:** `planning/adr-map.yaml`
+
+Aquí vive:
+
+- el conjunto canónico de ADRs materialmente relevantes por item  
+- el título normalizado de cada ADR referenciado  
+- el motivo de carga (`reason`) de cada ADR referenciado  
+
+`item-manifest.yaml` puede incluir una shortlist de `adr_refs` como atajo de contexto mínimo, pero no sustituye a `adr-map.yaml`.
+
+---
+
+## Resolución de contexto por fase
+
+**Fuente operativa:** `tools/resolve_sdd_context.py`
+
+La resolución de contexto mínimo para un item y una fase SDD debe hacerse con:
+
+`python tools/resolve_sdd_context.py --item <ITEM_ID> --phase <specify|clarify|plan|tasks|analyze|implement> --profile <minimal|default|deep>`
+
+La utilidad resuelve contexto estratificado para que distintos modelos SDD consuman solo la profundidad necesaria.
+
+### Perfiles
+
+- `minimal`: solo contexto core del item. Recomendado para `specify` y `clarify`.
+- `default`: contexto core + baseline de apoyo útil. Recomendado para `plan`, `tasks` y `analyze`.
+- `deep`: contexto completo, incluyendo baseline y clausura amplia. Recomendado para `implement`.
+
+### Significado de `core` y `supporting`
+
+- `core`: contexto canónico y de lectura prioritaria para el item en la fase actual.
+- `supporting`: contexto adicional disponible para profundizar si la fase lo necesita.
+
+Aplicado a la salida del resolvedor:
+
+- `core_adrs` / `core_technical_baseline`: ADRs y decisiones técnicas prioritarias.
+- `supporting_adrs` / `supporting_technical_baseline`: ADRs y baseline técnico de apoyo.
+- `core_constitution_sections` / `core_context_sections`: secciones explícitamente canónicas del item, declaradas en `item-manifest.yaml`.
+- `supporting_constitution_sections` / `supporting_context_sections`: secciones adicionales aportadas por `context-slices.yaml`.
+- `shared_specs`: contratos shared explícitos del item.
+- `inherited_shared_specs`: contratos shared heredados por dependencias.
+- `direct_dependencies`: baseline funcional inmediato del item.
+- `transitive_dependencies`: baseline heredado del DAG.
+
+### Regla de consumo
+
+- Un modelo SDD debe empezar por el contexto `core`.
+- Solo debe usar el contexto `supporting` cuando la fase no pueda resolverse con seguridad usando el contexto `core`.
+- `deep` no implica que todo deba leerse siempre; implica que todo está disponible si hace falta profundizar.
+
+---
+
 ## Decisiones arquitectónicas
 
 **Fuente de verdad:** `decisions/adr/`
@@ -179,9 +240,28 @@ Aquí vive:
 Aquí viven:
 
 - decisiones técnicas relevantes  
+- elecciones tecnológicas concretas  
 - su racional  
 - consecuencias  
 - restricciones derivadas  
+
+Los ADRs son el lugar correcto para documentar decisiones como framework HTTP, lenguaje, ORM, base de datos, estrategia de autenticación o delivery model.
+
+---
+
+## Convenciones de expresión
+
+**Fuente de verdad:** `system/conventions.md`
+
+Aquí viven:
+
+- nomenclatura  
+- estilo documental  
+- formato de nombres  
+- convenciones de representación no normativas  
+- reglas de referencia cruzada entre documentos  
+
+`conventions.md` **no debe redefinir invariantes globales** ni decisiones tecnológicas ya cubiertas por la constitución o por ADRs.
 
 ---
 
@@ -207,7 +287,9 @@ Distribución esperada:
 - Regla global → `constitution.md`  
 - Restricción del entorno → `context.md`  
 - Decisión técnica concreta → ADR  
+- Convención de nomenclatura o estilo → `conventions.md`  
 - Dependencia u orden → `dependency-graph.yaml`  
+- ADRs relevantes por item → `adr-map.yaml`  
 - Objetivo de MVP → `roadmap.md`  
 - Comportamiento específico de un item → su spec  
 
@@ -219,42 +301,20 @@ Si una spec necesita una regla global, **DEBE referirse a ella**, no reescribirl
 
 La documentación está estructurada para que la herramienta SDD no tenga que cargar todo `docs/` en cada fase.
 
----
+La disciplina por fase vive en:
 
-## Specify
+- `docs/sdd/templates/01_specify.md`
+- `docs/sdd/templates/02_clarify.md`
+- `docs/sdd/templates/03_plan.md`
+- `docs/sdd/templates/04_tasks.md`
+- `docs/sdd/templates/05_analyze.md`
+- `docs/sdd/templates/06_implementation.md`
 
-Debe cargar como mínimo:
+Resumen operativo:
 
-- spec del item  
-- `item-manifest.yaml` del item  
-- dependencias relevantes  
-- ADRs relevantes  
-- secciones relevantes de `constitution.md` y `context.md`  
-
----
-
-## Plan
-
-Debe cargar como mínimo:
-
-- spec aprobada del item  
-- manifiesto del item  
-- dependencias relevantes  
-- ADRs relevantes  
-- reglas globales aplicables  
-
----
-
-## Implement
-
-Debe cargar como mínimo:
-
-- spec  
-- plan  
-- tasks  
-- ADRs relevantes  
-- reglas globales aplicables  
-- dependencias técnicas necesarias  
+- `specify` y `clarify`: resolver con perfil `minimal`
+- `plan`, `tasks` y `analyze`: resolver con perfil `default`
+- `implement`: resolver con perfil `deep`
 
 ---
 
@@ -273,6 +333,7 @@ En su lugar, el contexto **DEBE resolverse por**:
 - item actual  
 - closure de dependencias  
 - manifiestos  
+- `adr-map.yaml`  
 - slices relevantes  
 - ADRs mapeados  
 
@@ -283,6 +344,8 @@ En su lugar, el contexto **DEBE resolverse por**:
 Cuando cambie una **regla global**, debe revisarse `constitution.md`.
 
 Cuando cambie una **restricción del sistema**, debe revisarse `context.md`.
+
+Cuando cambie una **convención de nomenclatura, estilo o redacción**, debe revisarse `conventions.md`.
 
 Cuando cambie el **orden o baseline de ejecución**, debe revisarse `dependency-graph.yaml`.
 
@@ -320,6 +383,10 @@ Para trabajar un item concreto:
 3. `planning/dependency-graph.yaml`  
 4. ADRs relevantes  
 5. secciones necesarias de `constitution.md` y `context.md`  
+
+Puede resolverse automáticamente el contexto mínimo por fase con:
+
+`python tools/resolve_sdd_context.py --item <ITEM_ID> --phase <specify|clarify|plan|tasks|analyze|implement> --profile <minimal|default|deep>`
 
 ---
 

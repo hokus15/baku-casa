@@ -1,10 +1,33 @@
 # F-0003: Propiedades y Titularidad
 
+---
+
 ## Objetivo
 
 Permitir registrar propiedades y vincularlas a uno o varios propietarios (sujetos fiscales), estableciendo la titularidad actual sin histórico.
 
 Este slice habilita la base estructural para contratos, contabilidad y fiscalidad.
+
+---
+
+## Alcance
+
+Esta feature cubre:
+
+- Crear propiedad
+- Editar propiedad
+- Consultar detalle de propiedad
+
+---
+
+## Fuera de alcance
+
+- Operación de adquisición y venta.
+- Gastos recurrentes.
+- Amortizaciones fiscales.
+- Contratos.
+- Contabilidad.
+- Facturación.
 
 ---
 
@@ -20,7 +43,20 @@ Este slice habilita la base estructural para contratos, contabilidad y fiscalida
 
 ---
 
-## Datos de la propiedad
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Propiedad
+- Titularidad
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Datos de la propiedad
 
 - `property_id`
 - `name`
@@ -67,24 +103,15 @@ Este slice habilita la base estructural para contratos, contabilidad y fiscalida
   - Situado en Navarra
   - Sin referencia catastral
 
-### Metadatos de auditoría
+### Auditoría y soft delete
 
-Todas las entidades creadas por esta feature deben incluir los siguientes campos de auditoría:
+Esta feature reutiliza el contrato común definido en:
 
-- `created_at`
-- `created_by`
-- `updated_at`
-- `updated_by`
-- `deleted_at`
-- `deleted_by`
-
-La eliminación de propiedades debe implementarse mediante **soft-delete**, utilizando `deleted_at` y `deleted_by`.
-
-La eliminación de titularidades debe implementarse mediante **soft-delete**, utilizando `deleted_at` y `deleted_by`.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 
 ---
 
-## Titularidad
+### Titularidad
 
 La relación Propiedad ↔ Propietario incluye:
 
@@ -113,16 +140,11 @@ El sistema debe permitir:
 - Consultar propiedades de un propietario
 - Consultar propietarios de una propiedad
 - Eliminar propiedad (soft-delete)
-
-Los listados deben usar **paginación obligatoria**. Los parámetros de paginación deben resolverse exclusivamente a través del configuration system definido en **EN-0202**, siguiendo la cadena de precedencia global:
-
-`environment variables > config file > defaults`
-
-Los valores por defecto del registro de configuración EN-0202 son `page=1`, `page_size=20` y `max_page_size=100`, pero son configurables y no deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-## Reglas de negocio
+## Reglas del dominio
 
 - Una propiedad debe tener al menos un propietario.
 - `type` debe ser uno de los valores permitidos.
@@ -135,61 +157,47 @@ Los valores por defecto del registro de configuración EN-0202 son `page=1`, `pa
 
 ---
 
-## Fuera de alcance (en este slice)
+## Casos borde
 
-- Operación de adquisición y venta.
-- Gastos recurrentes.
-- Amortizaciones fiscales.
-- Contratos.
-- Contabilidad.
-- Facturación.
+La feature debe contemplar los siguientes escenarios:
+
+- Una propiedad debe tener al menos un propietario.
+- `type` debe ser uno de los valores permitidos.
+- `cadastral_construction_value` y `construction_ratio` son campos derivados y no editables directamente.
 
 ---
 
-## Dependencias y trazabilidad
+## Dependencias
 
-### Depende de
+Esta feature puede depender de:
+
 - F-0002
 
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## ADR aplicables
+## Shared specs aplicables
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
-- ADR-0013
-- ADR-0014
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Criterios de aceptación
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+La feature se considera completada cuando:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- Crear propiedad
+- Editar propiedad
+- Consultar detalle de propiedad
 
 ---
 
-## Reglas de serialización API
 
-- En las respuestas de la API no deben incluirse campos con valor `null`.
-- Los `timestamps` deben serializarse en formato ISO-8601 UTC con sufijo `Z`.
-- Las fechas puras deben serializarse en formato `YYYY-MM-DD`.

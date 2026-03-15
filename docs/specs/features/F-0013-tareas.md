@@ -1,8 +1,28 @@
 # F-0013: Tareas
 
+---
+
 ## Objetivo
 
 Gestionar tareas operativas dirigidas al propietario, permitiendo registrar acciones pendientes derivadas de eventos del sistema o creadas manualmente, y facilitar su ejecución mediante un contexto asociado.
+
+---
+
+## Alcance
+
+Esta feature cubre:
+
+- Crear tareas manualmente
+- Crear tareas automáticamente desde otras features
+- Consultar detalle de tarea (incluyendo contexto)
+
+---
+
+## Fuera de alcance
+
+- Implementación concreta de envío de notificaciones (WhatsApp, email, etc.)
+- Implementación concreta de generación de documentos
+- Motor de workflows
 
 ---
 
@@ -15,7 +35,20 @@ Gestionar tareas operativas dirigidas al propietario, permitiendo registrar acci
 
 ---
 
-## Datos de la tarea
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Tarea
+- Ver definiciones de dominio y datos principales de la feature
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Datos de la tarea
 
 ### Identificación
 
@@ -35,9 +68,9 @@ Estado de la tarea (lista cerrada):
 
 ### Fechas
 
-- `fecha_creacion`
-- `fecha_limite`
-- `fecha_finalizacion` (opcional; requerida si estado = FINALIZADA)
+- `creation_date`
+- `due_date`
+- `completion_date` (opcional; requerida si estado = FINALIZADA)
 
 ---
 
@@ -57,7 +90,9 @@ La prioridad no tiene impacto funcional por ahora (solo informativa).
 
 Define el propósito de la tarea y determina las acciones disponibles.
 
-Lista abierta dependiente de implementación.
+Lista abierta gobernada por las features que producen tareas.
+
+`F-0013` define el contenedor común (`task_type`, estado, contexto y ciclo de vida), pero no impone un catálogo cerrado global.
 
 Ejemplos:
 
@@ -72,7 +107,7 @@ Ejemplos:
 
 La tarea contiene un contexto estructurado y extensible con la información necesaria para ejecutar acciones asociadas.
 
-El contexto debe permitir almacenar pares clave-valor o estructura JSON equivalente.
+El contexto debe permitir almacenar pares clave-valor o una estructura equivalente que preserve datos compuestos de forma estable.
 
 Ejemplos de datos posibles:
 
@@ -88,14 +123,13 @@ El contexto no contiene lógica, solo datos necesarios para ejecutar acciones.
 
 ### Auditoría
 
-- `created_at`
-- `created_by`
-- `updated_at`
-- `updated_by`
+Esta feature reutiliza el contrato común de auditoría definido en:
+
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 
 ---
 
-## Acciones de tarea
+### Acciones de tarea
 
 Las acciones que se pueden realizar sobre una tarea no están definidas por el sistema.
 
@@ -123,77 +157,60 @@ El sistema debe permitir:
 - Filtrar tareas por fecha límite
 - Cambiar estado de tarea
 - Reabrir tareas
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-Los listados deben usar **paginacion obligatoria**.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
-
-`environment variables > config file > defaults`
-
-## Reglas de negocio
+## Reglas del dominio
 
 - Toda tarea debe tener un estado.
-- Una tarea en estado FINALIZADA debe tener `fecha_finalizacion`.
-- Una tarea en estado SALTADA no requiere `fecha_finalizacion`.
+- Una tarea en estado FINALIZADA debe tener `completion_date`.
+- Una tarea en estado SALTADA no requiere `completion_date`.
 - El sistema no valida la semántica del contexto.
 - El cliente es responsable de interpretar el tipo de tarea y su contexto.
 - Las tareas no tienen múltiples fechas límite.
-- Las tareas generadas automáticamente deben incluir una clave de idempotencia en su contexto (`automation_key`) para evitar duplicados.
-- Las tareas automáticas deben incluir automation_key en el contexto para idempotencia.
+- Las tareas generadas automáticamente deben incluir una identidad de idempotencia en su contexto (`automation_key`) siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
 
 ---
 
-## Fuera de alcance
+## Casos borde
 
-- Implementación concreta de envío de notificaciones (WhatsApp, email, etc.)
-- Implementación concreta de generación de documentos
-- Motor de workflows
+La feature debe contemplar los siguientes escenarios:
 
----
-
----
-
-## Dependencias y trazabilidad
-
-### Depende de
-- (ninguna explícita)
-
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
+- Toda tarea debe tener un estado.
+- Una tarea en estado FINALIZADA debe tener `completion_date`.
+- Una tarea en estado SALTADA no requiere `completion_date`.
 
 ---
 
-## ADR aplicables
+## Dependencias
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
+Esta feature puede depender de:
 
-### Condicionales
-- ADR-0010 (si esta feature publica/consume eventos con entrega duradera)
+- F-0012
 
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Shared specs aplicables
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
+- docs/specs/shared/SHARED-0005-idempotency-contract.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Crear tareas manualmente
+- Crear tareas automáticamente desde otras features
+- Consultar detalle de tarea (incluyendo contexto)

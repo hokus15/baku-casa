@@ -1,95 +1,99 @@
 # EN-0202: Configuration System
 
+---
+
 ## Objetivo
-Introducir un sistema centralizado y tipado para gestionar la configuración de la aplicación (variables de entorno, ficheros, valores por defecto) de forma consistente entre entornos, reduciendo ambigüedad operativa y evitando configuraciones divergentes.
+
+Introducir un sistema centralizado y tipado para gestionar la configuración de la aplicación a partir de variables de entorno, ficheros y valores por defecto de forma consistente entre entornos, reduciendo ambigüedad operativa y evitando configuraciones divergentes.
+
+Un enabler **NO introduce funcionalidad de dominio visible para el usuario final**.  
+Su objetivo es habilitar el desarrollo, la operación o la evolución segura de las features.
 
 ---
 
-## Descripción
-A medida que la aplicación incorpora más componentes (persistencia, autenticación, notificaciones, logging, etc.), la configuración tiende a dispersarse en múltiples lugares y formatos. Esto provoca inconsistencias entre entornos, dificultades de despliegue y riesgos de errores por configuración incompleta o incorrecta.
+## Alcance
 
-Este enabler define un sistema de configuración único que permita:
-- declarar parámetros de configuración de manera tipada
-- aplicar valores por defecto de forma explícita
-- soportar múltiples fuentes (variables de entorno, ficheros, defaults)
-- validar configuración en el arranque para fallar de forma temprana ante errores
+Este enabler introduce capacidades relacionadas con:
 
-El sistema debe ser consistente y reproducible para los distintos entornos (dev, test, prod) sin introducir decisiones de implementación en esta fase.
+- definición centralizada y tipada de parámetros de configuración
+- validación temprana y resolución determinista de configuración entre múltiples fuentes
 
----
+El enabler afecta principalmente a:
 
-## Root afectado
-- `backend/`
+- backend y configuración transversal de runtime y testing
 
----
-
-## Incluye
-- Definición de un “source of truth” centralizado para configuración de la aplicación.
-- Configuración tipada:
-  - tipos explícitos (por ejemplo strings, ints, booleans, URLs)
-  - validaciones de rango/formato cuando aplique
-- Soporte de múltiples fuentes de configuración:
-  - variables de entorno
-  - ficheros de configuración
-  - valores por defecto definidos explícitamente
-- Reglas de precedencia entre fuentes (orden determinista).  
-  - Política global fija de precedencia: `environment variables > config file > defaults`.
-- Separación clara de configuración por entorno (por ejemplo `dev`, `test`, `prod`).
-- Validación y carga de configuración durante el arranque:
-  - fallar temprano si falta configuración requerida
-  - fallar temprano si la configuración no es válida
-  - si existen errores de validación, el sistema debe fallar el arranque reportando el **conjunto completo de errores detectados**, no solo el primero.
-- Manejo de claves de configuración no declaradas:
-  - las claves no declaradas están permitidas
-  - deben generar un **warning de diagnóstico**
-  - no deben bloquear el arranque de la aplicación
-- Requisitos de configuración:
-  - solo existen **claves requeridas globales**
-  - no se definen mínimos obligatorios de claves específicos por entorno
-- Convenciones para:
-  - nombres estables de claves de configuración
-  - compatibilidad con despliegues self-hosted (incluyendo Docker)
-- Garantía de que el sistema de configuración no introduce dependencias que violen la arquitectura hexagonal.
+Este enabler **NO introduce cambios funcionales en el dominio**.
 
 ---
 
 ## Fuera de alcance
-- Gestión de secretos externa (vaults, KMS, etc.).
-- Sistemas de feature flags.
-- Configuración dinámica runtime (hot reload).
-- Cambios funcionales en la lógica de negocio.
+
+- gestión externa de secretos, feature flags o configuración dinámica runtime
+- cambios funcionales en la lógica de negocio o definición de nuevas capacidades de dominio
 
 ---
 
-## Notas de arquitectura
-- La configuración debe ser consumible por componentes de Infrastructure/Adapters sin filtrar detalles hacia Domain.
-- La configuración de testing debe ser segura y explícita para evitar uso accidental de entornos persistentes.
-- La definición tipada y validada mejora la reproducibilidad del desarrollo y despliegue.
+## Problema que resuelve
 
-### Resolución de parámetros configurables
+A medida que la aplicación incorpora más componentes, la configuración tiende a dispersarse en múltiples lugares y formatos. Esto provoca inconsistencias entre entornos, dificultades de despliegue y riesgos de errores por configuración incompleta o incorrecta. Sin una fuente única de verdad para los parámetros configurables, el sistema pierde reproducibilidad y aumenta el riesgo de defaults implícitos o divergentes.
 
-Todo parámetro declarado como configurable en una spec debe resolverse exclusivamente a través del configuration system definido en este enabler.
+---
 
-Queda prohibido:
+## Capacidad introducida
 
-- definir valores configurables mediante constantes hardcoded en el código de aplicación
-- duplicar valores configurables en múltiples capas
-- aplicar valores por defecto en adapters, servicios de aplicación o repositorios
+Este enabler introduce la siguiente capacidad en el sistema:
 
-Debe existir **una única fuente de verdad** para cada parámetro configurable, resuelta por el configuration system siguiendo la precedencia global definida:
+- la configuración de la aplicación puede declararse y resolverse de manera tipada y centralizada
+- el sistema aplica una precedencia determinista entre variables de entorno, ficheros y valores por defecto
+- la aplicación valida la configuración en el arranque, falla de forma temprana ante errores y emite diagnóstico cuando aparecen claves no declaradas
 
-`environment variables > config file > defaults`.
+La capacidad debe describirse **en términos de resultado**, no de implementación.
 
-Los adapters y servicios pueden **consumir configuración**, pero no convertirse en la fuente de definición de la misma.
+---
+
+## Impacto en el sistema
+
+Áreas potencialmente afectadas:
+
+- configuración de runtime de todos los componentes del backend
+- seguridad operativa, testing y despliegue self-hosted por consistencia entre entornos
+
+Si el enabler afecta a múltiples áreas debe indicarse claramente.
+
+---
+
+## Dependencias
+
+Este enabler puede depender de:
+
+- F-0001
+- ninguna otra dependencia estructural definida para este enabler
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
+
+---
+
+## Relación con ADR
+
+Si el enabler depende de decisiones arquitectónicas existentes, debe referenciar los ADR relevantes.
+
+- ADR-0013 — Configuration System
+- ADR-0002 — Hexagonal Architecture
+
+Los enablers **NO deben redefinir decisiones arquitectónicas** ya documentadas.
 
 ---
 
 ## Criterios de aceptación
-1. Existe un sistema centralizado de configuración con una definición tipada de parámetros.
-2. La configuración puede resolverse de forma determinista a partir de variables de entorno, ficheros y defaults.
-3. Existen reglas de precedencia claras y documentadas entre las fuentes de configuración (`environment variables > config file > defaults`).
-4. La aplicación valida la configuración en el arranque y falla de forma temprana ante errores, reportando el conjunto completo de errores detectados.
-5. Las claves de configuración no declaradas generan un warning pero no bloquean el arranque.
-6. Solo existen claves requeridas globales; no hay mínimos obligatorios específicos por entorno.
-7. La configuración es consistente entre entornos (`dev`, `test`, `prod`) y no depende de convenciones implícitas.
-8. El sistema de configuración respeta la arquitectura hexagonal y no introduce dependencias indebidas en Domain.
+
+El enabler se considera completado cuando:
+
+- existe un sistema centralizado de configuración con una definición tipada de parámetros configurables
+- la configuración puede resolverse de forma determinista a partir de variables de entorno, ficheros y valores por defecto siguiendo la precedencia `environment variables > config file > defaults`
+- la aplicación valida la configuración durante el arranque y reporta el conjunto completo de errores detectados cuando la configuración no es válida
+- las claves de configuración no declaradas generan un warning de diagnóstico pero no bloquean el arranque
+- la configuración es consistente entre entornos y no depende de convenciones implícitas ni de valores hardcoded dispersos

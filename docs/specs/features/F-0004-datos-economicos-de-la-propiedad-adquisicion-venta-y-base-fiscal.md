@@ -1,8 +1,35 @@
 # F-0004: Datos Económicos de la Propiedad (Adquisición, Venta y Base Fiscal)
 
+---
+
 ## Objetivo
 
 Permitir registrar en cada propiedad **0..N apuntes económicos** asociados a su adquisición o transmisión, diferenciando importe real e importe fiscal, categorizados mediante una lista cerrada global, y dejando preparada la base estructural para el cálculo futuro de bases fiscales.
+
+---
+
+## Alcance
+
+- Gestión CRUD de apuntes económicos.
+- Asociación exclusiva a una propiedad.
+- Validación contra lista cerrada global de categorías.
+- Soporte de categorías compartidas entre adquisición y transmisión.
+- Persistencia de información necesaria para cálculo futuro de:
+  - Base de adquisición.
+  - Base de transmisión.
+- Determinación estructural de deducibilidad vía categoría.
+- Los EconomicEntry no afectan al saldo/deuda del contrato y no participan en el cálculo contable del ledger.
+
+---
+
+## Fuera de alcance
+
+- Cálculo automático de impuestos.
+- Cálculo de ganancia/pérdida patrimonial.
+- Generación de modelos fiscales.
+- Automatización contable.
+- Gestión multi-moneda.
+- Integración documental (OCR, almacenamiento binario).
 
 ---
 
@@ -20,7 +47,20 @@ Permitir registrar en cada propiedad **0..N apuntes económicos** asociados a su
 
 ---
 
-## Entidad
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Propiedad
+- Apunte económico
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Entidad
 
 ### EconomicEntry
 
@@ -54,16 +94,11 @@ Permitir registrar en cada propiedad **0..N apuntes económicos** asociados a su
 - `document_reference`: string
 - `external_id`: string
 
-### Auditoría
+### Auditoría y soft delete
 
-- `created_at`
-- `created_by`
-- `updated_at`
-- `updated_by`
-- `deleted_at` (nullable)
-- `deleted_by` (nullable)
+Esta feature reutiliza el contrato común definido en:
 
-La eliminación es lógica (soft delete) y debe registrar `deleted_at` y `deleted_by`.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 Los registros eliminados lógicamente no deben mostrarse en consultas normales, pero deben preservarse para trazabilidad histórica.
 
 **Reglas estructurales**
@@ -89,43 +124,11 @@ Los registros eliminados lógicamente no deben mostrarse en consultas normales, 
 - Filtrar por tipo de movimiento.
 - Consultar detalle de un apunte.
 - Marcar propiedad como transmitida sin impedir la edición posterior de apuntes.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-Los listados deben usar **paginacion obligatoria**.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
-
-`environment variables > config file > defaults`
-
-## Alcance
-
-- Gestión CRUD de apuntes económicos.
-- Asociación exclusiva a una propiedad.
-- Validación contra lista cerrada global de categorías.
-- Soporte de categorías compartidas entre adquisición y transmisión.
-- Persistencia de información necesaria para cálculo futuro de:
-  - Base de adquisición.
-  - Base de transmisión.
-- Determinación estructural de deducibilidad vía categoría.
-- Los EconomicEntry no afectan al saldo/deuda del contrato y no participan en el cálculo contable del ledger.
-
----
-
-## Fuera de alcance
-
-- Cálculo automático de impuestos.
-- Cálculo de ganancia/pérdida patrimonial.
-- Generación de modelos fiscales.
-- Automatización contable.
-- Gestión multi-moneda.
-- Integración documental (OCR, almacenamiento binario).
-
----
-
-## Reglas de negocio
+## Reglas del dominio
 
 1. Una propiedad puede no tener ningún apunte económico.
 2. Cada apunte debe tener `movement_type`, `category`, `date`, `amount_real`, `amount_fiscal`.
@@ -147,43 +150,46 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
 
 ---
 
-## Dependencias y trazabilidad
+## Casos borde
 
-### Depende de
-- (ninguna explícita)
+La feature debe contemplar los siguientes escenarios:
 
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
-
----
-
-## ADR aplicables
-
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
-
-### Condicionales
-- ADR-0010 (si esta feature publica/consume eventos con entrega duradera)
-
+- Una propiedad puede no tener ningún apunte económico.
+- Cada apunte debe tener `movement_type`, `category`, `date`, `amount_real`, `amount_fiscal`.
+- Los importes deben ser estrictamente positivos o cero.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Dependencias
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature puede depender de:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- F-0003
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
+
+---
+
+## Shared specs aplicables
+
+Esta feature utiliza y debe interpretarse conjuntamente con:
+
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Crear apunte económico asociado a una propiedad.
+- Editar apunte económico.
+- Eliminar apunte económico (soft delete).
+
+---
+

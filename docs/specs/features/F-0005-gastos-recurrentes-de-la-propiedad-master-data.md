@@ -1,10 +1,32 @@
 # F-0005: Gastos Recurrentes de la Propiedad (Master Data)
 
+---
+
 ## Objetivo
 
 Permitir definir en cada propiedad **plantillas de gastos recurrentes operativos**, que representen una configuración estructural para la futura generación automática de cargos.
 
 Estas plantillas no generan movimientos económicos por sí mismas en esta feature, sino que establecen las reglas base para futuras automatizaciones.
+
+---
+
+## Alcance
+
+- Gestión CRUD de plantillas.
+- Validación de categoría contra lista cerrada global.
+- Validación estructural de `rrule`.
+- Soporte de múltiples plantillas por propiedad.
+- Permitir varias plantillas con misma categoría si difieren en rango temporal.
+
+---
+
+## Fuera de alcance
+
+- Generación automática de cargos.
+- Cálculo real de importes devengados.
+- Integración con contratos o imputación a inquilinos.
+- Ajustes automáticos por IPC u otras reglas.
+- Contabilidad automática.
 
 ---
 
@@ -19,7 +41,20 @@ Estas plantillas no generan movimientos económicos por sí mismas en esta featu
 
 ---
 
-## Entidad
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Plantilla de gasto recurrente
+- Categoría operativa
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Entidad
 
 ### RecurringExpenseTemplate
 
@@ -36,16 +71,11 @@ Estas plantillas no generan movimientos económicos por sí mismas en esta featu
 - `end_date`: date
 - `notes`: string
 
-### Auditoría
+### Auditoría y soft delete
 
-- `created_at`
-- `created_by`
-- `updated_at`
-- `updated_by`
-- `deleted_at` (nullable)
-- `deleted_by` (nullable)
+Esta feature reutiliza el contrato común definido en:
 
-La eliminación es lógica y debe ser auditable.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 
 **Lista cerrada de categorías**
 
@@ -82,35 +112,11 @@ La eliminación es lógica y debe ser auditable.
 
 ---
 
-Los listados deben usar **paginacion obligatoria**.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
-
-`environment variables > config file > defaults`
-
-## Alcance
-
-- Gestión CRUD de plantillas.
-- Validación de categoría contra lista cerrada global.
-- Validación estructural de `rrule`.
-- Soporte de múltiples plantillas por propiedad.
-- Permitir varias plantillas con misma categoría si difieren en rango temporal.
+Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-## Fuera de alcance
-
-- Generación automática de cargos.
-- Cálculo real de importes devengados.
-- Integración con contratos o imputación a inquilinos.
-- Ajustes automáticos por IPC u otras reglas.
-- Contabilidad automática.
-
----
-
-## Reglas de negocio
+## Reglas del dominio
 
 1. Una propiedad puede no tener ninguna plantilla de gasto recurrente.
 2. Cada plantilla debe tener `category`, `estimated_amount`, `periodicity`, `start_date`.
@@ -119,7 +125,7 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
 5. `end_date`, si existe, debe ser mayor o igual que `start_date`.
 6. La vigencia de la plantilla está determinada por el rango `[start_date, end_date]`.
 7. Se permiten múltiples plantillas con la misma categoría siempre que no exista solapamiento temporal inconsistente.
-8. La eliminación debe ser lógica (soft delete).
+8. La eliminación debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
 9. El diseño debe permitir en el futuro generar cargos a partir de:
     - periodicidad (rrule)
     - importe estimado
@@ -127,42 +133,46 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
 
 ---
 
----
+## Casos borde
 
-## Dependencias y trazabilidad
+La feature debe contemplar los siguientes escenarios:
 
-### Depende de
-- (ninguna explícita)
-
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
+- Una propiedad puede no tener ninguna plantilla de gasto recurrente.
+- Cada plantilla debe tener `category`, `estimated_amount`, `periodicity`, `start_date`.
+- `estimated_amount` debe ser positivo o cero.
 
 ---
 
-## ADR aplicables
+## Dependencias
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
+Esta feature puede depender de:
 
+- F-0003
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Shared specs aplicables
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Crear plantilla de gasto recurrente para una propiedad.
+- Editar plantilla.
+- Eliminar plantilla (soft delete).
+
+---
+

@@ -4,202 +4,373 @@ items:
 
   EN-0100:
     spec: docs/specs/enablers/EN-0100-project-bootstrap.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0001
       - ADR-0002
       - ADR-0008
     constitution_sections:
-      - architecture
-      - specification_implementation_separation
+      - system_architecture
+      - spec_vs_implementation
       - engineering_principles
     context_sections:
-      - system_purpose
-      - operational_constraints
+      - infrastructure_constraints
+      - system_evolution
 
   F-0001:
     spec: docs/specs/features/F-0001-acceso-y-autenticacion-operador.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0004
       - ADR-0005
       - ADR-0006
     constitution_sections:
       - api_contracts
-      - authentication
+      - time_policy
       - observability
     context_sections:
       - system_purpose
+      - access_model
 
   EN-0202:
     spec: docs/specs/enablers/EN-0202-configuration-system.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0013
     constitution_sections:
+      - infrastructure
       - engineering_principles
     context_sections:
-      - operational_constraints
+      - infrastructure_constraints
+      - persistence_context
 
   EN-0200:
-    spec: docs/specs/enablers/EN-0200-logging-baseline.md
+    spec: docs/specs/enablers/EN-0200-application-logging-baseline-with-daily-rotation.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0009
     constitution_sections:
+      - time_policy
       - observability
     context_sections:
-      - operational_constraints
+      - infrastructure_constraints
+      - operational_observability
 
   EN-0201:
-    spec: docs/specs/enablers/EN-0201-testing-baseline.md
+    spec: docs/specs/enablers/EN-0201-in-memory-database-testing-baseline.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0008
     constitution_sections:
+      - system_architecture
+      - database_indexes
       - engineering_principles
     context_sections:
-      - operational_constraints
+      - infrastructure_constraints
+      - persistence_context
 
   EN-0300:
-    spec: docs/specs/enablers/EN-0300-http-composition-root.md
+    spec: docs/specs/enablers/EN-0300-http-composition-root-refactor.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0002
       - ADR-0013
     constitution_sections:
-      - architecture
-    context_sections:
-      - operational_constraints
-
-  F-0002:
-    spec: docs/specs/features/F-0002-propietarios.md
-    adr_refs:
-      - ADR-0003
-    constitution_sections:
-      - persistence
-    context_sections:
-      - domain_scope
-
-  F-0003:
-    spec: docs/specs/features/F-0003-propiedades.md
-    adr_refs:
-      - ADR-0003
-    constitution_sections:
-      - persistence
-    context_sections:
-      - domain_scope
-
-  F-0004:
-    spec: docs/specs/features/F-0004-datos-economicos-propiedad.md
-    constitution_sections:
-      - monetary_policy
-    context_sections:
-      - domain_scope
-
-  F-0005:
-    spec: docs/specs/features/F-0005-gastos-recurrentes.md
-    constitution_sections:
-      - monetary_policy
-    context_sections:
-      - domain_scope
-
-  F-0006:
-    spec: docs/specs/features/F-0006-contratos.md
-    constitution_sections:
+      - system_architecture
       - api_contracts
     context_sections:
-      - domain_scope
+      - infrastructure_constraints
+      - access_model
+
+  F-0002:
+    spec: docs/specs/features/F-0002-propietarios-sujetos-fiscales.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+    constitution_sections:
+      - api_contracts
+      - database_indexes
+    context_sections:
+      - functional_scope
+      - persistence_context
+
+  F-0003:
+    spec: docs/specs/features/F-0003-propiedades-y-titularidad.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+    constitution_sections:
+      - api_contracts
+      - database_indexes
+    context_sections:
+      - functional_scope
+      - persistence_context
+
+  F-0004:
+    spec: docs/specs/features/F-0004-datos-economicos-de-la-propiedad-adquisicion-venta-y-base-fiscal.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
+    constitution_sections:
+      - monetary_policy
+      - accounting_invariants
+    context_sections:
+      - functional_scope
+      - persistence_context
+
+  F-0005:
+    spec: docs/specs/features/F-0005-gastos-recurrentes-de-la-propiedad-master-data.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
+    constitution_sections:
+      - monetary_policy
+      - accounting_invariants
+    context_sections:
+      - functional_scope
+      - persistence_context
+
+  F-0006:
+    spec: docs/specs/features/F-0006-contratos-estructura-base.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0012
+    constitution_sections:
+      - api_contracts
+      - time_policy
+    context_sections:
+      - functional_scope
+      - persistence_context
 
   F-0007:
-    spec: docs/specs/features/F-0007-historico-rentas.md
+    spec: docs/specs/features/F-0007-historico-de-rentas-master-data.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
+      - ADR-0012
     constitution_sections:
       - monetary_policy
+      - time_policy
     context_sections:
-      - domain_scope
+      - functional_scope
+      - persistence_context
 
   F-0008:
-    spec: docs/specs/features/F-0008-clausulas-actualizacion.md
+    spec: docs/specs/features/F-0008-clausulas-de-actualizacion-de-renta-master-data.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
+      - ADR-0012
     constitution_sections:
       - monetary_policy
+      - time_policy
     context_sections:
-      - domain_scope
+      - functional_scope
+      - persistence_context
 
   F-0009:
-    spec: docs/specs/features/F-0009-asignacion-gastos.md
+    spec: docs/specs/features/F-0009-clausulas-de-asignacion-de-gastos-recurrentes-de-la-propiedad.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
     constitution_sections:
       - monetary_policy
+      - api_contracts
     context_sections:
-      - domain_scope
+      - functional_scope
+      - persistence_context
 
   EN-0301:
     spec: docs/specs/enablers/EN-0301-application-service-modularization.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0002
     constitution_sections:
-      - architecture
+      - system_architecture
+      - engineering_principles
     context_sections:
-      - operational_constraints
+      - infrastructure_constraints
+      - system_evolution
 
   EN-0302:
     spec: docs/specs/enablers/EN-0302-persistence-schema-rebaseline.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
     adr_refs:
       - ADR-0003
     constitution_sections:
-      - persistence
+      - database_indexes
+      - system_architecture
     context_sections:
-      - operational_constraints
+      - infrastructure_constraints
+      - persistence_context
 
   F-0010:
-    spec: docs/specs/features/F-0010-devengos.md
+    spec: docs/specs/features/F-0010-devengos-fuente-unica-de-ingresos-y-gastos.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
+      - ADR-0014
     constitution_sections:
       - economic_model
       - accounting_invariants
       - monetary_policy
+      - idempotency
     context_sections:
-      - domain_scope
+      - functional_scope
+      - persistence_context
 
   EN-0209:
     spec: docs/specs/enablers/EN-0209-idempotency-protection.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0014
     constitution_sections:
       - idempotency
+      - observability
     context_sections:
-      - operational_constraints
+      - persistence_context
+      - operational_observability
 
   F-0011:
-    spec: docs/specs/features/F-0011-pagos.md
+    spec: docs/specs/features/F-0011-pagos-asignacion-fifo-y-credito-por-contrato.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0003
+      - ADR-0011
+      - ADR-0014
     constitution_sections:
       - accounting_invariants
       - monetary_policy
+      - idempotency
     context_sections:
-      - domain_scope
+      - functional_scope
+      - persistence_context
 
   EN-0208:
-    spec: docs/specs/enablers/EN-0208-domain-event-logging.md
+    spec: docs/specs/enablers/EN-0208-event-publication-outbox.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0009
+      - ADR-0010
     constitution_sections:
+      - sources_of_truth
       - observability
+      - infrastructure
     context_sections:
-      - operational_constraints
+      - persistence_context
+      - operational_observability
 
   F-0012:
     spec: docs/specs/features/F-0012-facturacion.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0004
+      - ADR-0011
     constitution_sections:
       - api_contracts
       - monetary_policy
     context_sections:
-      - domain_scope
+      - functional_scope
+      - persistence_context
 
   F-0013:
     spec: docs/specs/features/F-0013-tareas.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+      - bot
+    adr_refs:
+      - ADR-0004
+      - ADR-0009
+      - ADR-0014
     constitution_sections:
       - api_contracts
+      - observability
     context_sections:
-      - domain_scope
+      - functional_scope
+      - access_model
 
   F-0014:
-    spec: docs/specs/features/F-0014-automatizacion-tareas.md
+    spec: docs/specs/features/F-0014-automatizacion-creacion-de-tareas.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+      - bot
+    adr_refs:
+      - ADR-0004
+      - ADR-0009
+      - ADR-0010
+      - ADR-0011
+      - ADR-0014
     constitution_sections:
       - api_contracts
+      - observability
+      - monetary_policy
     context_sections:
-      - domain_scope
+      - functional_scope
+      - operational_observability
+      - persistence_context
 
   F-0015:
     spec: docs/specs/features/F-0015-reports-fiscales.md
+    primary_scope: backend
+    affected_scopes:
+      - backend
+    adr_refs:
+      - ADR-0011
     constitution_sections:
+      - accounting_invariants
       - monetary_policy
+      - percentage_representation
     context_sections:
-      - domain_scope
+      - functional_scope
+      - geographic_scope

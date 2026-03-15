@@ -1,8 +1,31 @@
 # F-0001: Acceso y Autenticación (Operador)
 
+---
+
 ## Objetivo
 
 Restringir el acceso al sistema a un operador autenticado, habilitando el uso seguro del resto de features.
+
+---
+
+## Alcance
+
+Esta feature cubre:
+
+- **Bootstrap**: establecer credenciales iniciales del operador (primer arranque).
+- **Autenticación**: iniciar sesión con credenciales válidas.
+- **Cierre de sesión**: finalizar sesión activa mediante revocación explícita del token actual.
+
+---
+
+## Fuera de alcance
+
+- Múltiples usuarios.
+- Roles/permisos (RBAC/ACL).
+- Invitaciones.
+- SSO/OAuth.
+- Recuperación de contraseña vía email/SMS.
+- Permisos por propietario o por propiedad.
 
 ---
 
@@ -15,6 +38,31 @@ Restringir el acceso al sistema a un operador autenticado, habilitando el uso se
 
 ---
 
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Operador (usuario del sistema)
+- Ver definiciones de dominio y datos principales de la feature
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Auditoría mínima
+
+El usuario operador debe mantener metadatos mínimos de auditoría para creación, actualización y último acceso:
+
+- fecha de creación (obligatoria)
+- fecha de último acceso correcto (obligatoria)
+- fecha de última actualización efectiva (obligatoria en el modelo, aunque inicialmente pueda no tener valor)
+
+La fecha de última actualización efectiva debe establecerse únicamente cuando se produzca una modificación del operador.
+
+---
+
 ## Capacidades
 
 El sistema debe permitir:
@@ -23,11 +71,11 @@ El sistema debe permitir:
 - **Autenticación**: iniciar sesión con credenciales válidas.
 - **Cierre de sesión**: finalizar sesión activa mediante revocación explícita del token actual.
 - **Gestión de credenciales**: cambiar contraseña del operador.
-- **Revocación**: invalidar sesiones/tokens existentes tras cambio de contraseña (TBD mecanismo exacto).
+- **Revocación**: invalidar todas las sesiones/tokens activos del operador tras cambio de contraseña.
 
 ---
 
-## Reglas de negocio
+## Reglas del dominio
 
 - Todas las operaciones funcionales del sistema requieren autenticación.
 - Un intento de acceso sin autenticar debe ser rechazado.
@@ -45,71 +93,62 @@ El sistema debe permitir:
 
 Esta feature no introduce listados funcionales de dominio como capacidad principal.
 
-Si dentro de su alcance se expone cualquier endpoint de coleccion (por ejemplo, intentos de acceso o sesiones), debe cumplir obligatoriamente la disciplina transversal de paginacion:
+Si dentro de su alcance se expone cualquier endpoint de coleccion (por ejemplo, intentos de acceso o sesiones), debe cumplir el contrato comun definido en:
 
-- paginacion obligatoria en toda coleccion
-- valores por defecto y limites maximos definidos de forma transversal
-- parametros de paginacion resueltos exclusivamente mediante el configuration system (EN-0202) con precedencia global: `environment variables > config file > defaults`
-- prohibido definir defaults o maximos hardcoded fuera de la configuracion central
+- docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
-## Auditoría mínima
+## Casos borde
 
-El usuario operador debe mantener los siguientes campos de auditoría:
+La feature debe contemplar los siguientes escenarios:
 
-- `created_at` (obligatorio).
-- `last_login_at` (obligatorio).
-- `updated_at` (obligatorio en el modelo; puede ser `null` hasta que exista una actualización efectiva).
-
-`updated_at` debe establecerse únicamente cuando se produzca una modificación del operador.
+- Todas las operaciones funcionales del sistema requieren autenticación.
+- Un intento de acceso sin autenticar debe ser rechazado.
+- El sistema debe implementar protección frente a fuerza bruta mediante bloqueo temporal tras intentos fallidos consecutivos.
 
 ---
 
-## Fuera de alcance
+## Dependencias
 
-- Múltiples usuarios.
-- Roles/permisos (RBAC/ACL).
-- Invitaciones.
-- SSO/OAuth.
-- Recuperación de contraseña vía email/SMS.
-- Permisos por propietario o por propiedad.
+Esta feature puede depender de:
 
----
+- EN-0100
 
-## ADR aplicables
+Las dependencias estructurales se definen en:
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
-- ADR-0013
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Shared specs aplicables
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- docs/specs/shared/SHARED-0003-api-response-conventions.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
-## Baseline de testing de persistencia (EN-0201)
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- **Bootstrap**: establecer credenciales iniciales del operador (primer arranque).
+- **Autenticación**: iniciar sesión con credenciales válidas.
+- **Cierre de sesión**: finalizar sesión activa mediante revocación explícita del token actual.
+
+---
+
+
+### Baseline de testing de persistencia (EN-0201)
 
 Las pruebas de integración de esta feature deben ejecutarse sobre el baseline EN-0201 cuando requieran persistencia:
 
 - DB en memoria activada por configuración de test explícita.
 - Inicialización determinista de esquema mediante migraciones.
 - Aislamiento de estado entre casos para evitar dependencias temporales entre tests.
+
+---

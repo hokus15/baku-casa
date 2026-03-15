@@ -29,6 +29,37 @@ Eliminar todos los bloques <<INSTRUCTION>> en el documento final.
 Describir qué capacidad funcional introduce esta feature y qué problema del dominio resuelve.
 
 No describir implementación técnica.
+No fijar decisiones tecnológicas concretas; si una decisión técnica condiciona la feature, debe referenciarse mediante ADR o shared spec aplicable.
+<<END_INSTRUCTION>>
+
+---
+
+## Alcance
+
+Esta feature cubre:
+
+- {{IN_SCOPE_1}}
+- {{IN_SCOPE_2}}
+- {{IN_SCOPE_3}}
+
+<<INSTRUCTION>>
+Describir qué comportamiento funcional sí forma parte de la feature.
+El alcance debe expresarse en términos de capacidad de dominio observable.
+Eliminar este bloque en el documento final.
+<<END_INSTRUCTION>>
+
+---
+
+## Fuera de alcance
+
+- {{OUT_OF_SCOPE_1}}
+- {{OUT_OF_SCOPE_2}}
+- {{OUT_OF_SCOPE_3}}
+
+<<INSTRUCTION>>
+Indicar explícitamente qué NO cubre esta feature.
+Puede incluir automatizaciones futuras, variantes no soportadas o capacidades reservadas para otras features o enablers.
+Eliminar este bloque en el documento final.
 <<END_INSTRUCTION>>
 
 ---
@@ -72,6 +103,7 @@ La feature gestiona la siguiente información:
 <<INSTRUCTION>>
 Describir los campos conceptuales relevantes.
 No describir estructuras de base de datos.
+No introducir restricciones de persistencia, concurrencia, índices o framework salvo que formen parte del comportamiento observable o se referencien desde una fuente autoritativa.
 Eliminar este bloque en el documento final.
 <<END_INSTRUCTION>>
 
@@ -103,6 +135,7 @@ La feature debe respetar las siguientes reglas:
 <<INSTRUCTION>>
 Estas reglas deben describir invariantes o comportamiento del dominio.
 No incluir reglas técnicas de implementación.
+Si una regla global ya existe en `docs/system/constitution.md`, debe referenciarse o especializarse sin reescribirla.
 Eliminar este bloque en el documento final.
 <<END_INSTRUCTION>>
 
@@ -138,15 +171,38 @@ Este documento **NO define dependencias**.
 
 ---
 
-## Relación con shared specs
+## Shared specs aplicables
 
-La feature puede reutilizar definiciones de:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
 - docs/specs/shared/{{SHARED_SPEC_1}}
 - docs/specs/shared/{{SHARED_SPEC_2}}
 
 <<INSTRUCTION>>
-Referenciar modelos compartidos cuando corresponda.
+Referenciar shared specs realmente aplicables a esta feature.
+Si no aplica ninguno, sustituir la frase anterior y la lista por:
+
+Esta feature no requiere shared specs adicionales en su definición actual.
+
+Evitar formulaciones opcionales como "puede reutilizar".
+Eliminar este bloque en el documento final.
+<<END_INSTRUCTION>>
+
+---
+
+## Relación con fuentes autoritativas
+
+Esta feature puede requerir interpretación conjunta con:
+
+- `docs/system/constitution.md`
+- `docs/system/context.md`
+- `docs/decisions/adr/{{ADR_REFERENCE_1}}`
+- `docs/decisions/adr/{{ADR_REFERENCE_2}}`
+
+<<INSTRUCTION>>
+Incluir solo las referencias materialmente necesarias para interpretar la feature.
+No duplicar el contenido de constitution, context o ADR; referenciarlos.
+Si no hay ADR materialmente relevante, eliminar las líneas de ADR y dejar solo las fuentes realmente aplicables.
 Eliminar este bloque en el documento final.
 <<END_INSTRUCTION>>
 
@@ -162,17 +218,5 @@ La feature se considera completada cuando:
 
 <<INSTRUCTION>>
 Los criterios deben describir condiciones observables que indiquen que la feature funciona correctamente.
-Eliminar este bloque en el documento final.
-<<END_INSTRUCTION>>
-
----
-
-## Notas de implementación (opcional)
-
-{{IMPLEMENTATION_NOTES}}
-
-<<INSTRUCTION>>
-Sección opcional.
-Puede incluir orientación técnica general sin definir implementación concreta.
 Eliminar este bloque en el documento final.
 <<END_INSTRUCTION>>

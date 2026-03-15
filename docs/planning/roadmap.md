@@ -277,11 +277,11 @@ Incluye:
 
 ---
 
-## EN-0208 — Domain Event Logging
+## EN-0208 — Event Publication Outbox
 
-Registro de eventos relevantes del dominio en el sistema de logging estructurado.
+Capacidad transversal de publicación duradera de eventos mediante outbox pattern.
 
-Permite correlacionar eventos técnicos con eventos de negocio.
+Permite persistir eventos del dominio junto con la transacción de negocio, reintentarlos tras fallo y habilitar automatizaciones e integraciones coherentes con ADR-0010.
 
 ---
 

@@ -1,18 +1,24 @@
 # Convenciones del sistema — Baku.Casa
 
-Este documento define **convenciones de diseño e implementación** utilizadas en el proyecto.
+Este documento define **convenciones de expresión, nomenclatura y estilo** utilizadas en el proyecto.
 
 Las convenciones ayudan a mantener consistencia en:
 
 - código
-- API
+- contratos externos
 - persistencia
 - documentación
 
-Este documento **no define reglas invariantes del sistema**.  
-Las reglas del sistema se definen en:
+Este documento **no define reglas invariantes del sistema** ni decisiones tecnológicas concretas.  
+Las reglas globales se definen en:
 
 `docs/system/constitution.md`
+
+Las decisiones técnicas concretas se documentan en:
+
+`docs/decisions/adr/`
+
+Si una convención pasa a ser un requisito obligatorio del sistema, **DEBE promocionarse** a la constitución, a un ADR o a una shared spec, según corresponda.
 
 ---
 
@@ -22,7 +28,7 @@ Las reglas del sistema se definen en:
 
 Los identificadores de entidades deben utilizar el formato:
 
-```
+```text
 entity_id
 ```
 
@@ -63,11 +69,11 @@ Ejemplos:
 
 ## Nombres de endpoints
 
-Los endpoints deben utilizar nombres de recursos en plural.
+Los endpoints deben utilizar nombres de recursos en plural cuando el contrato exponga colecciones.
 
 Ejemplos:
 
-```
+```text
 /api/v1/owners
 /api/v1/properties
 /api/v1/contracts
@@ -79,13 +85,13 @@ Ejemplos:
 
 ## Formato JSON
 
-La API utiliza **JSON** como formato de intercambio.
+La API utiliza **JSON** como formato de intercambio cuando el contrato sea JSON.
 
 Las claves deben utilizar **snake_case**.
 
 Ejemplo:
 
-```
+```json
 {
   "owner_id": "123",
   "name": "Juan Pérez"
@@ -94,145 +100,37 @@ Ejemplo:
 
 ---
 
-## Campos opcionales
+## Representación temporal en interfaces
 
-Los campos con valor `null` **no deben incluirse en la respuesta de la API**.
-
----
-
-## Paginación
-
-Los endpoints de colección utilizan paginación.
-
-Parámetros comunes:
-
-- page
-- page_size
-
-La estructura de respuesta debe ser consistente entre endpoints.
-
----
-
-# Convenciones de tiempo
-
-Las fechas y horas deben utilizar formato **ISO 8601**.
+Las fechas y horas expuestas en interfaces textuales deben utilizar formato **ISO 8601** cuando el contrato no establezca un formato más específico.
 
 Ejemplo:
 
-```
+```text
 2025-01-15T10:30:00Z
 ```
 
 ---
 
-# Convenciones monetarias
-
-Los importes monetarios deben representarse utilizando **Decimal**.
-
-Ejemplo:
-
-```
-1250.50
-```
-
-Las operaciones monetarias deben evitar conversiones a tipos flotantes.
-
----
-
-# Convenciones de porcentajes
-
-Los porcentajes se representan en el rango:
-
-```
-0–100
-```
-
-Ejemplo:
-
-```
-50
-```
-
-representa **50%**.
-
----
-
-# Convenciones de auditoría
-
-Las entidades persistidas deben incluir los siguientes campos de auditoría:
-
-- created_at
-- created_by
-- updated_at
-- updated_by
-- deleted_at
-- deleted_by
-
----
-
-# Convenciones de soft delete
-
-Las entidades eliminadas mediante soft delete:
-
-- permanecen en la base de datos
-- no aparecen en consultas normales
-
-Los endpoints de listado pueden permitir incluir registros eliminados mediante filtros explícitos.
-
----
-
-# Convenciones de errores
-
-Los errores de la API deben:
-
-- ser estructurados
-- incluir un código de error
-- incluir un mensaje legible
-
-Ejemplo:
-
-```
-{
-  "error_code": "OWNER_NOT_FOUND",
-  "message": "Owner not found"
-}
-```
-
----
-
-# Convenciones de logging
-
-Los logs deben:
-
-- estar en inglés
-- ser estructurados
-- incluir correlation id cuando sea posible
-
----
-
 # Convenciones de documentación
+
+## Redacción de especificaciones
 
 Las especificaciones deben:
 
-- ser deterministas
-- evitar ambigüedad
 - describir comportamiento observable
+- usar terminología consistente con el glosario
+- evitar redacción ambigua
 
-Las especificaciones **no deben describir detalles de implementación**.
+Las especificaciones no deben introducir detalles de implementación salvo referencia explícita a un ADR o a una nota auxiliar claramente marcada como no normativa.
 
 ---
 
-# Convenciones de desarrollo
+## Referencias cruzadas
 
-El desarrollo sigue **Specification Driven Development (SDD)**.
+Cuando una spec dependa de una regla global, una decisión técnica o un catálogo compartido, debe **referenciar la fuente autoritativa** en lugar de reescribirla.
 
-El flujo esperado es:
-
-1. especificación
-2. planificación
-3. implementación
-
-Las implementaciones deben seguir siempre las especificaciones definidas.
+---
 
 # Convenciones de idioma
 

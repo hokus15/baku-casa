@@ -15,6 +15,7 @@ Eliminar este bloque de instrucciones en el documento final.
 <<INSTRUCTION>>
 Describir brevemente qué capacidad técnica introduce el enabler y por qué es necesario.
 No describir implementación.
+No fijar aquí tecnologías concretas salvo cuando la propia decisión técnica sea parte del alcance y quede respaldada por ADR.
 Eliminar este bloque en el resultado final.
 <<END_INSTRUCTION>>
 
@@ -43,6 +44,19 @@ Eliminar este bloque en el resultado final.
 
 ---
 
+## Fuera de alcance
+
+- {{OUT_OF_SCOPE_1}}
+- {{OUT_OF_SCOPE_2}}
+
+<<INSTRUCTION>>
+Indicar explícitamente qué NO introduce este enabler.
+Puede incluir funcionalidad de dominio, automatizaciones no cubiertas o cambios estructurales ajenos al objetivo.
+Eliminar este bloque en el resultado final.
+<<END_INSTRUCTION>>
+
+---
+
 ## Problema que resuelve
 
 {{PROBLEM_DESCRIPTION}}
@@ -66,6 +80,7 @@ La capacidad debe describirse **en términos de resultado**, no de implementaci�
 
 <<INSTRUCTION>>
 Describir la capacidad que estará disponible una vez implementado el enabler.
+Si depende de una decisión técnica previa, referenciar el ADR en lugar de reexplicarlo.
 Eliminar este bloque en el resultado final.
 <<END_INSTRUCTION>>
 
@@ -108,6 +123,23 @@ Los enablers **NO deben redefinir decisiones arquitectónicas** ya documentadas.
 
 ---
 
+## Relación con otras fuentes autoritativas
+
+Si aplica, este enabler debe interpretarse conjuntamente con:
+
+- `docs/system/constitution.md`
+- `docs/system/context.md`
+- `docs/specs/shared/{{SHARED_SPEC_1}}`
+
+<<INSTRUCTION>>
+Incluir solo referencias materialmente necesarias.
+No duplicar reglas globales ni decisiones ya documentadas.
+Si no aplica ninguna shared spec, eliminar su línea.
+Eliminar este bloque en el resultado final.
+<<END_INSTRUCTION>>
+
+---
+
 ## Criterios de aceptación
 
 El enabler se considera completado cuando:
@@ -118,16 +150,5 @@ El enabler se considera completado cuando:
 
 <<INSTRUCTION>>
 Los criterios deben describir condiciones observables que indiquen que el enabler está completado.
-Eliminar este bloque en el resultado final.
-<<END_INSTRUCTION>>
-
----
-
-## Notas de implementación (opcional)
-
-{{IMPLEMENTATION_NOTES}}
-
-<<INSTRUCTION>>
-Sección opcional. Puede omitirse si no es necesaria.
 Eliminar este bloque en el resultado final.
 <<END_INSTRUCTION>>

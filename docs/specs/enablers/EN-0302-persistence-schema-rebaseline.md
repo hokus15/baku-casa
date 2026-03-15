@@ -1,81 +1,99 @@
-# EN-0302 — Persistence Schema Rebaseline
+# EN-0302: Persistence Schema Rebaseline
+
+---
 
 ## Objetivo
 
-Consolidar el esquema de persistencia al finalizar MVP1, reemplazando el historial inicial de migraciones por un **baseline limpio del esquema de base de datos**, con el fin de simplificar la evolución futura del sistema antes de introducir el núcleo financiero (ledger).
+Consolidar el esquema de persistencia al finalizar MVP1, reemplazando el historial inicial de migraciones por un baseline limpio del esquema de base de datos para simplificar la evolución futura del sistema antes de introducir el núcleo financiero.
 
-Este enabler permite comenzar MVP2 con un modelo de persistencia estabilizado y un historial de migraciones mínimo y coherente.
-
----
-
-## Descripción
-
-Durante el desarrollo de MVP1 es habitual que el modelo de persistencia evolucione de forma iterativa mientras se explora y estabiliza el dominio (propiedades, contratos, gastos recurrentes, etc.).
-
-Como resultado, el historial de migraciones puede contener:
-
-- migraciones experimentales
-- cambios intermedios ya obsoletos
-- estructuras temporales
-- inconsistencias de naming o constraints
-
-Este enabler introduce un **punto de consolidación del esquema de persistencia** antes de iniciar el desarrollo del núcleo económico del sistema (MVP2).
-
-El proceso consiste en:
-
-- generar un esquema de base de datos consolidado a partir del modelo final de MVP1
-- reemplazar el historial previo de migraciones por un nuevo **baseline inicial**
-- asegurar que el esquema resultante es coherente, consistente y preparado para evolucionar con migraciones normales a partir de ese punto
-
-Este proceso no introduce cambios funcionales en el dominio, sino que únicamente reorganiza la capa de persistencia.
+Un enabler **NO introduce funcionalidad de dominio visible para el usuario final**.  
+Su objetivo es habilitar el desarrollo, la operación o la evolución segura de las features.
 
 ---
 
-## Root afectado
+## Alcance
 
-- `backend/`
+Este enabler introduce capacidades relacionadas con:
 
----
+- consolidación del esquema de persistencia tras estabilizar el modelo de MVP1
+- establecimiento de un nuevo baseline de migraciones coherente y recreable desde cero
 
-## Incluye
+El enabler afecta principalmente a:
 
-- Consolidación del esquema de base de datos correspondiente al modelo final de MVP1.
-- Generación de una nueva migración inicial que represente el estado consolidado del esquema.
-- Eliminación o archivado del historial previo de migraciones generado durante el desarrollo exploratorio de MVP1.
-- Verificación de que el nuevo baseline puede recrear el esquema completo de la base de datos desde cero.
-- Alineación de naming, constraints e índices del esquema resultante.
+- backend, persistencia y baseline de migraciones previo al inicio de MVP2
+
+Este enabler **NO introduce cambios funcionales en el dominio**.
 
 ---
 
 ## Fuera de alcance
 
-- Cambios en el modelo de dominio.
-- Cambios funcionales en la lógica de negocio.
-- Migración o preservación de datos existentes.
-- Introducción de nuevas entidades o reglas de negocio.
-
-Este enabler asume que los datos existentes en entornos de desarrollo o testing pueden descartarse.
+- cambios en el modelo de dominio, en la lógica de negocio o introducción de nuevas entidades funcionales
+- preservación o migración de datos existentes fuera del objetivo de consolidar el esquema y su historial de migraciones
 
 ---
 
-## Notas de arquitectura
+## Problema que resuelve
 
-Este enabler afecta exclusivamente a la capa de **Infrastructure / persistencia** y no debe introducir cambios en:
+Durante MVP1 el modelo de persistencia evoluciona de forma iterativa mientras se explora y estabiliza el dominio. Como resultado, el historial de migraciones puede acumular cambios intermedios, estructuras temporales, inconsistencias de naming o constraints y migraciones exploratorias ya obsoletas. Sin una consolidación explícita antes de iniciar MVP2, la base de persistencia para el núcleo financiero queda innecesariamente compleja y frágil.
 
-- Domain
-- Application
-- Interfaces
+---
 
-El resultado esperado es un esquema de persistencia limpio que actúe como **nuevo punto de partida para migraciones posteriores**, especialmente aquellas relacionadas con el núcleo financiero del sistema (ledger).
+## Capacidad introducida
 
-A partir de este punto, las migraciones deben gestionarse siguiendo el flujo normal de evolución del esquema.
+Este enabler introduce la siguiente capacidad en el sistema:
+
+- el sistema dispone de un baseline limpio del esquema de persistencia alineado con el estado final de MVP1
+- el esquema completo de la base de datos puede recrearse desde cero a partir de un nuevo punto de partida coherente
+- las migraciones posteriores pueden evolucionar desde una base estabilizada y preparada para soportar el núcleo financiero
+
+La capacidad debe describirse **en términos de resultado**, no de implementación.
+
+---
+
+## Impacto en el sistema
+
+Áreas potencialmente afectadas:
+
+- historial de migraciones y baseline del esquema de persistencia
+- preparación técnica del backend para iniciar MVP2 sobre una base de datos estabilizada
+
+Si el enabler afecta a múltiples áreas debe indicarse claramente.
+
+---
+
+## Dependencias
+
+Este enabler puede depender de:
+
+- F-0009
+- ninguna otra dependencia estructural definida para este enabler
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
+
+---
+
+## Relación con ADR
+
+Si el enabler depende de decisiones arquitectónicas existentes, debe referenciar los ADR relevantes.
+
+- ADR-0003 — Persistence SQLite SQLAlchemy
+- ADR-0002 — Hexagonal Architecture
+
+Los enablers **NO deben redefinir decisiones arquitectónicas** ya documentadas.
 
 ---
 
 ## Criterios de aceptación
 
-1. Existe una nueva migración inicial que representa el estado consolidado del esquema tras MVP1.
-2. El esquema completo de la base de datos puede recrearse desde cero utilizando únicamente el nuevo baseline.
-3. El historial previo de migraciones ha sido eliminado o archivado.
-4. No se introducen cambios funcionales en el comportamiento del sistema.
-5. El nuevo baseline de persistencia se utiliza como punto de partida para las migraciones de MVP2.
+El enabler se considera completado cuando:
+
+- existe un nuevo baseline inicial que representa el estado consolidado del esquema tras MVP1
+- el esquema completo de la base de datos puede recrearse desde cero utilizando únicamente ese nuevo baseline
+- el historial previo de migraciones exploratorias ha sido eliminado o archivado
+- el resultado no introduce cambios funcionales en el comportamiento del sistema
+- el nuevo baseline de persistencia puede utilizarse como punto de partida para las migraciones de MVP2

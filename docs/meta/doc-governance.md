@@ -34,6 +34,7 @@ system/
 planning/  
 decisions/  
 specs/  
+sdd/  
 meta/
 
 Cada área tiene una responsabilidad distinta.
@@ -42,20 +43,23 @@ Cada área tiene una responsabilidad distinta.
 
 ## [system_docs] Documentación del sistema (`docs/system/`)
 
-Contiene las reglas y el contexto global del sistema.
+Contiene las reglas, el contexto y las convenciones globales del sistema.
 
 Archivos principales:
 
 | Documento | Propósito |
 |---|---|
-| `constitution.md` | Reglas invariantes del sistema |
+| `constitution.md` | Reglas invariantes del sistema, agnósticas al stack |
 | `context.md` | Contexto operativo y alcance |
 | `glossary.md` | Definiciones de términos |
-| `conventions.md` | Convenciones de nomenclatura y estilo |
+| `conventions.md` | Convenciones de nomenclatura, estilo y redacción |
 
 Reglas:
 
-- estos documentos **definen el sistema**
+- `constitution.md` **define reglas globales**
+- `context.md` **define hechos y restricciones del entorno**
+- `glossary.md` **define terminología compartida**
+- `conventions.md` **define forma de expresión, no invariantes ni decisiones tecnológicas**
 - no deben duplicarse en specs
 
 ---
@@ -70,8 +74,8 @@ Archivos principales:
 |---|---|
 | `roadmap.md` | Evolución narrativa del sistema |
 | `dependency-graph.yaml` | DAG de features y enablers |
-| `item-manifest.yaml` | Metadatos estructurados de items |
-| `adr-map.yaml` | Relación entre items y ADR |
+| `item-manifest.yaml` | Contexto mínimo y punteros rápidos por item |
+| `adr-map.yaml` | Fuente de verdad del mapeo item → ADR, incluyendo motivo de carga |
 | `context-slices.yaml` | Conjuntos mínimos de contexto para LLM |
 
 Reglas:
@@ -93,6 +97,7 @@ docs/decisions/ADR-INDEX.md
 Reglas:
 
 - los ADR documentan **decisiones técnicas**
+- los ADR son la fuente correcta para **elecciones tecnológicas concretas**
 - las specs **pueden referenciar ADR**
 - las specs **no deben redefinir decisiones ya tomadas**
 
@@ -154,6 +159,18 @@ Estos documentos ayudan a mantener coherencia en el proyecto.
 
 ---
 
+## [sdd_docs] Artefactos SDD (`docs/sdd/`)
+
+Contiene plantillas operativas reutilizables del flujo SDD.
+
+Reglas:
+
+- `docs/sdd/` contiene templates de ejecución
+- `docs/meta/` contiene gobierno documental y prompts auxiliares
+- ambos directorios pueden evolucionar juntos, pero no deben solaparse en responsabilidad
+
+---
+
 ## [source_of_truth_rules] Reglas de fuente de verdad
 
 Cada tipo de información tiene un lugar único.
@@ -162,12 +179,16 @@ Cada tipo de información tiene un lugar único.
 |---|---|
 | reglas globales del sistema | `constitution.md` |
 | contexto del sistema | `context.md` |
+| convenciones de nomenclatura, estilo y redacción | `conventions.md` |
 | decisiones técnicas | `ADR` |
+| ADRs relevantes por item y motivo de carga | `adr-map.yaml` |
 | dependencias de features | `dependency-graph.yaml` |
 | narrativa evolutiva | `roadmap.md` |
 | comportamiento funcional | `specs/features` |
 | capacidades técnicas | `specs/enablers` |
 | definiciones compartidas | `specs/shared` |
+
+`item-manifest.yaml` puede repetir un subconjunto de `adr_refs` solo como atajo operativo para resolver contexto mínimo; el mapeo canónico item → ADR vive en `adr-map.yaml`, junto con el campo `reason` que explica por qué cada ADR es materialmente relevante para el item.
 
 La duplicación de información entre estas fuentes **debe evitarse**.
 
@@ -181,6 +202,7 @@ Cuando se introduce un cambio en el sistema:
 2. actualizar el **dependency graph** si cambia la estructura
 3. crear o actualizar **ADR** si se toma una decisión arquitectónica
 4. actualizar la **constitución** si cambian reglas globales
+5. actualizar `conventions.md` si cambian reglas de nomenclatura, estilo o redacción reutilizables
 
 La documentación debe evolucionar junto con el sistema.
 
@@ -203,6 +225,10 @@ Para ello se utilizan:
 Los LLM **no deben inferir reglas globales a partir de specs individuales**.
 
 Las reglas globales siempre deben leerse desde `constitution.md`.
+
+Las decisiones tecnológicas concretas deben leerse desde ADR.
+
+Las convenciones de nomenclatura o estilo deben leerse desde `conventions.md`.
 
 ---
 

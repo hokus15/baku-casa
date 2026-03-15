@@ -59,7 +59,7 @@ Ejemplos de enablers:
 - **EN-0200 — Application Logging Baseline with Daily Rotation**
 - **EN-0201 — In-Memory Database Testing Baseline**
 - **EN-0202 — Configuration System**
-- **EN-0208 — Domain Event Logging**
+- **EN-0208 — Event Publication Outbox**
 - **EN-0209 — Idempotency and Duplicate Operation Protection**
 
 ---

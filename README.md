@@ -1,5 +1,6 @@
 # Baku.Casa
 
+[![CI](https://github.com/hokus15/baku-casa/actions/workflows/ci.yml/badge.svg)](https://github.com/hokus15/baku-casa/actions/workflows/ci.yml)
 ![Project Status](https://img.shields.io/badge/status-in%20development-yellow)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![Architecture](https://img.shields.io/badge/architecture-hexagonal-blueviolet)

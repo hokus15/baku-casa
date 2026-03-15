@@ -52,6 +52,17 @@ slices:
       - infrastructure_constraints
       - operational_observability
 
+  event_publication_runtime:
+    constitution_sections:
+      - sources_of_truth
+      - observability
+      - infrastructure
+      - engineering_principles
+    context_sections:
+      - infrastructure_constraints
+      - persistence_context
+      - operational_observability
+
   testing_persistence_baseline:
     constitution_sections:
       - system_architecture
@@ -145,6 +156,21 @@ slices:
       - access_model
       - operational_observability
       - system_evolution
+
+  tasks_automation_financial_events:
+    constitution_sections:
+      - time_policy
+      - api_contracts
+      - api_versioning
+      - observability
+      - monetary_policy
+      - idempotency
+      - sources_of_truth
+      - infrastructure
+    context_sections:
+      - functional_scope
+      - persistence_context
+      - operational_observability
 
   fiscal_reporting:
     constitution_sections:
@@ -250,7 +276,7 @@ assignments:
 
   EN-0208:
     slices:
-      - logging_observability
+      - event_publication_runtime
       - tasks_and_automation
 
   F-0012:
@@ -263,8 +289,7 @@ assignments:
 
   F-0014:
     slices:
-      - tasks_and_automation
-      - monetary_domain
+      - tasks_automation_financial_events
 
   F-0015:
     slices:

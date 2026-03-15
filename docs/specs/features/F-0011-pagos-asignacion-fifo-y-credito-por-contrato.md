@@ -1,5 +1,7 @@
 # F-0011: Pagos, Asignación FIFO y Crédito (por contrato)
 
+---
+
 ## Objetivo
 
 Controlar de forma precisa los pagos recibidos para un contrato, permitiendo:
@@ -16,6 +18,30 @@ Los devengos cuyo `payer = OWNER` no generan registro de pagos en este modelo.
 
 ---
 
+## Alcance
+
+- Modelo explícito `Payment` + `PaymentApplication`.
+- FIFO determinista dentro del contrato con orden estable:
+  1. `due_date` ascendente
+  2. `accrual_date` ascendente
+  3. `sequence` ascendente (entero incremental por contrato)
+- Soporte de liquidaciones parciales.
+- Soporte de sobrepago con crédito del contrato (sin entidad separada).
+- Cálculo determinista del estado de cuenta por contrato y fecha.
+- FIFO solo considera devengos con `outstanding_debt_amount(T) > 0` en el momento de aplicar.
+
+---
+
+## Fuera de alcance
+
+- Conciliación bancaria automática.
+- Reembolsos y devoluciones.
+- Pagos del propietario a proveedores.
+- Contabilidad completa de tesorería.
+- Reversión parcial de pagos o de aplicaciones de pago (solo se permite reversión TOTAL del Payment).
+
+---
+
 ## Definiciones
 
 - **Pago**: importe recibido asociado a un contrato.
@@ -26,15 +52,36 @@ Los devengos cuyo `payer = OWNER` no generan registro de pagos en este modelo.
 
 ---
 
-## Entidades
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Pago
+- Aplicación de pago
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Entidades
 
 ### Payment
+
+Esta entidad reutiliza la semántica económica común definida en:
+
+- docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 
 **Campos obligatorios**
 - `contract_id`
 - `payment_date`
 - `amount`: decimal positivo
 - `idempotency_key`: string
+
+`idempotency_key` reutiliza el contrato común definido en:
+
+- docs/specs/shared/SHARED-0005-idempotency-contract.md
 
 **Campos opcionales**
 
@@ -65,6 +112,10 @@ Los devengos cuyo `payer = OWNER` no generan registro de pagos en este modelo.
 - `applied_amount`: decimal positivo
 - `idempotency_key`: string
 
+`idempotency_key` reutiliza el contrato común definido en:
+
+- docs/specs/shared/SHARED-0005-idempotency-contract.md
+
 **Restricciones**
 - `accrual.contract_id` debe ser igual a `payment.contract_id`.
 - `applied_amount` ≤ saldo pendiente del devengo en el momento de la aplicación.
@@ -74,20 +125,6 @@ Los devengos cuyo `payer = OWNER` no generan registro de pagos en este modelo.
 
 **Campos derivados (no persistidos)**
 - `effective_applied_amount = effect_sign(payment) * applied_amount`
----
-
-## Alcance
-
-- Modelo explícito `Payment` + `PaymentApplication`.
-- FIFO determinista dentro del contrato con orden estable:
-  1. `due_date` ascendente
-  2. `accrual_date` ascendente
-  3. `sequence` ascendente (entero incremental por contrato)
-- Soporte de liquidaciones parciales.
-- Soporte de sobrepago con crédito del contrato (sin entidad separada).
-- Cálculo determinista del estado de cuenta por contrato y fecha.
-- FIFO solo considera devengos con `outstanding_debt_amount(T) > 0` en el momento de aplicar.
-
 ---
 
 ## Capacidades
@@ -103,28 +140,11 @@ Los devengos cuyo `payer = OWNER` no generan registro de pagos en este modelo.
   - qué devengos se liquidan
   - cuánto se aplica a cada devengo
   - cuánto crédito sobrante se genera y cómo se usa en pagos posteriores
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-Los listados y consultas de coleccion deben usar **paginacion obligatoria**.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
-
-`environment variables > config file > defaults`
-
-## Fuera de alcance
-
-- Conciliación bancaria automática.
-- Reembolsos y devoluciones.
-- Pagos del propietario a proveedores.
-- Contabilidad completa de tesorería.
-- Reversión parcial de pagos o de aplicaciones de pago (solo se permite reversión TOTAL del Payment).
-
----
-
-## Reglas de negocio
+## Reglas del dominio
 
 1. Solo se registran pagos para cubrir devengos con `payer = TENANT`.
 2. Todo pago pertenece a un contrato (`contract_id` obligatorio).
@@ -172,7 +192,7 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
 9. No se cancelan pagos: se crea un pago compensatorio con reversal_of_payment_id.
 9.A La reversión de un pago es SIEMPRE TOTAL:
     - Un Payment compensatorio (`reversal_of_payment_id`) debe tener el mismo `amount` que el original.
-    - El efecto económico se deriva por signo (`effective_amount`), no por importes negativos persistidos.
+    - El efecto económico se deriva por signo (`effective_amount`), no por importes negativos persistidos, siguiendo la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 9.B Reversión TOTAL de Payment y espejo de aplicaciones (invariante de conservación):
   - No se permite revertir/modificar una `PaymentApplication` de forma aislada.
   - Si existe un Payment reverso `R` con `reversal_of_payment_id = P.id`,
@@ -194,9 +214,14 @@ No deben definirse mediante constantes hardcoded en adapters, servicios de aplic
   - crédito generado y aplicado posteriormente.
 11. Las aplicaciones de pago deben registrarse explícitamente (PaymentApplication).
 12. El sistema no recalcula automáticamente aplicaciones históricas salvo que se reviertan explícitamente.
-13. Los cálculos por fecha deben considerar exclusivamente pagos y devengos con fecha <= T, aplicando importes efectivos (`effective_*`) para reflejar compensaciones (`reversal_of_*`).
+13. Los cálculos por fecha deben considerar exclusivamente pagos y devengos con fecha <= T, aplicando importes efectivos (`effective_*`) según la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
 14. FIFO se aplica sobre devengos con saldo pendiente calculado con importes efectivos (considerando reversals).
 15. Crédito del contrato se calcula con importes efectivos; nunca se persiste como entidad aparte.
+16. El registro de pagos y de sus aplicaciones debe seguir el contrato común de idempotencia definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+17. La identificación de una repetición lógica debe apoyarse en la disciplina de idempotencia habilitada por EN-0209.
+18. Especialización local:
+   - tanto `Payment` como `PaymentApplication` deben definir su propia identidad lógica protegida
+   - un reintento válido no puede generar un nuevo efecto persistente de pago o aplicación
 
 ---
 
@@ -204,40 +229,48 @@ MVP 2 — Automatización Supervisada + Facturación
 
 ---
 
-## Dependencias y trazabilidad
+## Casos borde
 
-### Depende de
-- F-0008
+La feature debe contemplar los siguientes escenarios:
 
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
-
----
-
-## ADR aplicables
-
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
-
+- Solo se registran pagos para cubrir devengos con `payer = TENANT`.
+- Todo pago pertenece a un contrato (`contract_id` obligatorio).
+- Un pago solo puede aplicarse a devengos del mismo contrato.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Dependencias
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature puede depender de:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- F-0010
+- EN-0209
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
+
+---
+
+## Shared specs aplicables
+
+Esta feature utiliza y debe interpretarse conjuntamente con:
+
+- docs/specs/shared/SHARED-0004-financial-entity-semantics.md
+- docs/specs/shared/SHARED-0005-idempotency-contract.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Registrar pago de un contrato.
+- Aplicar pago automáticamente por FIFO.
+- Consultar por contrato:
+
+---
+

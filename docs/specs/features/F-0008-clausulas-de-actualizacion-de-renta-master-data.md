@@ -1,10 +1,32 @@
 # F-0008: Cláusulas de Actualización de Renta (Master Data)
 
+---
+
 ## Objetivo
 
 Permitir definir cláusulas de actualización de renta asociadas a un contrato, representando reglas independientes del histórico que determinan cuándo y cómo debe actualizarse la renta en el tiempo.
 
 Estas cláusulas no modifican automáticamente la renta en esta feature, sino que establecen la configuración necesaria para futuras actualizaciones automatizadas o asistidas.
+
+---
+
+## Alcance
+
+- Persistencia estructural de reglas de actualización.
+- Uso del mismo `update_type` definido en Feature 5.
+- Validación estructural de `rrule`.
+- Validación de parámetros obligatorios según tipo.
+- Diseño extensible para nuevos tipos de actualización.
+
+---
+
+## Fuera de alcance
+
+- Ejecución automática de la actualización.
+- Cálculo del nuevo importe de renta.
+- Obtención automática de índices oficiales.
+- Resolución de conflictos entre cláusulas.
+- Simulación de escenarios futuros.
 
 ---
 
@@ -17,36 +39,44 @@ Estas cláusulas no modifican automáticamente la renta en esta feature, sino qu
 
 ---
 
-## Entidad
+## Entidades principales
+
+La feature introduce o utiliza las siguientes entidades del dominio:
+
+- Cláusula de actualización
+- Recurrencia (rrule)
+
+---
+
+## Datos principales
+
+La feature gestiona la siguiente información:
+
+### Entidad
 
 ### RentUpdateClause
 
 **Campos obligatorios**
 
 - `contract_id`
-- `tipo_actualizacion`
+- `update_type`
 - `rrule`
 
 **Campos opcionales (según tipo)**
 
-- `porcentaje_fijo`
-- `cantidad_fija`
-- `limite_minimo`
-- `limite_maximo`
-- `indice_referencia`
-- `redondeo`
+- `fixed_percent`
+- `fixed_amount`
+- `min_limit`
+- `max_limit`
+- `reference_index`
+- `rounding_rule`
 - Otros parámetros específicos definidos por cada tipo
 
-### Auditoría
+### Auditoría y soft delete
 
-- `created_at`
-- `created_by`
-- `updated_at`
-- `updated_by`
-- `deleted_at` (nullable)
-- `deleted_by` (nullable)
+Esta feature reutiliza el contrato común definido en:
 
-La eliminación es lógica y auditable.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 
 **Relación**
 
@@ -65,86 +95,66 @@ La eliminación es lógica y auditable.
 
 ---
 
-Los listados deben usar **paginacion obligatoria**.
-
-Los parámetros de paginación configurables deben resolverse exclusivamente a través del configuration system definido en **EN-0202**.
-
-No deben definirse mediante constantes hardcoded en adapters, servicios de aplicación o repositorios. Debe existir una única fuente de verdad para estos valores siguiendo la precedencia global de configuración:
-
-`environment variables > config file > defaults`
-
-## Alcance
-
-- Persistencia estructural de reglas de actualización.
-- Uso del mismo `tipo_actualizacion` definido en Feature 5.
-- Validación estructural de `rrule`.
-- Validación de parámetros obligatorios según tipo.
-- Diseño extensible para nuevos tipos de actualización.
+Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
 
 ---
 
-## Fuera de alcance
-
-- Ejecución automática de la actualización.
-- Cálculo del nuevo importe de renta.
-- Obtención automática de índices oficiales.
-- Resolución de conflictos entre cláusulas.
-- Simulación de escenarios futuros.
-
----
-
-## Reglas de negocio
+## Reglas del dominio
 
 1. Un contrato puede tener 0..N cláusulas de actualización.
-2. Cada cláusula debe tener `tipo_actualizacion` y `rrule`.
-3. `tipo_actualizacion` debe pertenecer a la lista interna del sistema.
+2. Cada cláusula debe tener `update_type` y `rrule`.
+3. `update_type` debe pertenecer a la lista interna del sistema.
 4. La lista de tipos es extensible y no cerrada a nivel de dominio (permitiendo ampliaciones futuras).
-5. Los parámetros requeridos dependen del `tipo_actualizacion`.
+5. Los parámetros requeridos dependen del `update_type`.
 6. Si un tipo requiere parámetros específicos, estos deben validarse como obligatorios.
 7. Las cláusulas son independientes del histórico de rentas.
 8. La existencia de una cláusula no implica modificación automática de la renta.
 9. Se permite más de una cláusula activa en el mismo contrato.
-10. El diseño debe permitir mapear cada `tipo_actualizacion` interno a un tipo definido en una librería externa.
-11. La eliminación de cláusulas debe ser lógica (soft delete).
+10. El modelo debe permitir ampliar los tipos y parámetros de actualización sin romper cláusulas ya existentes.
+11. La eliminación de cláusulas debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
 
 ---
 
----
+## Casos borde
 
-## Dependencias y trazabilidad
+La feature debe contemplar los siguientes escenarios:
 
-### Depende de
-- F-0005
-
-### Impacto en contratos
-- HTTP API: (si aplica)
-- Eventos (CloudEvents): (si aplica)
+- Un contrato puede tener 0..N cláusulas de actualización.
+- Cada cláusula debe tener `update_type` y `rrule`.
+- `update_type` debe pertenecer a la lista interna del sistema.
 
 ---
 
-## ADR aplicables
+## Dependencias
 
-### Base
-- ADR-0001
-- ADR-0002
-- ADR-0003
-- ADR-0004
-- ADR-0005
-- ADR-0006
-- ADR-0007
-- ADR-0008
-- ADR-0009
-- ADR-0011
-- ADR-0012
+Esta feature puede depender de:
 
+- F-0006
+
+Las dependencias estructurales se definen en:
+
+docs/planning/dependency-graph.yaml
+
+Este documento **NO define dependencias**.
 
 ---
 
-## Baseline de observabilidad (EN-0200)
+## Shared specs aplicables
 
-Esta feature debe alinearse con el baseline de logging transversal definido por EN-0200 cuando aplique en su implementacion:
+Esta feature utiliza y debe interpretarse conjuntamente con:
 
-- Campos minimos en logs: `timestamp` (UTC), `level`, `service_name`, `correlation_id`, `message`.
-- Mensajes tecnicos en ingles y campos de contexto en `snake_case`.
-- Exclusion de secretos, tokens y contraseñas en registros.
-- Correlacion por request mediante `correlation_id`.
+- docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
+- docs/specs/shared/SHARED-0002-pagination-contract.md
+
+---
+
+## Criterios de aceptación
+
+La feature se considera completada cuando:
+
+- Crear cláusula de actualización asociada a un contrato.
+- Editar cláusula.
+- Eliminar cláusula (soft delete).
+
+---
+

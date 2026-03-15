@@ -188,7 +188,7 @@ items:
     phase: MVP2
     depends_on:
       - F-0010
-    scope: module
+    scope: cross_cutting
     affects_future_features: false
     applies_to:
       - backend
@@ -208,7 +208,7 @@ items:
     depends_on:
       - EN-0200
       - F-0011
-    scope: module
+    scope: cross_cutting
     affects_future_features: false
     applies_to:
       - backend

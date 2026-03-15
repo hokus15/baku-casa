@@ -1,6 +1,4 @@
-# Prompt — Crear especificación de Feature
-
-## Objetivo
+# Objetivo
 
 Generar una nueva **especificación de Feature** para el proyecto Baku.Casa.
 
@@ -12,7 +10,7 @@ docs/specs/templates/feature-template.md
 
 ---
 
-## Contexto
+# Contexto
 
 Baku.Casa sigue el modelo **Specification Driven Development (SDD)**.
 
@@ -31,18 +29,29 @@ docs/system/context.md
 docs/system/glossary.md  
 docs/meta/enablers-taxonomy.md  
 docs/planning/dependency-graph.yaml  
+docs/planning/item-manifest.yaml  
+docs/planning/context-slices.yaml  
+docs/planning/adr-map.yaml  
 docs/specs/templates/feature-template.md  
 docs/specs/shared/
 
+Para resolver contexto mínimo por item y fase, debe usarse como punto de partida:
+
+`python tools/resolve_sdd_context.py --item <ITEM_ID> --phase specify --profile minimal`
+
+La salida de esa utilidad debe tratarse como contexto base obligatorio del item.
+
+Su bloque `Technical baseline` define el baseline técnico aplicable; no debes inferir ni introducir stack adicional fuera de los ADRs priorizados devueltos por la utilidad.
+
 ---
 
-## Idioma
+# Idioma
 
 La especificación generada debe escribirse **en castellano**.
 
 ---
 
-## Instrucciones
+# Instrucciones
 
 1. Identificar la **capacidad funcional del dominio** que introduce la feature.
 
@@ -66,7 +75,7 @@ El documento final **NO debe contener placeholders ni bloques de instrucción**.
 
 ---
 
-## Reglas
+# Reglas
 
 La feature generada:
 
@@ -89,7 +98,7 @@ docs/planning/dependency-graph.yaml
 
 ---
 
-## Uso de shared specs
+# Uso de shared specs
 
 Cuando una feature reutilice conceptos comunes, debe referenciar:
 
@@ -104,9 +113,11 @@ Ejemplos típicos:
 
 La feature **NO debe duplicar definiciones ya presentes en shared**.
 
+Si existen ADRs relevantes para el item, deben resolverse desde `docs/planning/adr-map.yaml`, priorizando los que tengan un `reason` material para la fase `specify`.
+
 ---
 
-## Reglas del dominio
+# Reglas del dominio
 
 Las reglas del dominio deben:
 
@@ -118,7 +129,7 @@ Las reglas **NO deben describir código o arquitectura técnica**.
 
 ---
 
-## Casos borde
+# Casos borde
 
 La feature debe considerar situaciones límite del dominio, por ejemplo:
 
@@ -131,7 +142,7 @@ Estos casos deben describirse a nivel de **comportamiento del sistema**.
 
 ---
 
-## Criterios de aceptación
+# Criterios de aceptación
 
 Los criterios de aceptación deben describir **resultados observables**, por ejemplo:
 
@@ -143,7 +154,7 @@ Los criterios **NO deben describir implementación técnica**.
 
 ---
 
-## Salida esperada
+# Salida esperada
 
 Devolver **únicamente el documento Markdown final** de la especificación de la feature.
 
@@ -152,7 +163,3 @@ No incluir explicaciones ni comentarios.
 El resultado debe poder guardarse directamente como:
 
 docs/specs/features/F-XXXX-nombre.md
-
-## Idioma
-
-La especificación generada debe escribirse en **castellano**.

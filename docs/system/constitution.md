@@ -4,6 +4,11 @@ Este documento define las reglas invariantes del sistema que gobiernan el diseñ
 
 La constitución es la máxima autoridad normativa del sistema.
 
+Este documento **DEBE permanecer agnóstico al stack concreto**.  
+No debe fijar frameworks, librerías, herramientas o productos específicos salvo que formen parte de una restricción externa ineludible.
+
+Las decisiones tecnológicas concretas **DEBEN documentarse mediante ADR**.
+
 ---
 
 ## [interpretation] Interpretación normativa
@@ -23,10 +28,10 @@ Regula:
 - arquitectura
 - modelo económico
 - representación de datos
-- contratos de API
-- persistencia
+- contratos externos
 - operaciones
 - observabilidad
+- restricciones estructurales del sistema
 - gobernanza del sistema
 
 La constitución **NO define comportamiento funcional**.
@@ -35,6 +40,9 @@ El comportamiento funcional se define exclusivamente en:
 
 - `docs/specs/features/*`
 - `docs/specs/enablers/*`
+
+La constitución **NO define decisiones tecnológicas concretas**.  
+Esas decisiones se documentan en `docs/decisions/adr/*`.
 
 ---
 
@@ -82,9 +90,9 @@ Capas permitidas:
 Reglas:
 
 - El dominio **NO DEBE depender de infraestructura**.
-- La capa de aplicación **coordina casos de uso**.
-- Interfaces **expone adaptadores externos**.
-- Infraestructura **implementa dependencias técnicas**.
+- La capa de aplicación **DEBE coordinar casos de uso**.
+- La capa de interfaces **DEBE exponer adaptadores externos**.
+- La infraestructura **DEBE implementar dependencias técnicas**.
 
 ---
 
@@ -93,13 +101,13 @@ Reglas:
 El sistema **DEBE separar claramente**:
 
 - modelos de dominio
-- modelos de persistencia (ORM)
-- modelos de API
+- modelos de persistencia
+- modelos de API o integración
 
 Reglas:
 
-- El dominio **NO DEBE depender de ORM**.
-- Los DTOs de API **NO DEBEN exponer entidades ORM**.
+- El dominio **NO DEBE depender de mecanismos concretos de persistencia**.
+- Los contratos externos **NO DEBEN exponer modelos de persistencia**.
 - Las conversiones entre capas **DEBEN ser explícitas**.
 
 ---
@@ -185,7 +193,8 @@ Todas las fechas y horas **DEBEN almacenarse en UTC**.
 
 Reglas:
 
-Las conversiones de zona horaria **DEBEN hacerse en la capa de presentación**.
+- Las conversiones de zona horaria **DEBEN hacerse en la capa de presentación**.
+- Las representaciones temporales expuestas externamente **DEBEN ser inequívocas**.
 
 ---
 
@@ -239,12 +248,13 @@ Reglas:
 
 # [api_contracts] 16. Contratos de API
 
-La API **DEBE ser RESTful**.
+El sistema **DEBE exponer contratos HTTP consistentes, versionables y orientados a recursos**.
 
 Reglas:
 
-- Los recursos **DEBEN representarse como recursos HTTP**.
-- Las operaciones **DEBEN mapearse a métodos HTTP estándar**.
+- Los recursos **DEBEN representarse mediante contratos HTTP explícitos**.
+- Las operaciones **DEBEN mapearse a semánticas HTTP estándar cuando aplique**.
+- Los contratos externos **DEBEN ser validables y documentables**.
 
 ---
 
@@ -278,18 +288,19 @@ Reglas:
 
 # [database_indexes] 19. Índices de base de datos
 
-Las tablas **DEBEN tener índices adecuados para consultas frecuentes**.
+Los mecanismos de persistencia **DEBEN proporcionar estrategias de indexación adecuadas para consultas frecuentes y restricciones críticas**.
 
 ---
 
 # [observability] 20. Observabilidad
 
-El sistema **DEBE generar logs estructurados**.
+El sistema **DEBE generar trazabilidad operativa suficiente para diagnóstico y auditoría**.
 
 Reglas:
 
-- Los logs **DEBEN estar en inglés**.
-- Los logs **DEBEN incluir correlation id**.
+- Los eventos operativos relevantes **DEBEN quedar registrados de forma estructurada**.
+- Las operaciones correlacionables **DEBEN incluir identificadores de correlación**.
+- Los fallos **NO DEBEN perderse de forma silenciosa**.
 
 ---
 
@@ -299,7 +310,8 @@ El sistema **DEBE poder ejecutarse en entornos domésticos o VPS ligeros**.
 
 Reglas:
 
-- El sistema **NO DEBE depender obligatoriamente de servicios externos**.
+- El sistema **NO DEBE depender obligatoriamente de servicios externos** para su funcionamiento básico.
+- El despliegue **DEBE seguir siendo viable con recursos limitados**.
 
 ---
 

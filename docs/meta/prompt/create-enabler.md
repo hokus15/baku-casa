@@ -1,6 +1,4 @@
-# Prompt — Crear especificación de Enabler
-
-## Objetivo
+# Objetivo
 
 Generar una nueva **especificación de Enabler** para el proyecto Baku.Casa.
 
@@ -10,7 +8,7 @@ docs/specs/templates/enabler-template.md
 
 ---
 
-## Contexto
+# Contexto
 
 Baku.Casa sigue el modelo **Specification Driven Development (SDD)**.
 
@@ -28,11 +26,28 @@ docs/system/constitution.md
 docs/system/context.md  
 docs/meta/enablers-taxonomy.md  
 docs/planning/dependency-graph.yaml  
+docs/planning/item-manifest.yaml  
+docs/planning/context-slices.yaml  
+docs/planning/adr-map.yaml  
 docs/specs/templates/enabler-template.md
+
+Para resolver contexto mínimo por item y fase, debe usarse como punto de partida:
+
+`python tools/resolve_sdd_context.py --item <ITEM_ID> --phase specify --profile minimal`
+
+La salida de esa utilidad debe tratarse como contexto base obligatorio del item.
+
+Su bloque `Technical baseline` define el baseline técnico aplicable; no debes inferir ni introducir stack adicional fuera de los ADRs priorizados devueltos por la utilidad.
 
 ---
 
-## Instrucciones
+# Idioma
+
+La especificación generada debe escribirse **en castellano**.
+
+---
+
+# Instrucciones
 
 1. Identificar la **capacidad técnica** que introduce el enabler.
 
@@ -56,7 +71,7 @@ El documento final **NO debe contener placeholders ni bloques de instrucción**.
 
 ---
 
-## Reglas
+# Reglas
 
 El enabler generado:
 
@@ -72,9 +87,11 @@ Las dependencias se definen exclusivamente en:
 
 docs/planning/dependency-graph.yaml
 
+Si existen ADRs relevantes para el item, deben resolverse desde `docs/planning/adr-map.yaml`, priorizando los que tengan un `reason` material para la fase `specify`.
+
 ---
 
-## Criterios de aceptación
+# Criterios de aceptación
 
 Los criterios de aceptación deben describir **resultados observables**, por ejemplo:
 
@@ -86,7 +103,7 @@ Los criterios **NO deben describir implementación técnica**.
 
 ---
 
-## Salida esperada
+# Salida esperada
 
 Devolver **únicamente el documento Markdown final** de la especificación del enabler.
 
@@ -95,7 +112,3 @@ No incluir explicaciones ni comentarios.
 El resultado debe poder guardarse directamente como:
 
 docs/specs/enablers/EN-XXXX-nombre.md
-
-## Idioma
-
-La especificación generada debe escribirse en **castellano**.
