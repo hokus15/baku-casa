@@ -8,7 +8,7 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: Unit/integration tests follow feature scope. Contract tests are MANDATORY whenever contract surfaces change.
+**Tests**: Unit/integration tests follow feature scope. Contract validation tasks MUST be included when contract surfaces change.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -66,7 +66,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T005 [P] Implement authentication/authorization framework
 - [ ] T006 [P] Setup API routing and middleware structure
 - [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure typed error handling and correlation-aware logging infrastructure
+- [ ] T008 Configure structured observability and correlation-aware logging infrastructure
 - [ ] T009 Setup environment configuration management
 - [ ] T010 Identify constitution impacts (contracts, invariants, documentation)
 
@@ -83,7 +83,7 @@ Examples of foundational tasks (adjust based on your project):
 ### Tests for User Story 1 (MANDATORY when applicable) ⚠️
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
-> Contract changes REQUIRE contract tests.
+> Contract changes REQUIRE explicit contract validation coverage.
 
 - [ ] T011 [P] [US1] Contract test for [endpoint/event] in tests/contract/test_[name].py
 - [ ] T012 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
@@ -182,7 +182,7 @@ Examples of foundational tasks (adjust based on your project):
 ### Within Each User Story
 
 - Tests (when applicable) MUST be written and FAIL before implementation
-- Contract tests MUST be present when contract surfaces change
+- Contract validation tasks MUST be present when contract surfaces change
 - Models before services
 - Services before endpoints
 - Core implementation before integration

@@ -32,16 +32,16 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - [ ] Layer boundaries preserved (Domain/Application/Interfaces/Infrastructure)
-- [ ] No cross-root runtime coupling introduced; integration only through versioned contracts
-- [ ] Contract impact classified (breaking/non-breaking) and versioning impact declared
-- [ ] Typed error mapping and stable error codes defined for new failure modes
-- [ ] Financial/time invariants respected (Decimal-only money, percentage 0–100, UTC aware datetime)
-- [ ] TDD strategy declared (red -> green -> refactor) for functional changes
-- [ ] Contract tests included when any contract surface changes
-- [ ] API responses exclude null-valued optional fields unless the endpoint contract explicitly requires their presence
-- [ ] Spec updates identified for behavior changes
-- [ ] ADR updates/new ADR identified for structural or architectural changes
-- [ ] CI quality gates impacted by this feature are listed (lint, type-check, tests, contracts)
+- [ ] Model separation preserved (Domain/Persistence/API-Integration with explicit mappings)
+- [ ] Contract impact classified (breaking/non-breaking) and API versioning impact declared
+- [ ] Economic invariants respected (ledger append-only, reversals, non-negative amounts, exact compensation)
+- [ ] Financial/time invariants respected (Decimal money, percentage 0-100, UTC timestamps)
+- [ ] Pagination contract defined for collection endpoints (no unbounded lists)
+- [ ] Persistence strategy covers frequent queries and critical constraints (indexing)
+- [ ] Observability and correlation requirements identified for relevant operations
+- [ ] Soft-delete and audit fields impact identified for persisted entities
+- [ ] Spec updates identified for behavior changes (without duplicating constitutional rules)
+- [ ] ADR updates/new ADR identified for incompatible or structural changes
 
 ## Project Structure
 

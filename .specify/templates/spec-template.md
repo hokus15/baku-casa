@@ -98,14 +98,14 @@
 ### Constitution Alignment *(mandatory)*
 
 - **CA-001**: Layer boundary impact MUST be stated (Domain/Application/Interfaces/Infrastructure).
-- **CA-002**: Contract surface impact MUST be stated (none / changed) and versioning impact declared.
-- **CA-003**: If contract changed, required contract tests MUST be listed.
-- **CA-004**: Financial and time invariants impact MUST be stated (Decimal/percentages/UTC).
-- **CA-005**: Documentation impact MUST be stated:
+- **CA-002**: Model separation impact MUST be stated (Domain/Persistence/API-Integration and explicit mappings).
+- **CA-003**: Contract surface impact MUST be stated (none / changed), including API versioning impact.
+- **CA-004**: Economic, financial and time invariants impact MUST be stated (ledger append-only, reversals, non-negative amounts, exact compensation, Decimal/percentages/UTC).
+- **CA-005**: Operational constraints impact MUST be stated when applicable (pagination for collections, observability with correlation, audit fields, soft delete, indexing).
+- **CA-006**: Documentation impact MUST be stated:
   - behavior change → spec update REQUIRED
   - structural change → ADR update/new ADR REQUIRED
-- **CA-006**: TDD impact MUST be stated for functional changes (tests first, red -> green -> refactor).
-- **CA-007**: If a constitutional rule lacks explicit ADR coverage, an `ADR Gap` entry MUST be created.
+- **CA-007**: Specifications MUST reference constitutional rules and MUST NOT duplicate them.
 
 ### Key Entities *(include if feature involves data)*
 

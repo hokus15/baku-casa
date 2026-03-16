@@ -1,140 +1,162 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.2 -> 1.2.0
+- Version change: 1.2.0 -> 2.0.0
 - Modified principles:
-	- Principle II: Contratos explícitos — expandido con regla de omisión de campos null en
-	  respuestas de la API pública (propagado desde docs/spec/constitution.md §Diseño de API)
+  - I. Arquitectura hexagonal y limites de capas -> I. Autoridad normativa y fuente unica de verdad
+  - II. Contratos explicitos, versionados y testeables -> II. Arquitectura hexagonal y separacion de modelos
+  - III. Determinismo financiero y disciplina temporal -> III. Modelo economico ledger e invariantes contables
+  - IV. Modelo de errores tipificados y observabilidad estructurada -> IV. Representacion determinista de dinero, porcentajes y tiempo
+  - V. Atomicidad, idempotencia y concurrencia explicita -> V. Contratos externos y evolucion compatible
+  - VI. Calidad verificable, TDD y gobernanza de cambios -> VI. Operacion, observabilidad e infraestructura minima viable
 - Added sections:
-	- None
+  - Reglas Normativas del Sistema
+  - Gobernanza y Enmiendas
 - Removed sections:
-	- None
+  - Invariantes transversales
+  - Restricciones operativas permanentes
+  - ADR Gap
+  - Estado de conflictos de fuentes autoritativas
 - Templates requiring updates:
-	- ✅ .specify/templates/plan-template.md (Constitution Check: añadido item null-field omission)
-	- ✅ .specify/templates/spec-template.md (validado; sin cambios requeridos)
-	- ✅ .specify/templates/tasks-template.md (validado; sin cambios requeridos)
-	- ✅ .specify/templates/commands/*.md (no existe directorio; no aplica)
+  - ✅ .specify/templates/plan-template.md
+  - ✅ .specify/templates/spec-template.md
+  - ✅ .specify/templates/tasks-template.md
+  - ✅ .specify/templates/commands/*.md (directorio no existe; no aplica)
 - Follow-up TODOs:
-	- None
+  - None
 -->
 
 # Baku Casa Constitution
 
 ## Core Principles
 
-### I. Arquitectura hexagonal y límites de capas
-El sistema MUST mantener separación estricta entre Domain, Application, Interfaces e
-Infrastructure. Domain MUST permanecer libre de dependencias de framework, IO,
-persistencia y transporte. La lógica de negocio fuera de Domain/Application está
-PROHIBITED. El mapeo Domain <-> ORM y Domain <-> API MUST ser explícito.
+### I. Autoridad normativa y fuente unica de verdad
+Esta constitucion define reglas invariantes del sistema y es la maxima autoridad
+normativa. Cada regla del sistema MUST definirse en un unico documento y las reglas
+globales MUST definirse unicamente aqui. Las especificaciones funcionales NO DEBEN
+redefinir reglas ya definidas en esta constitucion; DEBEN referenciarlas. La duplicacion
+de reglas en multiples documentos esta prohibida.
 
-Rationale: evita acoplamiento accidental y preserva testabilidad aislada del núcleo.
+Rationale: mantener una jerarquia normativa unica evita contradicciones y deriva del
+sistema.
 
-### II. Contratos explícitos, versionados y testeables
-Toda integración entre roots o componentes aislados MUST ocurrir exclusivamente mediante
-contratos explícitos y versionados (HTTP y/o eventos). El acoplamiento runtime directo y
-los imports cruzados entre roots están PROHIBITED. Cambios incompatibles MUST incrementar
-MAJOR. Dentro de una misma MAJOR, eliminar/renombrar campos o cambiar semántica está
-PROHIBITED. Todo cambio de contrato MUST incluir contract tests en CI. Los campos con
-valor `null` NO DEBEN incluirse en respuestas de la API pública salvo que el contrato del
-endpoint los requiera explícitamente; su ausencia MUST interpretarse como ausencia de
-valor (`null` o no aplicable).
+### II. Arquitectura hexagonal y separacion de modelos
+El backend MUST seguir arquitectura hexagonal con capas permitidas: domain,
+application, interfaces e infrastructure. El dominio NO DEBE depender de
+infraestructura. La capa de aplicacion MUST coordinar casos de uso, interfaces MUST
+exponer adaptadores externos e infrastructure MUST implementar dependencias tecnicas. El
+sistema MUST separar modelos de dominio, persistencia y API/integracion. Las conversiones
+entre capas MUST ser explicitas y los contratos externos NO DEBEN exponer modelos de
+persistencia.
 
-Rationale: preserva compatibilidad evolutiva y evita romper consumidores de forma tácita.
+Rationale: separar responsabilidades reduce acoplamiento y preserva mantenibilidad.
 
-### III. Determinismo financiero y disciplina temporal
-Dinero y porcentajes MUST usar Decimal; float está PROHIBITED en lógica de dominio y
-persistencia semántica. Los porcentajes MUST representarse en rango 0-100 en todas las
-capas; el modelo 0-1 persistente/de dominio está PROHIBITED. El redondeo financiero MUST
-ser explícito y determinista. El tiempo interno MUST ser UTC, timezone-aware, y
-serializado en ISO 8601/RFC3339. datetime naive está PROHIBITED.
+### III. Modelo economico ledger e invariantes contables
+El sistema implementa un modelo contable basado en ledger append-only. Los eventos
+economicos NO DEBEN eliminarse ni editarse y las correcciones MUST realizarse mediante
+reversiones que crean nuevos eventos. Los importes NO DEBEN ser negativos; el signo
+economico MUST derivarse del tipo de evento; las compensaciones MUST conservar el valor
+total y MUST ser exactas.
 
-Rationale: evita deriva numérica/temporal y garantiza consistencia contable verificable.
+Rationale: la inmutabilidad del ledger y las invariantes contables sostienen trazabilidad
+y consistencia economica.
 
-### IV. Modelo de errores tipificados y observabilidad estructurada
-Los errores de negocio/aplicación MUST estar tipificados con código estable en inglés y
-mapeo determinista a contratos externos. Exponer detalles internos de excepción está
-PROHIBITED. Las respuestas de error MUST incluir error_code, message y correlation_id.
-Todo log técnico MUST ser estructurado, en inglés y con timestamp UTC.
+### IV. Representacion determinista de dinero, porcentajes y tiempo
+Los importes monetarios MUST representarse con valores decimales exactos y esta
+PROHIBIDO utilizar floats para dinero. Los porcentajes MUST representarse en rango 0-100
+con precision decimal; 0 representa 0% y 100 representa 100%; tambien esta PROHIBIDO
+usar floats para porcentajes. Todas las fechas y horas MUST almacenarse en UTC, las
+conversiones de zona horaria MUST hacerse en presentacion y las representaciones externas
+MUST ser inequivocas.
 
-Rationale: estabiliza el contrato de error y mejora diagnóstico operativo sin filtrar
-detalles internos.
+Rationale: determinismo numerico y temporal evita errores acumulativos y ambiguedades.
 
-### V. Atomicidad, idempotencia y concurrencia explícita
-Toda operación económica que cambie estado MUST ejecutarse en transacción atómica con
-rollback completo ante fallo. Las operaciones con efecto económico MUST ser idempotentes y
-proteger duplicados mediante clave/id único persistido o mecanismo equivalente. El patrón
-last-write-wins en flujos contables está PROHIBITED. El conflicto de concurrencia MUST
-fallar de forma explícita con error tipificado.
+### V. Contratos externos y evolucion compatible
+El sistema MUST exponer contratos HTTP consistentes, versionables y orientados a
+recursos. Los recursos MUST representarse mediante contratos HTTP explicitos; las
+operaciones MUST mapearse a semanticas HTTP estandar cuando aplique; los contratos
+externos MUST ser validables y documentables. La version mayor de API MUST aparecer en
+la ruta base (por ejemplo, /api/v1). Los cambios incompatibles MUST incrementar la
+version mayor y los cambios compatibles MUST ser retrocompatibles. Los endpoints que
+devuelven colecciones MUST estar paginados y esta PROHIBIDO devolver listas no acotadas.
 
-Rationale: protege invariantes contables frente a reintentos, concurrencia y fallos.
+Rationale: contratos estables y versionados permiten evolucion sin romper consumidores.
 
-### VI. Calidad verificable, TDD y gobernanza de cambios
-Todo cambio funcional MUST seguir ciclo TDD (red -> green -> refactor) con evidencia en
-tests. Ningún merge está permitido sin CI en verde (lint, type-check, unit, integration,
-contract cuando aplique). Todo cambio de comportamiento MUST actualizar spec en el mismo
-change set. Todo cambio estructural/arquitectónico MUST actualizar o crear ADR.
-Excepciones temporales MUST ser explícitas, justificadas y con fecha de retiro.
+### VI. Operacion, observabilidad e infraestructura minima viable
+El sistema MUST generar trazabilidad operativa suficiente para diagnostico y auditoria.
+Los eventos operativos relevantes MUST registrarse de forma estructurada, las operaciones
+correlacionables MUST incluir identificadores de correlacion y los fallos NO DEBEN
+perderse de forma silenciosa. El sistema MUST poder ejecutarse en entornos domesticos o
+VPS ligeros, NO DEBE depender obligatoriamente de servicios externos para funcionamiento
+basico y el despliegue MUST seguir siendo viable con recursos limitados. Toda entidad
+persistida MUST soportar auditoria con campos created_at, created_by, updated_at,
+updated_by, deleted_at y deleted_by. Las entidades NO DEBEN eliminarse fisicamente; el
+sistema MUST usar soft delete y los registros eliminados NO DEBEN aparecer en consultas
+normales.
 
-Rationale: reduce regresiones y mantiene trazabilidad entre intención, diseño y entrega.
+Rationale: operacion confiable y auditable es requisito de sostenibilidad del sistema.
 
-## Invariantes transversales
+## Reglas Normativas del Sistema
 
-- El ledger económico es append-only: modificación/borrado lógico de eventos económicos
-	está PROHIBITED.
-- Las correcciones económicas MUST realizarse mediante eventos compensatorios trazables.
-- La conservación de valor y el cuadrado exacto de allocations MUST mantenerse.
-- correlation_id MUST propagarse en entrada, procesamiento e integración saliente.
-- IDs persistentes MUST ser opacos, estables e inmutables; semántica embebida en IDs está
-	PROHIBITED.
-- Todo conjunto cerrado relevante MUST modelarse como enumeración centralizada.
-- DRY MUST aplicarse dentro de un contexto; duplicación intencional entre roots MAY
-	aceptarse para preservar aislamiento.
+Las palabras DEBE, NO DEBE, DEBERIA y PUEDE se interpretan segun RFC 2119.
 
-## Restricciones operativas permanentes
+Esta constitucion regula arquitectura, modelo economico, representacion de datos,
+contratos externos, operaciones, observabilidad, restricciones estructurales y gobernanza
+del sistema.
 
-- El despliegue MUST ser reproducible, autocontenido y compatible con modelo self-hosted.
-- La exposición a internet por defecto está PROHIBITED; el modo por defecto MUST minimizar
-	superficie pública.
-- El sistema MUST soportar backup y restore verificables del estado persistente.
-- Las migraciones MUST preservar restaurabilidad, integridad y trazabilidad de datos.
-- Cambios destructivos sin estrategia explícita de preservación y verificación están
-	PROHIBITED.
-- La configuración de runtime MUST ser tipada, centralizada y validada en arranque,
-	excepto los perfiles del framework de logging definidos como artefactos operativos
-	externos en la raíz de `backend/` (EN-0200), que MAY cargarse directamente y usar
-	fallback seguro del framework manteniendo baseline mínimo obligatorio de logging
-	(timestamp UTC, level, service name, correlation_id, message), sin modo "sin logging".
-	Contrato por entorno durante fallback (escritura en consola): `dev` human-friendly,
-	`test` human-friendly minimalista, `prod` JSON estructurada.
+La constitucion NO define comportamiento funcional. El comportamiento funcional se define
+exclusivamente en docs/specs/features/* y docs/specs/enablers/*.
 
-## ADR Gap
+La constitucion NO define decisiones tecnologicas concretas. Esas decisiones DEBEN
+documentarse mediante ADR en docs/decisions/adr/*.
 
-- Regla constitucional sin ADR dedicado: TDD obligatorio (red -> green -> refactor) como
-	requisito de proceso verificable. Actualmente existe cobertura parcial en ADR-0008
-	(gates de CI), pero no una decisión arquitectónica explícita sobre disciplina TDD.
-	Recomendación: registrar ADR específico de test strategy/process governance.
+El sistema se define mediante estas fuentes de verdad:
+- docs/system/constitution.md
+- docs/decisions/adr/*
+- docs/planning/dependency-graph.yaml
+- docs/specs/*
 
-## Estado de conflictos de fuentes autoritativas
+En caso de conflicto aplica esta precedencia:
+- Constitution > ADR > Specification > Implementation
 
-- No se detectan conflictos activos en las fuentes autoritativas validadas para esta
-  enmienda.
-- Se verificó la alineación de IDs de enablers (`EN-0200`, `EN-0201`, `EN-0202`) entre:
-  `docs/spec/roadmap.md`, `docs/spec/dependency-graph.yaml` y
-  `docs/spec/enablers-taxonomy.md`.
+Las especificaciones NO DEBEN duplicar reglas definidas en esta constitucion.
 
-## Governance
+Los mecanismos de persistencia DEBEN proporcionar estrategias de indexacion adecuadas para
+consultas frecuentes y restricciones criticas.
 
-- Esta constitución prevalece sobre normas operativas de menor rango.
-- Toda enmienda MUST incluir: justificación, impacto, estrategia de migración y plan de
-	adopción.
-- Versionado de la constitución:
-	- MAJOR: eliminación/redefinición incompatible de principios o garantías.
-	- MINOR: adición de principios o ampliación material de obligaciones normativas.
-	- PATCH: aclaraciones editoriales sin cambio semántico.
-- Revisión de cumplimiento:
-	- Todo plan MUST pasar Constitution Check antes de diseño detallado.
-	- Todo PR MUST declarar impactos en contratos, invariantes, spec y ADR.
-	- Incumplimientos MUST bloquear merge salvo excepción aprobada y registrada.
-	- Revisiones periódicas MUST verificar coherencia entre constitución, ADR y roadmap.
+Los Enablers introducen capacidades tecnicas reutilizables. Los Enablers marcados como
+affects_future_features: true en el dependency graph forman parte del baseline tecnico
+del sistema. Las Features futuras DEBEN asumir ese baseline y NO deben redefinir esas
+capacidades.
 
-**Version**: 1.2.0 | **Ratified**: 2026-03-02 | **Last Amended**: 2026-03-08
+Las especificaciones deben ser deterministas, evitar ambiguedad y evitar comportamiento
+implicito. Si una regla puede interpretarse de multiples formas, la especificacion DEBE
+aclararla explicitamente.
+
+El desarrollo DEBE seguir Specification Driven Development (SDD): las capacidades se
+introducen mediante Features y Enablers, y las implementaciones DEBEN seguir las
+especificaciones.
+
+## Gobernanza y Enmiendas
+
+Esta constitucion prevalece sobre normas operativas de menor rango.
+
+Las modificaciones que rompan reglas de esta constitucion DEBEN actualizar esta
+constitucion.
+
+Las modificaciones incompatibles DEBEN documentarse mediante ADR.
+
+Toda enmienda MUST incluir justificacion, impacto, estrategia de migracion y plan de
+adopcion.
+
+Versionado de la constitucion:
+- MAJOR: eliminacion o redefinicion incompatible de principios o garantias.
+- MINOR: adicion de principios o ampliacion material de obligaciones normativas.
+- PATCH: aclaraciones editoriales sin cambio semantico.
+
+Revision de cumplimiento:
+- Todo plan MUST pasar Constitution Check antes de diseno detallado.
+- Todo PR MUST declarar impactos en contratos, invariantes, especificaciones y ADR.
+- Los incumplimientos MUST bloquear merge salvo excepcion aprobada y registrada.
+- Las revisiones periodicas MUST verificar coherencia entre constitucion, ADR y roadmap.
+
+**Version**: 2.0.0 | **Ratified**: 2026-03-02 | **Last Amended**: 2026-03-16
