@@ -85,8 +85,8 @@ La feature gestiona la siguiente información:
       Tasación
       Subrogación préstamo
 - `date`: date
-- `amount_real`: decimal positivo
-- `amount_fiscal`: decimal positivo
+- `amount_real`: decimal no negativo
+- `amount_fiscal`: decimal no negativo
 
 **Campos opcionales**
 
@@ -103,7 +103,7 @@ Los registros eliminados lógicamente no deben mostrarse en consultas normales, 
 
 **Reglas estructurales**
 
-- Los importes son siempre positivos.
+- Los importes son no negativos.
 - La categoría determina si el apunte es fiscalmente deducible.
 - Existe al menos una categoría obligatoria de tipo “precio principal” para:
   - adquisición
@@ -132,7 +132,7 @@ Los registros eliminados lógicamente no deben mostrarse en consultas normales, 
 
 1. Una propiedad puede no tener ningún apunte económico.
 2. Cada apunte debe tener `movement_type`, `category`, `date`, `amount_real`, `amount_fiscal`.
-3. Los importes deben ser estrictamente positivos o cero.
+3. Los importes deben ser no negativos (incluyen cero).
 4. La categoría debe pertenecer a la lista cerrada global.
 5. Las categorías pueden ser compartidas entre adquisición y transmisión.
 6. Se permiten múltiples apuntes con la misma categoría y tipo.
@@ -155,8 +155,12 @@ Los registros eliminados lógicamente no deben mostrarse en consultas normales, 
 La feature debe contemplar los siguientes escenarios:
 
 - Una propiedad puede no tener ningún apunte económico.
-- Cada apunte debe tener `movement_type`, `category`, `date`, `amount_real`, `amount_fiscal`.
-- Los importes deben ser estrictamente positivos o cero.
+- Se permiten múltiples apuntes con la misma combinación (`movement_type`, `category`) en una misma propiedad.
+- Una propiedad marcada como transmitida mantiene edición permitida sobre sus apuntes económicos.
+- Las categorías compartidas entre adquisición y transmisión deben mantener semántica consistente de deducibilidad.
+- Los importes en cero deben validarse con las mismas reglas de coherencia estructural que el resto de importes.
+- Pendiente de aclaración: definición operativa de "categoría precio principal" por tipo de movimiento; se debe confirmar si la obligatoriedad aplica por propiedad y por ciclo de vida del registro, o solo como disponibilidad en el catálogo global.
+- Pendiente de aclaración: criterio de uso esperado para importes en cero; aunque se permiten por regla de dominio, se debe confirmar en qué escenarios de negocio deben considerarse válidos.
 
 ---
 
@@ -190,6 +194,10 @@ La feature se considera completada cuando:
 - Crear apunte económico asociado a una propiedad.
 - Editar apunte económico.
 - Eliminar apunte económico (soft delete).
+- Listar y filtrar apuntes de una propiedad siguiendo el contrato de paginación compartido.
+- Consultar el detalle de un apunte económico.
+- Validar categorías contra la lista cerrada global y su deducibilidad estructural.
+- Garantizar que los EconomicEntry no alteran saldo/deuda de contratos ni el ledger.
 
 ---
 
