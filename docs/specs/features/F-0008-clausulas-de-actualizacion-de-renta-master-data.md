@@ -95,7 +95,7 @@ Esta feature reutiliza el contrato común definido en:
 
 ---
 
-Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -111,7 +111,7 @@ Los listados y consultas de colección de esta feature deben seguir el contrato 
 8. La existencia de una cláusula no implica modificación automática de la renta.
 9. Se permite más de una cláusula activa en el mismo contrato.
 10. El modelo debe permitir ampliar los tipos y parámetros de actualización sin romper cláusulas ya existentes.
-11. La eliminación de cláusulas debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
+11. La eliminación de cláusulas debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 
 ---
 

@@ -134,7 +134,7 @@ Todos los importes persistidos son siempre positivos o cero.
 - Consultar detalle de factura con sus líneas.
 - Emitir factura (asignar numeración/serie y congelar snapshots).
 - Generar factura rectificativa que compense total o parcialmente una factura emitida.
-- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -151,8 +151,8 @@ Todos los importes persistidos son siempre positivos o cero.
 6. Una factura emitida no puede cancelarse ni modificarse.
 7. Para corregir una factura emitida debe crearse una nueva factura con:
    - `reversal_of_invoice_id` apuntando a la factura original.
-8. Los importes de una factura rectificativa deben seguir la disciplina común de importes persistidos no negativos definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
-9. El efecto económico de una factura rectificativa es negativo y se deriva mediante `effect_sign`, según la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+8. Los importes de una factura rectificativa deben seguir la disciplina común de importes persistidos no negativos definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md
+9. El efecto económico de una factura rectificativa es negativo y se deriva mediante `effect_sign`, según la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 10. No puede revertirse más importe del originalmente facturado.
 11. No puede crearse una rectificativa sobre una factura ya completamente revertida.
 12. La factura rectificativa debe tener el mismo `customer_snapshot` que la original.

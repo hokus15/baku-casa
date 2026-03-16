@@ -2299,12 +2299,13 @@ def validate_spec_shared_refs(
 ) -> list[LintMessage]:
     messages: list[LintMessage] = []
     for shared_ref in SHARED_SPEC_REF_RE.findall(content):
-        shared_path = docs_root / "specs" / "shared" / shared_ref
+        normalized_shared_ref = shared_ref.rstrip(".,;:")
+        shared_path = docs_root / "specs" / "shared" / normalized_shared_ref
         if not shared_path.exists():
             messages.append(
                 error(
                     "SPECFMT-009",
-                    f"{path} references missing shared spec docs/specs/shared/{shared_ref}",
+                    f"{path} references missing shared spec docs/specs/shared/{normalized_shared_ref}",
                 )
             )
     return messages

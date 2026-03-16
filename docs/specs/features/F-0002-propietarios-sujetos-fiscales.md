@@ -105,7 +105,8 @@ El sistema debe permitir:
 - Buscar propietarios por `tax_id` y/o `legal_name`
 - Eliminar propietario mediante **soft delete** (estableciendo `deleted_at`)
 - Consultar detalle y listado con `include_deleted` opcional (default `false`)
-- Los listados y búsquedas de propietarios deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+- Los listados y búsquedas de propietarios deben seguir el contrato común definido en:
+  docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -115,7 +116,8 @@ El sistema debe permitir:
 - `entity_type` debe ser uno de los valores permitidos.
 - `owner_id` debe ser estable e inmutable durante toda la vida del propietario.
 - `email`, `land_line` y `mobile`, cuando existan, son datos informativos de contacto y no forman parte de la identidad del propietario.
-- La semántica de auditoría y soft delete debe seguir docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
+- La semántica de auditoría y soft delete debe seguir:
+  docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 - Las respuestas y errores expuestos por API deben seguir docs/specs/shared/SHARED-0003-api-response-conventions.md cuando aplique.
 - No se requiere relación con propiedades en este MVP.
 

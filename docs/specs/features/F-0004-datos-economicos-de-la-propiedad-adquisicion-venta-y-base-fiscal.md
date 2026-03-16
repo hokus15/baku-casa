@@ -124,7 +124,7 @@ Los registros eliminados lógicamente no deben mostrarse en consultas normales, 
 - Filtrar por tipo de movimiento.
 - Consultar detalle de un apunte.
 - Marcar propiedad como transmitida sin impedir la edición posterior de apuntes.
-- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 

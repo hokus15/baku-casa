@@ -89,7 +89,7 @@ Esta feature reutiliza el contrato común definido en:
 
 ---
 
-Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -104,7 +104,7 @@ Los listados y consultas de colección de esta feature deben seguir el contrato 
    - vigencia del contrato
    - vigencia de la plantilla de gasto
    - vigencia de la cláusula
-7. La eliminación debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
+7. La eliminación debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 8. En ausencia de cláusula activa, el gasto se considera responsabilidad del propietario.
 ---
 

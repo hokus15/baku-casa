@@ -140,7 +140,7 @@ El sistema debe permitir:
 - Consultar propiedades de un propietario
 - Consultar propietarios de una propiedad
 - Eliminar propiedad (soft-delete)
-- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 

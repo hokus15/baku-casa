@@ -42,7 +42,7 @@ Esta feature cubre:
 - **Modelo 303**: declaración trimestral de IVA.
 - **Propietario**: titular de una propiedad con un ratio de participación.
 - **Ratio de propiedad**: porcentaje de titularidad aplicado proporcionalmente cuando proceda.
-- **Devengo fiscalmente relevante**: `Accrual` cuya `accrual_date` cae dentro del periodo fiscal, considerando compensaciones mediante importes efectivos conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+- **Devengo fiscalmente relevante**: `Accrual` cuya `accrual_date` cae dentro del periodo fiscal, considerando compensaciones mediante importes efectivos conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 
 ---
 
@@ -63,7 +63,7 @@ La feature gestiona la siguiente información:
 ### Fuente de datos
 
 - Los informes se construyen exclusivamente a partir de `Accrual`.
-- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado, agregados usando importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado, agregados usando importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 
 No se utilizan pagos para cálculo fiscal.
 
@@ -101,10 +101,10 @@ No se utilizan pagos para cálculo fiscal.
    - gastos deducibles
    salvo que la categoría indique tratamiento no proporcional (extensible).
 3. No se incluyen devengos con `payer = TENANT` tipo gasto.
-4. Los devengos se agregan considerando compensaciones mediante importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+4. Los devengos se agregan considerando compensaciones mediante importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 5. El resultado es un resumen estructurado exportable en formatos adecuados para consulta e intercambio.
 6. Si un devengo tiene reverso total, su contribución fiscal neta es 0.
-7. Los cálculos fiscales deben usar siempre importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+7. Los cálculos fiscales deben usar siempre importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 
 ---
 
@@ -141,12 +141,12 @@ No se utilizan pagos para cálculo fiscal.
 1. Solo puede generarse si existe un único propietario al 100%.
 2. El periodo debe corresponder a un trimestre natural iniciado en enero.
 3. Se consideran devengos con `accrual_date` dentro del trimestre.
-4. Los devengos se agregan considerando compensaciones mediante importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+4. Los devengos se agregan considerando compensaciones mediante importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 5. El sistema debe generar el fichero importable compatible con la AEAT.
 6. No se gestionan compensaciones intertrimestrales en esta versión.
 7. No se gestionan regímenes especiales de IVA (extensible).
 8. Si un devengo tiene reverso total, su contribución fiscal neta es 0.
-9. Los cálculos fiscales deben usar siempre importes efectivos (effective_*) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+9. Los cálculos fiscales deben usar siempre importes efectivos (effective_*) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 
 ---
 
@@ -162,7 +162,7 @@ No se utilizan pagos para cálculo fiscal.
 ## Reglas del dominio
 
 - Los informes se construyen exclusivamente a partir de `Accrual`.
-- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado y los cálculos deben usar importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+- Se consideran únicamente devengos con `accrual_date` dentro del periodo solicitado y los cálculos deben usar importes efectivos (`effective_*`) conforme a docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 - En IRPF, el informe se genera para un único propietario por solicitud y aplica el ratio de propiedad cuando corresponda.
 - En IRPF, solo son deducibles por defecto los `Accrual.type = EXPENSE` con `payer = OWNER`; los `EXPENSE` con `payer = TENANT` se consideran traslados y no son deducibles por defecto.
 - En Modelo 303, solo puede generarse el informe si existe un único propietario al 100% y el periodo corresponde a un trimestre natural.

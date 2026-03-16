@@ -105,7 +105,7 @@ No se gestionan porcentajes de participación ni histórico de cambios dentro de
 
 ---
 
-Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -131,7 +131,7 @@ Los listados y consultas de colección de esta feature deben seguir el contrato 
 14. Si existe `auto_extension_period`, el contrato se prorroga automáticamente **incrementando `end_date`** en el **número de meses** indicado por `auto_extension_period`.
   - La prórroga se aplica de forma **iterativa**: si tras extender `end_date` el contrato sigue vencido (respecto a la fecha de evaluación), se siguen aplicando extensiones sucesivas del mismo tamaño hasta que `end_date` quede en el futuro o en la fecha actual.
   - Si `auto_extension_period` es **indefinido**, la prórroga se considera ilimitada (se permite el estado “en prórroga” sin un fin definitivo), manteniendo la lógica de preaviso.
-  - La prórroga automática constituye una modificación explícita del contrato y debe registrarse según el contrato común de auditoría definido en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
+  - La prórroga automática constituye una modificación explícita del contrato y debe registrarse según el contrato común de auditoría definido en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
   - No debe sobrescribir la fecha original sin trazabilidad.
   
 **Nota**: el estado del contrato se sigue derivando de `start_date`, `end_date` (prorrogada) y, si aplica, `termination_notice_period`.

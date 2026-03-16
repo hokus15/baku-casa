@@ -140,7 +140,7 @@ Esta entidad reutiliza la semántica económica común definida en:
   - qué devengos se liquidan
   - cuánto se aplica a cada devengo
   - cuánto crédito sobrante se genera y cómo se usa en pagos posteriores
-- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -192,7 +192,7 @@ Esta entidad reutiliza la semántica económica común definida en:
 9. No se cancelan pagos: se crea un pago compensatorio con reversal_of_payment_id.
 9.A La reversión de un pago es SIEMPRE TOTAL:
     - Un Payment compensatorio (`reversal_of_payment_id`) debe tener el mismo `amount` que el original.
-    - El efecto económico se deriva por signo (`effective_amount`), no por importes negativos persistidos, siguiendo la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+    - El efecto económico se deriva por signo (`effective_amount`), no por importes negativos persistidos, siguiendo la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 9.B Reversión TOTAL de Payment y espejo de aplicaciones (invariante de conservación):
   - No se permite revertir/modificar una `PaymentApplication` de forma aislada.
   - Si existe un Payment reverso `R` con `reversal_of_payment_id = P.id`,
@@ -214,10 +214,10 @@ Esta entidad reutiliza la semántica económica común definida en:
   - crédito generado y aplicado posteriormente.
 11. Las aplicaciones de pago deben registrarse explícitamente (PaymentApplication).
 12. El sistema no recalcula automáticamente aplicaciones históricas salvo que se reviertan explícitamente.
-13. Los cálculos por fecha deben considerar exclusivamente pagos y devengos con fecha <= T, aplicando importes efectivos (`effective_*`) según la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+13. Los cálculos por fecha deben considerar exclusivamente pagos y devengos con fecha <= T, aplicando importes efectivos (`effective_*`) según la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 14. FIFO se aplica sobre devengos con saldo pendiente calculado con importes efectivos (considerando reversals).
 15. Crédito del contrato se calcula con importes efectivos; nunca se persiste como entidad aparte.
-16. El registro de pagos y de sus aplicaciones debe seguir el contrato común de idempotencia definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+16. El registro de pagos y de sus aplicaciones debe seguir el contrato común de idempotencia definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
 17. La identificación de una repetición lógica debe apoyarse en la disciplina de idempotencia habilitada por EN-0209.
 18. Especialización local:
    - tanto `Payment` como `PaymentApplication` deben definir su propia identidad lógica protegida

@@ -112,7 +112,7 @@ Esta feature reutiliza el contrato común definido en:
 
 ---
 
-Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -125,7 +125,7 @@ Los listados y consultas de colección de esta feature deben seguir el contrato 
 5. `end_date`, si existe, debe ser mayor o igual que `start_date`.
 6. La vigencia de la plantilla está determinada por el rango `[start_date, end_date]`.
 7. Se permiten múltiples plantillas con la misma categoría siempre que no exista solapamiento temporal inconsistente.
-8. La eliminación debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md.
+8. La eliminación debe seguir la semántica compartida de soft delete definida en docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
 9. El diseño debe permitir en el futuro generar cargos a partir de:
     - periodicidad (rrule)
     - importe estimado

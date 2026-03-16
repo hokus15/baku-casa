@@ -33,7 +33,7 @@ Esta feature cubre el comportamiento funcional descrito en las secciones de dato
   - tipo de automatización
   - entidad origen
   - periodo u ocurrencia concreta
-- **Idempotencia**: garantía de que un mismo evento de automatización genera una única tarea, siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+- **Idempotencia**: garantía de que un mismo evento de automatización genera una única tarea, siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
 
 ---
 
@@ -174,7 +174,7 @@ Contexto mínimo:
 
 Idempotencia:
 - `automation_key` debe ser único por devengo facturable (p.ej. `INVOICE_DRAFT_PROPOSED:<accrual_id>`).
-- `automation_key` reutiliza el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+- `automation_key` reutiliza el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
 
 ---
 
@@ -191,10 +191,10 @@ El sistema debe permitir:
 
 1. Las automatizaciones se evalúan por calendario (A1–A4) o por eventos del sistema (A5).
 2. Cada evento de automatización debe generar una única tarea.
-3. Debe existir una clave de idempotencia (`automation_key`) asociada al evento, siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+3. Debe existir una clave de idempotencia (`automation_key`) asociada al evento, siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
 4. Las tareas automáticas deben incluir en su contexto toda la información necesaria para ejecutar la acción.
 5. La creación de una tarea no implica ejecución automática.
-6. La ejecución debe ser segura ante reintentos (no crear duplicados), conforme al contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+6. La ejecución debe ser segura ante reintentos (no crear duplicados), conforme al contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
 7. El sistema debe permitir añadir nuevas automatizaciones sin modificar las existentes.
 8. El sistema no valida la semántica del contexto (Feature 11).
 9. Los disparadores basados en eventos del sistema que requieran entrega fiable entre componentes o procesos deben apoyarse en la capacidad de publicación duradera definida por EN-0208.

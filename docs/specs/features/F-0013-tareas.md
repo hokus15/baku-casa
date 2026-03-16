@@ -157,7 +157,7 @@ El sistema debe permitir:
 - Filtrar tareas por fecha límite
 - Cambiar estado de tarea
 - Reabrir tareas
-- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md.
+- Los listados y consultas de colección de esta feature deben seguir el contrato común definido en docs/specs/shared/SHARED-0002-pagination-contract.md
 
 ---
 
@@ -169,7 +169,7 @@ El sistema debe permitir:
 - El sistema no valida la semántica del contexto.
 - El cliente es responsable de interpretar el tipo de tarea y su contexto.
 - Las tareas no tienen múltiples fechas límite.
-- Las tareas generadas automáticamente deben incluir una identidad de idempotencia en su contexto (`automation_key`) siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+- Las tareas generadas automáticamente deben incluir una identidad de idempotencia en su contexto (`automation_key`) siguiendo el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
 
 ---
 

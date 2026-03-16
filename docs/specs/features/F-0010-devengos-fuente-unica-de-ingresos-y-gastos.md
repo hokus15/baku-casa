@@ -171,10 +171,10 @@ El sistema debe permitir:
    - Es estrictamente creciente dentro de cada `contract_id`.
    - No se reutiliza ni se recalcula.
    - Su única finalidad es garantizar orden estable determinista para FIFO.
-8. Los importes persistidos del `Accrual` siguen la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
+8. Los importes persistidos del `Accrual` siguen la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md
 9. `vat_rate_percent` y `withholding_rate_percent` deben estar entre 0 y 100.
-10. Los cálculos de saldo deben considerar importes efectivos conforme a la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md.
-11. Toda creación requiere `idempotency_key` y debe seguir el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md.
+10. Los cálculos de saldo deben considerar importes efectivos conforme a la disciplina común definida en docs/specs/shared/SHARED-0004-financial-entity-semantics.md
+11. Toda creación requiere `idempotency_key` y debe seguir el contrato común definido en docs/specs/shared/SHARED-0005-idempotency-contract.md
     Especialización local:
     - la identidad de idempotencia se evalúa dentro del ámbito declarado para operaciones de creación de devengos.
     - un mismo `idempotency_key` no puede producir más de un devengo materialmente distinto dentro de ese ámbito.
