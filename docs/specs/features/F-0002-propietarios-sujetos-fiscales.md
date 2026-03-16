@@ -118,7 +118,7 @@ El sistema debe permitir:
 - `email`, `land_line` y `mobile`, cuando existan, son datos informativos de contacto y no forman parte de la identidad del propietario.
 - La semántica de auditoría y soft delete debe seguir:
   docs/specs/shared/SHARED-0001-audit-and-soft-delete.md
-- Las respuestas y errores expuestos por API deben seguir docs/specs/shared/SHARED-0003-api-response-conventions.md cuando aplique.
+- Las respuestas y errores expuestos por API en adapters HTTP deben seguir docs/specs/shared/SHARED-0003-api-response-conventions.md.
 - No se requiere relación con propiedades en este MVP.
 
 ---
@@ -135,7 +135,7 @@ La feature debe contemplar los siguientes escenarios:
 
 ## Dependencias
 
-Esta feature puede depender de:
+Esta feature depende de:
 
 - F-0001
 
@@ -143,7 +143,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 

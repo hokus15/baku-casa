@@ -18,7 +18,7 @@ Regla base: si un devengo tiene IVA (`vat_rate_percent > 0`), entonces **siempre
 - Facturación basada exclusivamente en `Accrual`.
 - Una línea de factura corresponde a un devengo facturable.
 - Totales calculados a partir de los porcentajes del devengo.
-- Soporte de retención (`withholding_rate_percent`) cuando aplique.
+- Soporte de retención (`withholding_rate_percent`) en los casos que la requieran.
 - Soporte de rectificación mediante compensación.
 - Importes siempre persistidos como valores positivos.
 
@@ -185,7 +185,7 @@ La feature debe contemplar los siguientes escenarios:
 
 ## Dependencias
 
-Esta feature puede depender de:
+Esta feature depende de:
 
 - F-0010
 
@@ -193,7 +193,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 

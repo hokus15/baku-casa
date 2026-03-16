@@ -64,7 +64,7 @@ Si el enabler afecta a múltiples áreas debe indicarse claramente.
 
 ## Dependencias
 
-Este enabler puede depender de:
+Este enabler depende de:
 
 - ninguna
 - ninguna dependencia previa definida en el sistema
@@ -73,7 +73,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 

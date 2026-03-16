@@ -99,7 +99,7 @@ Si el enabler afecta a múltiples áreas debe indicarse claramente.
 
 ## Dependencias
 
-Este enabler puede depender de:
+Este enabler depende de:
 
 - {{DEPENDENCY_1}}
 - {{DEPENDENCY_2}}
@@ -108,7 +108,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 
@@ -125,7 +125,7 @@ Los enablers **NO deben redefinir decisiones arquitectónicas** ya documentadas.
 
 ## Relación con otras fuentes autoritativas
 
-Si aplica, este enabler debe interpretarse conjuntamente con:
+Este enabler debe interpretarse conjuntamente con las siguientes fuentes autoritativas:
 
 - `docs/system/constitution.md`
 - `docs/system/context.md`

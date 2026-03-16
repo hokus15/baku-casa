@@ -137,8 +137,8 @@ Los registros eliminados lógicamente no deben mostrarse en consultas normales, 
 5. Las categorías pueden ser compartidas entre adquisición y transmisión.
 6. Se permiten múltiples apuntes con la misma categoría y tipo.
 7. Debe existir al menos una categoría estructural definida como:
-   - Precio principal de adquisición.
-   - Precio principal de transmisión.
+   - Precio principal de adquisición (Adquisición).
+   - Precio principal de transmisión (Venta).
 8. La deducibilidad fiscal de un apunte viene determinada exclusivamente por su categoría.
 9. Se permite modificar apuntes incluso si la propiedad ya está marcada como transmitida.
 10. La eliminación de apuntes debe ser lógica (soft delete).
@@ -162,7 +162,7 @@ La feature debe contemplar los siguientes escenarios:
 
 ## Dependencias
 
-Esta feature puede depender de:
+Esta feature depende de:
 
 - F-0003
 
@@ -170,7 +170,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 

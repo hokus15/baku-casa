@@ -158,7 +158,7 @@ Eliminar este bloque en el documento final.
 
 ## Dependencias
 
-Esta feature puede depender de:
+Esta feature depende de:
 
 - {{DEPENDENCY_1}}
 - {{DEPENDENCY_2}}
@@ -167,7 +167,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 
@@ -192,7 +192,7 @@ Eliminar este bloque en el documento final.
 
 ## Relación con fuentes autoritativas
 
-Esta feature puede requerir interpretación conjunta con:
+Esta feature debe interpretarse conjuntamente con las siguientes fuentes autoritativas:
 
 - `docs/system/constitution.md`
 - `docs/system/context.md`

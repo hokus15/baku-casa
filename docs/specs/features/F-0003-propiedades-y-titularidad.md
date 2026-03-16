@@ -169,7 +169,7 @@ La feature debe contemplar los siguientes escenarios:
 
 ## Dependencias
 
-Esta feature puede depender de:
+Esta feature depende de:
 
 - F-0002
 
@@ -177,7 +177,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 

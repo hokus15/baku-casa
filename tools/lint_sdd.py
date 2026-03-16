@@ -2283,7 +2283,10 @@ def validate_spec_required_section_bodies(
 def validate_spec_dependencies_note(path: Path, content: str) -> list[LintMessage]:
     if (
         "docs/planning/dependency-graph.yaml" in content
-        and "NO define dependencias" in content
+        and (
+            "NO define dependencias" in content
+            or "no sustituye la fuente estructural de dependencias" in content
+        )
     ):
         return []
     return [

@@ -6,7 +6,7 @@
 
 Registrar hechos económicos devengados (ingresos y gastos) asociados a propiedad y/o contrato, indicando quién es el obligado al pago (propietario o inquilino), de forma que esta entidad sea la fuente única para:
 
-- Generación de facturas de renta (con IVA y retención cuando aplique).
+- Generación de facturas de renta, incluyendo IVA y retención cuando la operación los requiera.
 - Registro de gastos de la propiedad.
 - Cálculo de deuda del inquilino con el propietario.
 - Preparar reporting fiscal futuro.
@@ -202,7 +202,7 @@ La feature debe contemplar los siguientes escenarios:
 
 ## Dependencias
 
-Esta feature puede depender de:
+Esta feature depende de:
 
 - F-0009
 - EN-0302
@@ -211,7 +211,7 @@ Las dependencias estructurales se definen en:
 
 docs/planning/dependency-graph.yaml
 
-Este documento **NO define dependencias**.
+La lista anterior declara dependencias del item; este documento no sustituye la fuente estructural de dependencias.
 
 ---
 
